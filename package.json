@@ -1,0 +1,23 @@
+{
+  "name": "waterline",
+  "version": "0.1.0",
+  "description": "Prove a jeonse property isn't over-leveraged, without revealing anyone's deposit.",
+  "type": "module",
+  "private": true,
+  "license": "Apache-2.0",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "compile": "compact compile +0.31.1 contracts/waterline.compact build/waterline",
+    "registry": "node src/registry.mjs",
+    "verify": "node src/verify.mjs"
+  },
+  "dependencies": {
+    "@midnight-ntwrk/compact-runtime": "0.16.0",
+    "@midnight-ntwrk/ledger-v8": "8.1.0",
+    "@midnight-ntwrk/midnight-js-contracts": "4.1.1",
+    "@midnight-ntwrk/midnight-js-indexer-public-data-provider": "4.1.1",
+    "@midnight-ntwrk/midnight-js-network-id": "4.1.1",
+    "@midnight-ntwrk/midnight-js-types": "4.1.1",
+    "@polkadot/api": "^16.0.0"
+  }
+}

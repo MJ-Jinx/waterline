@@ -1,0 +1,17 @@
+node_modules/
+
+# Compiled artifacts. 11 MB of ZK keys — regenerate with `npm run compile`.
+# NOTE: deploying the demo to GitHub Pages DOES require publishing
+# build/waterline/keys/ and build/waterline/zkir/ so the browser can fetch them.
+# Publish them from the Pages workflow rather than committing them to main.
+build/
+
+# Registry secret key, contract address and commitment salts. NEVER commit:
+# registryPk is sealed at construction, so this file is the only way to write
+# to a deployed contract.
+state.json
+
+*.log
+*.bin
+*.hex
+.DS_Store

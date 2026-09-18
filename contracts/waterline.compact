@@ -1,0 +1,97 @@
+// Waterline — 전세 senior-claim proof.
+//
+// The ledger stores ONLY an opaque commitment per building. The deposit total,
+// the lease count and the salt live in the registry's private state and never
+// touch the chain.
+//
+// The load-bearing idea is the CHAIN, not the commitment. `registerLease` can
+// only write a new commitment if the prover can OPEN THE PREVIOUS ONE. So a
+// registry cannot quietly understate the total later: doing so would require
+// having understated at every prior step, and each tenant's own registration is
+// already welded into the chain. This is the proof-of-liabilities problem
+// (Mt. Gox / exchange reserves) solved with a chained commitment rather than a
+// plain Merkle tree, which would prove inclusion but not exhaustiveness.
+//
+// NOTE ON THE DOMAIN SEPARATOR: it reads "jeonse:registry:pk:" rather than
+// "waterline:...". This is deliberate and MUST NOT be "tidied". The string is
+// hashed into the registry public key, so changing it changes the verifier keys
+// and would invalidate the recorded on-chain deployment cited in the README.
+// The separator names the problem domain; Waterline is the product.
+//
+// Verified with compiler 0.31.1 (runtime 0.16.0). See README "Reproducing".
+
+pragma language_version >= 0.22;
+
+import CompactStandardLibrary;
+
+// Aggregate of all senior lease deposits for one building.
+export struct LeaseAgg {
+  total: Uint<64>,
+  count: Uint<64>
+}
+
+// Hash of the registry's secret key. Set once at deployment.
+export sealed ledger registryPk: Bytes<32>;
+
+// buildingId -> persistentCommit(LeaseAgg, salt). Public but hiding.
+export ledger buildingState: Map<Bytes<32>, Bytes<32>>;
+
+witness registry_secret_key(): Bytes<32>;
+witness building_opening(buildingId: Bytes<32>): LeaseAgg;
+witness building_salt(buildingId: Bytes<32>): Bytes<32>;
+witness fresh_salt(): Bytes<32>;
+witness senior_liens(buildingId: Bytes<32>): Uint<64>;
+
+circuit registryPubKey(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([pad(32, "jeonse:registry:pk:"), sk]);
+}
+
+constructor() {
+  registryPk = disclose(registryPubKey(registry_secret_key()));
+}
+
+circuit requireRegistry(): [] {
+  const sk = registry_secret_key();
+  assert(disclose(registryPubKey(sk) == registryPk), "Only registry may write");
+}
+
+export circuit openBuilding(buildingId: Bytes<32>): [] {
+  requireRegistry();
+  // buildingId is public by design (the tenant types it in), so disclose it once.
+  const bid = disclose(buildingId);
+  assert(!buildingState.member(bid), "Building already open");
+  const zero = LeaseAgg { total: 0, count: 0 };
+  buildingState.insert(bid, disclose(persistentCommit<LeaseAgg>(zero, fresh_salt())));
+}
+
+// Chained update: the new commitment is only accepted if the prover can open
+// the PREVIOUS one. This is what makes omission impossible.
+export circuit registerLease(buildingId: Bytes<32>, deposit: Uint<64>): [] {
+  requireRegistry();
+  const bid = disclose(buildingId);
+  const prev = building_opening(buildingId);
+  const prevCommit = persistentCommit<LeaseAgg>(prev, building_salt(buildingId));
+  assert(disclose(prevCommit == buildingState.lookup(bid)), "Stale opening");
+  const next = LeaseAgg {
+    total: (prev.total + deposit) as Uint<64>,
+    count: (prev.count + 1) as Uint<64>
+  };
+  buildingState.insert(bid, disclose(persistentCommit<LeaseAgg>(next, fresh_salt())));
+}
+
+// Discloses ONLY whether exposure is within the cap. Never the total.
+export circuit proveSafety(
+  buildingId: Bytes<32>,
+  appraisedValue: Uint<64>,
+  thresholdPct: Uint<8>
+): Boolean {
+  const bid = disclose(buildingId);
+  const agg = building_opening(buildingId);
+  const commit = persistentCommit<LeaseAgg>(agg, building_salt(buildingId));
+  assert(disclose(commit == buildingState.lookup(bid)), "Stale opening");
+  // No division in Compact: compare exposure*100 <= value*pct instead.
+  const exposure = (agg.total as Uint<96>) + (senior_liens(buildingId) as Uint<96>);
+  const lhs = exposure * 100;
+  const rhs = (appraisedValue as Uint<96>) * (thresholdPct as Uint<16>);
+  return disclose(lhs <= rhs);
+}
