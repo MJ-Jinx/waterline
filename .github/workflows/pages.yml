@@ -31,6 +31,40 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      # Refresh the certificate snapshot from the live ledger so /check is
+      # current at deploy time. Decoding ledger state needs the compiled
+      # contract, hence the toolchain here — none of it is published; only the
+      # resulting JSON is.
+      #
+      # Deliberately non-fatal: if the indexer is unreachable, ship the
+      # committed snapshot rather than fail the deploy. The page prints the
+      # block and timestamp it was taken at, so a stale one is visible as stale
+      # rather than passed off as current.
+      - name: Refresh the ledger snapshot
+        id: snapshot
+        continue-on-error: true
+        run: |
+          npm ci
+          curl --proto '=https' --tlsv1.2 -LsSf             https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
+          export PATH="$HOME/.compact/bin:$PATH"
+          compact update 0.31.1
+          npm run compile
+          npm run snapshot
+
+      - name: Report snapshot outcome
+        run: |
+          if [ "${{ steps.snapshot.outcome }}" = "success" ]; then
+            echo "Snapshot refreshed from the live ledger."
+          else
+            echo "::warning::Snapshot refresh failed; deploying the committed snapshot."
+          fi
+          node -e "const s=require('./site/data/certificates.json');console.log('block',s.block,'taken',s.takenAt)"
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3

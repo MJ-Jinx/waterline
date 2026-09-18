@@ -227,6 +227,50 @@
      /check — the money page. Pure read: no proving, no keys, no wallet.
      ====================================================================== */
 
+  /**
+   * Certificates read off the live ledger at build time, written by
+   * src/snapshot.mjs. Decoding contract state needs the compiled contract, so
+   * the read happens in CI rather than here — which is what keeps this page a
+   * plain static fetch with no WASM, no prover keys and no wallet.
+   *
+   * It is a snapshot, not a live read, so the page says so and prints the block
+   * it was taken at. Missing or unreachable (opening the file over file://),
+   * the page falls back to the fictional demo buildings.
+   */
+  function fetchSnapshot() {
+    if (typeof fetch !== 'function') return Promise.resolve(null);
+    return fetch('data/certificates.json', { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; });
+  }
+
+  function wonFromString(raw) {
+    // Raw won as a decimal string -> '₩600,000,000'
+    return '₩' + String(raw).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  /** Turn a snapshot entry into the same shape the demo buildings use. */
+  function liveToBuilding(b, snap) {
+    var c = b.certificate;
+    return {
+      id: b.id.slice(0, 12).toUpperCase(),
+      chip: b.chip || 'Live',
+      place: b.label,
+      live: true,
+      registered: b.registered,
+      band: c ? c.band : null,
+      appraised: c ? wonFromString(c.appraisedValue) : '—',
+      limit: c ? wonFromString(c.limit) : '—',
+      hash: b.commitment ? '0x' + b.commitment.slice(0, 8) + '…' + b.commitment.slice(-4) : '—',
+      fullHash: b.commitment || '',
+      block: snap.block ? String(snap.block).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '—',
+      issued: snap.takenAt ? new Date(snap.takenAt).toUTCString().replace('GMT', 'UTC') : '—',
+      fresh: c ? c.fresh : null,
+      explorer: snap.explorer,
+      network: snap.network
+    };
+  }
+
   function initCheck() {
     var root = $('[data-wl-check]');
     if (!root) return;
@@ -247,20 +291,26 @@
       proofNote: $('[data-wl-proofnote]', root)
     };
 
-    BUILDINGS.forEach(function (b, i) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'wl-chip';
-      btn.dataset.band = b.band;
-      btn.setAttribute('aria-pressed', String(i === 0));
-      btn.textContent = b.chip;
-      btn.addEventListener('click', function () { select(i); });
-      els.chips.appendChild(btn);
-    });
+    var list = BUILDINGS.slice();     // replaced once the snapshot resolves
+    var current = 0;
+
+    function buildChips() {
+      els.chips.innerHTML = '';
+      list.forEach(function (b, i) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'wl-chip';
+        if (b.band) btn.dataset.band = b.band;
+        btn.setAttribute('aria-pressed', String(i === current));
+        btn.textContent = b.chip;
+        btn.addEventListener('click', function () { select(i); });
+        els.chips.appendChild(btn);
+      });
+    }
 
     function select(i) {
-      var b = BUILDINGS[i];
-      var band = BANDS[b.band];
+      var b = list[i];
+      current = i;
 
       $$('.wl-chip', els.chips).forEach(function (c, n) {
         c.setAttribute('aria-pressed', String(n === i));
@@ -269,23 +319,50 @@
       if (els.id) els.id.value = b.id;
       els.place.textContent = b.place;
 
-      els.verdict.textContent = band.label;
-      els.verdict.className = 'wl-verdict wl-is-' + b.band;
-
-      els.sentence.textContent = band.sentence;
-      els.figure.innerHTML = waterlineSVG(b.band, { lineLabel: 'LOAD LINE 70%' });
-      els.caption.textContent = band.caption;
+      // A live entry may be registered with no verdict, or not registered at
+      // all. Neither is a passing result, and neither may borrow a verdict
+      // colour — the absence of a verdict is not a safe one.
+      if (b.live && !b.band) {
+        var unknown = b.registered
+          ? ['NO CERTIFICATE', 'Registered, but no verdict has been published for this building yet.']
+          : ['NOT REGISTERED', 'This building has no entry in the registry. That is not the same as safe.'];
+        els.verdict.textContent = unknown[0];
+        els.verdict.className = 'wl-verdict wl-verdict--sm';
+        els.sentence.textContent = unknown[1];
+        els.figure.innerHTML = '';
+        els.caption.textContent = 'No level to draw.';
+      } else {
+        var band = BANDS[b.band];
+        els.verdict.textContent = band.label;
+        els.verdict.className = 'wl-verdict wl-is-' + b.band;
+        els.sentence.textContent = band.sentence;
+        els.figure.innerHTML = waterlineSVG(b.band, { lineLabel: 'LOAD LINE 70%' });
+        els.caption.textContent = band.caption;
+      }
 
       els.appraised.textContent = b.appraised;
       els.limit.textContent = b.limit;
       els.hash.textContent = b.hash + ' ⧉';
-      els.hash.dataset.value = b.hash;
+      els.hash.dataset.value = b.fullHash || b.hash;
       els.block.textContent = b.block;
       els.issued.textContent = b.issued;
+
+      var explorer = $('[data-wl-explorer]', root);
+      if (explorer && b.explorer) explorer.href = b.explorer;
+
+      var origin = $('[data-wl-origin]', root);
+      if (origin) {
+        origin.textContent = b.live
+          ? 'Read from the Midnight ' + b.network + ' ledger'
+          : 'Demo buildings are fictional';
+      }
+
       if (els.proofNote) {
-        els.proofNote.textContent =
-          'Proof verified by the Midnight network at block ' + b.block +
-          '. This page only reads the ledger.';
+        els.proofNote.textContent = b.live
+          ? 'Read from the contract’s ledger at block ' + b.block + ', snapshot taken ' +
+            b.issued + '. The verdict was written on chain by the registry; this page only reads it' +
+            (b.fresh === false ? ', and the books have moved since it was issued.' : '.')
+          : 'Illustrative demo building. The contract and block below are real; this building is not.';
       }
     }
 
@@ -296,7 +373,20 @@
       });
     }
 
+    buildChips();
     select(0);
+
+    // Upgrade to the real ledger read as soon as it arrives. Same-origin and
+    // under a kilobyte, so in practice this lands before a first paint is
+    // noticed; if it never lands, the demo buildings above stay.
+    fetchSnapshot().then(function (snap) {
+      if (!snap || !snap.buildings || !snap.buildings.length) return;
+      var live = snap.buildings.map(function (b) { return liveToBuilding(b, snap); });
+      list = live.concat(BUILDINGS);
+      current = 0;
+      buildChips();
+      select(0);
+    });
   }
 
   /* ======================================================================

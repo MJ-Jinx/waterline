@@ -1,0 +1,27 @@
+{
+  "network": "preprod",
+  "contract": "e99711c00fbcb7ee9a12f81a75e151367bf7899cbda96a1c54c75393494f3ac2",
+  "explorer": "https://explorer.preprod.midnight.network/contracts/e99711c00fbcb7ee9a12f81a75e151367bf7899cbda96a1c54c75393494f3ac2",
+  "takenAt": "2026-09-18T07:27:43.155Z",
+  "block": 2598396,
+  "blockTimestamp": 1789703034000,
+  "buildings": [
+    {
+      "id": "189285d39e578cbe1e357d330fe58326c644d93500d9ad7a424212fc9de44c47",
+      "chip": "Live",
+      "label": "Live registry entry · Midnight preprod",
+      "registered": true,
+      "commitment": "f65833a05bf6d6c47b18884d7e20674c90b7ddde3ed14b0a0da87d19a37f788a",
+      "certificate": {
+        "band": "danger",
+        "bandIndex": 0,
+        "appraisedValue": "600000000",
+        "safePct": 70,
+        "cautionPct": 80,
+        "limit": "420000000",
+        "boundTo": "f65833a05bf6d6c47b18884d7e20674c90b7ddde3ed14b0a0da87d19a37f788a",
+        "fresh": true
+      }
+    }
+  ]
+}
