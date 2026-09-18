@@ -8,6 +8,18 @@ A ship loaded past its waterline is unsafe. So is a building carrying more lease
 
 Built on [Midnight](https://midnight.network) for the Midnight Korea Hackathon 2026.
 
+**▶ Live demo: [mj-jinx.github.io/waterline](https://mj-jinx.github.io/waterline/)** — no wallet, no extension, no signup.
+
+| Page | What it shows |
+|---|---|
+| [Check a building](https://mj-jinx.github.io/waterline/check.html) | the tenant view — a verdict band read straight off the ledger |
+| [Try to cheat it](https://mj-jinx.github.io/waterline/attack.html) | claim any total you like, and watch the certificate refuse to exist |
+| [Registry console](https://mj-jinx.github.io/waterline/registry.html) | the proving pipeline, framed as a simulation |
+
+The demo buildings on those pages are fictional and labelled as such. The contract in the footer is
+real: [`e99711c0…3ac2`](https://explorer.preprod.midnight.network/contracts/e99711c00fbcb7ee9a12f81a75e151367bf7899cbda96a1c54c75393494f3ac2)
+on Midnight preprod.
+
 ---
 
 ## The problem
@@ -253,6 +265,26 @@ node src/read.mjs
 ```
 
 State persists to `state.json`: the registry secret key, the contract address and the per-building salts. **Do not lose it.** `registryPk` is sealed at construction, so without the secret key a deployed contract is permanently unwritable.
+
+### The site
+
+`site/` is the deployed front end — plain HTML, CSS and JS with no build step, no framework and no
+dependencies beyond a Google Fonts link. It is published to GitHub Pages by
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every push to `main`, uploaded
+verbatim.
+
+```bash
+cd site && python3 -m http.server 8080   # or just open site/index.html
+```
+
+**No ZK prover keys are hosted.** `issueCertificate` writes the verdict band to the ledger, so the
+tenant page is a read rather than a proof — which is why the public site needs no WASM, no keys and
+no wallet. The ~11 MB of prover keys stay on the registry side, which runs locally.
+
+`design/` holds the specification behind it: [`BUILD-SPEC.md`](design/BUILD-SPEC.md), the design
+tokens, and the original canvas artboards. The one rule worth repeating here — **the water surface is
+drawn as a hatched band, never a level.** The page genuinely does not know the total, so a precise
+surface would be either a lie or a disclosure.
 
 ### Gotchas worth knowing
 
