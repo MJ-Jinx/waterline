@@ -30,11 +30,30 @@ export struct LeaseAgg {
   count: Uint<64>
 }
 
+// A publicly readable verdict. Holds NO amounts from the private books:
+// only the band, the public inputs it was computed from, and `boundTo`.
+//
+// `boundTo` is the buildingState commitment this certificate was computed
+// against. A reader checks `boundTo == buildingState[bid]`: if they differ,
+// the books moved since issuance and the certificate is STALE. That gives
+// freshness without disclosing the lease count or any amount.
+export struct Certificate {
+  band: Uint<8>,
+  appraisedValue: Uint<64>,
+  safePct: Uint<8>,
+  cautionPct: Uint<8>,
+  boundTo: Bytes<32>
+}
+
 // Hash of the registry's secret key. Set once at deployment.
 export sealed ledger registryPk: Bytes<32>;
 
 // buildingId -> persistentCommit(LeaseAgg, salt). Public but hiding.
 export ledger buildingState: Map<Bytes<32>, Bytes<32>>;
+
+// buildingId -> the latest published verdict. Readable by anyone, so the
+// tenant-facing page is a plain query with no proving and no keys.
+export ledger certificates: Map<Bytes<32>, Certificate>;
 
 witness registry_secret_key(): Bytes<32>;
 witness building_opening(buildingId: Bytes<32>): LeaseAgg;
@@ -79,19 +98,48 @@ export circuit registerLease(buildingId: Bytes<32>, deposit: Uint<64>): [] {
   buildingState.insert(bid, disclose(persistentCommit<LeaseAgg>(next, fresh_salt())));
 }
 
-// Discloses ONLY whether exposure is within the cap. Never the total.
-export circuit proveSafety(
+// Publishes a three-band verdict and discloses NOTHING else. The amounts stay
+// in the witness; only `band` reaches the ledger.
+//
+// Deliberately NOT gated on requireRegistry(). It does not need to be: the
+// commitment check below can only be satisfied by someone who can open the
+// current commitment, and only the registry can. So the ability to issue a
+// certificate IS the ability to open the commitment — which is exactly the
+// property the attack demo exercises.
+export circuit issueCertificate(
   buildingId: Bytes<32>,
   appraisedValue: Uint<64>,
-  thresholdPct: Uint<8>
-): Boolean {
+  safePct: Uint<8>,
+  cautionPct: Uint<8>
+): Uint<8> {
   const bid = disclose(buildingId);
+  const current = buildingState.lookup(bid);
+
   const agg = building_opening(buildingId);
   const commit = persistentCommit<LeaseAgg>(agg, building_salt(buildingId));
-  assert(disclose(commit == buildingState.lookup(bid)), "Stale opening");
-  // No division in Compact: compare exposure*100 <= value*pct instead.
+  assert(disclose(commit == current), "Stale opening");
+
+  // No division in Compact: compare exposure*100 against value*pct.
   const exposure = (agg.total as Uint<96>) + (senior_liens(buildingId) as Uint<96>);
-  const lhs = exposure * 100;
-  const rhs = (appraisedValue as Uint<96>) * (thresholdPct as Uint<16>);
-  return disclose(lhs <= rhs);
+  const load = exposure * 100;
+  const safeCap = (appraisedValue as Uint<96>) * (safePct as Uint<16>);
+  const cautionCap = (appraisedValue as Uint<96>) * (cautionPct as Uint<16>);
+
+  // Boolean -> Uint avoids branching on witness-derived values entirely:
+  //   within safe AND within caution -> 2 (안전)
+  //   within caution only            -> 1 (주의)
+  //   neither                        -> 0 (위험)
+  const withinSafe = disclose(load <= safeCap);
+  const withinCaution = disclose(load <= cautionCap);
+  const band = ((withinSafe as Uint<8>) + (withinCaution as Uint<8>)) as Uint<8>;
+
+  certificates.insert(bid, Certificate {
+    band: band,
+    appraisedValue: disclose(appraisedValue),
+    safePct: disclose(safePct),
+    cautionPct: disclose(cautionPct),
+    boundTo: current
+  });
+
+  return band;
 }

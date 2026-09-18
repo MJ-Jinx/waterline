@@ -4,7 +4,7 @@
 
 > **전세 (jeonse)** — the dominant Korean lease form. Instead of monthly rent, the tenant hands the landlord a very large refundable lump-sum deposit, often 50–80% of the property's value, returned at the end of the lease. It is effectively an interest-free loan to the landlord, secured only by the property.
 
-A ship loaded past its waterline is unsafe. So is a building carrying more lease deposits than its value can cover. Waterline computes that load against its limit inside a zero-knowledge circuit and discloses **one band — 안전 (anjeon, "safe") or 위험 (wiheom, "danger") — and nothing else.**
+A ship loaded past its waterline is unsafe. So is a building carrying more lease deposits than its value can cover. Waterline computes that load against its limit inside a zero-knowledge circuit and discloses **one band — 안전 (anjeon, "safe"), 주의 (juui, "caution") or 위험 (wiheom, "danger") — and nothing else.**
 
 Built on [Midnight](https://midnight.network) for the Midnight Korea Hackathon 2026.
 
@@ -76,17 +76,20 @@ flowchart TB
     end
 
     subgraph CHAIN["Midnight ledger - PUBLIC"]
-        COM["opaque commitment<br/>304146ca81f5af7b"]
+        COM["opaque commitment<br/>f65833a05bf6d6c4"]
     end
 
-    subgraph CIRCUIT["ZK circuit - proveSafety"]
+    subgraph CIRCUIT["ZK circuit - issueCertificate"]
         OPEN{"opening<br/>matches?"}
-        LOAD{"load within<br/>limit?"}
+        LOAD{"load vs<br/>two limits"}
     end
 
     FAIL["REFUSED<br/>Stale opening"]
-    SAFE["SAFE - anjeon"]
-    RISK["UNSAFE - wiheom"]
+    CERT["Certificate on chain<br/>band + public inputs<br/>+ commitment bound to"]
+    SAFE["2 - anjeon SAFE"]
+    CAUT["1 - juui CAUTION"]
+    RISK["0 - wiheom DANGER"]
+    TEN["Tenant page<br/>plain query, no keys"]
 
     LA --> TOT
     LB --> TOT
@@ -95,8 +98,13 @@ flowchart TB
     COM -->|"public input"| OPEN
     OPEN -->|"no"| FAIL
     OPEN -->|"yes"| LOAD
-    LOAD -->|"true"| SAFE
-    LOAD -->|"false"| RISK
+    LOAD --> SAFE
+    LOAD --> CAUT
+    LOAD --> RISK
+    SAFE --> CERT
+    CAUT --> CERT
+    RISK --> CERT
+    CERT --> TEN
 
     classDef priv fill:#78350f,stroke:#fbbf24,stroke-width:2px,color:#fff
     classDef pub fill:#1e3a5f,stroke:#38bdf8,stroke-width:2px,color:#fff
@@ -107,7 +115,10 @@ flowchart TB
     class COM pub
     class FAIL bad
     class SAFE good
-    class RISK warn
+    class CAUT warn
+    class RISK bad
+    class CERT pub
+    class TEN pub
 ```
 
 Every write must **open the previous commitment** before it can replace it — the edge marked `writes`. That single rule is what makes the total unfalsifiable. `1 eok (억) = 100 million won ≈ USD 72k`.
@@ -121,8 +132,11 @@ Every write must **open the previous commitment** before it can replace it — t
 | Number of prior leases | **no** | registry only |
 | Commitment salt | **no** | registry only |
 | Opaque commitment per building | yes | anyone |
-| Appraised value, threshold % | yes | anyone — they are public inputs |
-| **안전 / 위험 (safe / danger) verdict** | yes | anyone |
+| Appraised value, both thresholds | yes | anyone — they are public inputs |
+| **The band (안전 / 주의 / 위험)** | yes | anyone |
+| Commitment the certificate was bound to | yes | anyone — this is the freshness check |
+
+**Freshness without disclosure.** Each certificate records the commitment it was computed against. A reader compares it to the live commitment: if they differ, the books moved since issuance and the certificate is **stale**. That signals staleness without revealing the lease count or any amount.
 
 ---
 
@@ -147,27 +161,32 @@ This is the **proof-of-liabilities** problem, familiar from exchange reserve aud
 Not simulated. Every step below ran against the live Midnight preprod network.
 
 ```text
-contract  0af6cf55a2d8a24ac954f0a60b91cd7da210c78d241accfa2ed552ed2b8b6067
+contract  e99711c00fbcb7ee9a12f81a75e151367bf7899cbda96a1c54c75393494f3ac2
 
-openBuilding                      proven + dust-sponsored   5086 -> 14350 B   landed
+deploy                            proven + dust-sponsored   7041 -> 16305 B   landed
+openBuilding                      proven + dust-sponsored   5086 -> 14356 B   landed
 registerLease  tenant A  3.0 eok  proven + dust-sponsored   5168 -> 14432 B   landed
-registerLease  tenant B  2.5 eok  proven + dust-sponsored   5168 -> 14431 B   landed
+registerLease  tenant B  2.5 eok  proven + dust-sponsored   5168 -> 14432 B   landed
+issueCertificate  x3 (see below)  proven + dust-sponsored   5126 -> 14390 B   landed
 
 registry books (private):  total 5.5 eok across 2 leases
-visible on chain:          304146ca81f5af7bbdd4efd373ad956f...  (opaque)
+building commitment:       f65833a05bf6d6c47b18884d7e20674c90b7ddde...  (opaque)
 ```
 
 ### The three verdicts
 
-| Case | Appraised | Cap @ 70% | Total claimed | Result |
-|---|---|---|---|---|
-| **A** honest | ₩9.0억 | ₩6.3억 | ₩5.5억 *(true)* | ✅ **안전 / SAFE** — ZK proof, 4,964 B |
-| **B** honest | ₩7.0억 | ₩4.9억 | ₩5.5억 *(true)* | ⚠️ **위험 / UNSAFE** — ZK proof, 4,964 B |
-| **C** attack | ₩7.0억 | ₩4.9억 | ₩3.0억 *(**lie**)* | ❌ **refused: `Stale opening`** |
+| Appraised | 안전 ≤ 70% | 주의 ≤ 80% | Total claimed | Band | Verdict |
+|---|---|---|---|---|---|
+| ₩9.0억 | ₩6.3억 | ₩7.2억 | ₩5.5억 *(true)* | 2 | ✅ **안전 anjeon — SAFE** |
+| ₩7.0억 | ₩4.9억 | ₩5.6억 | ₩5.5억 *(true)* | 1 | △ **주의 juui — CAUTION** |
+| ₩6.0억 | ₩4.2억 | ₩4.8억 | ₩5.5억 *(true)* | 0 | ⚠️ **위험 wiheom — DANGER** |
+| ₩6.0억 | ₩4.2억 | ₩4.8억 | ₩3.0억 *(**a lie**)* | — | ❌ **REFUSED: `Stale opening`** |
 
-**Case C is the point.** Identical building and appraisal to B. The landlord understates the total specifically to flip 위험 (danger) into 안전 (safe) and get the lease signed. The circuit recomputes the commitment from the forged figure, finds it does not match what is already on chain, and refuses.
+All four rows were executed against live preprod. The three honest bands were each published on chain and read back through the public indexer.
 
-Cases A and B together show the other half: identical private state, opposite verdicts, and in **both** cases the chain learns only `true` or `false`. ₩5.5억 is never disclosed — not when the answer is safe, not when it is unsafe.
+**The last row is the point.** Same building, same ₩6.0억 appraisal as the row above it. Honestly, ₩5.5억 exceeds even the 주의 ceiling of ₩4.8억, so the building is **위험**. The landlord claims ₩3.0억 instead — which would fall under the ₩4.2억 안전 line and flip DANGER into SAFE. The circuit recomputes the commitment from the forged figure, finds it does not match what is already on chain, and refuses.
+
+The three honest rows show the other half: identical private books, three different verdicts, and in every case the ledger records only a band. ₩5.5억 is never disclosed — not when the answer is safe, not when it is dangerous.
 
 > **Where the refusal happens — stated precisely.** Case C fails at **circuit-execution time, on the landlord's own machine** — before a proof exists, before anything is submitted. There is no transaction for the chain to reject, because no satisfying witness exists. This is *stronger* than a chain-level rejection: the landlord cannot even produce a fraudulent certificate to show a tenant, which is the actual threat. But it would be wrong to describe it as "the chain rejected it," so we don't.
 
@@ -199,7 +218,7 @@ flowchart LR
 - **Proving** — ProofStation proves the circuit. The **prover key travels with the request** via `createProvingPayload`, which is why a third-party prover can prove a contract it has never seen before.
 - **Fees** — the same service adds a `DustSpend`, so the user pays nothing.
 - **Reads** — the official public indexer, unauthenticated, CORS `*`.
-- **ZK keys** — 11 MB for three circuits, served as static files. Well inside GitHub Pages' limits.
+- **ZK keys** — 11 MB for three circuits, needed only by the side that *proves*. **The tenant-facing page needs none of it:** `issueCertificate` publishes the band to the ledger, so `/check` is a plain GraphQL query with no WASM and no key downloads. That is why it can load instantly.
 
 > ProofStation is third-party infrastructure, not official Midnight infra, and it rate-limits to one pending balance request at a time. Keep a "connect wallet" fallback for production. In-process WASM proving is a viable independent alternative.
 
@@ -217,11 +236,20 @@ compact compile +0.31.1 contracts/waterline.compact build/waterline
 
 npm install
 
-# 2. Registry side — open a building, register two leases (writes to chain)
+# 2. Registry side — deploy, open a building, register two leases (writes)
 node src/registry.mjs
 
-# 3. Tenant side — the two honest verdicts, then the attack
-node src/verify.mjs
+# 3. Issue a verdict certificate. Try each appraisal to see all three bands:
+node src/certify.mjs 9          # -> 2  안전 anjeon  SAFE
+node src/certify.mjs 7          # -> 1  주의 juui    CAUTION
+node src/certify.mjs 6          # -> 0  위험 wiheom  DANGER
+
+# 4. Try to cheat: understate the total to win a better band
+node src/certify.mjs 6 --attack # -> REFUSED: Stale opening
+
+# 5. Tenant side — the read path the web UI uses. No wallet, no proving,
+#    no prover keys, no transaction. Two ledger lookups.
+node src/read.mjs
 ```
 
 State persists to `state.json`: the registry secret key, the contract address and the per-building salts. **Do not lose it.** `registryPk` is sealed at construction, so without the secret key a deployed contract is permanently unwritable.

@@ -9,6 +9,7 @@
 
 import * as led from '@midnight-ntwrk/ledger-v8';
 import { createUnprovenDeployTx, createUnprovenCallTx } from '@midnight-ntwrk/midnight-js-contracts';
+import { ledger } from '../build/waterline/contract/index.js';
 import {
   S, save, BID, building, compiledContract, zkConfigProvider, publicDataProvider,
   walletProvider, sponsorAndSubmit, stateHash, waitForAdvance, freshSalt, lastSalt,
@@ -94,8 +95,12 @@ if (building() && BigInt(building().count) === 1n) {
 const b = building();
 if (b) {
   console.log(`\n   registry books (PRIVATE, never on chain): total=${won(BigInt(b.total))} across ${b.count} leases`);
-  console.log(`   on chain, anyone can see only: ${(await stateHash(S.addr)).slice(0, 32)}… (opaque commitment)`);
-  console.log('\n   now run:  node src/verify.mjs');
+  // Read the ACTUAL building commitment from the ledger. (stateHash() hashes the
+  // whole contract state, which is a different value - do not conflate them.)
+  const st = await publicDataProvider.queryContractState(S.addr);
+  const commitment = Buffer.from(ledger(st.data).buildingState.lookup(ub(BID))).toString('hex');
+  console.log(`   on chain, anyone can see only: ${commitment.slice(0, 40)}… (opaque commitment)`);
+  console.log('\n   now run:  node src/certify.mjs');
 }
 
 await disconnect();

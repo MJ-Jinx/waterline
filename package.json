@@ -9,7 +9,8 @@
   "scripts": {
     "compile": "compact compile +0.31.1 contracts/waterline.compact build/waterline",
     "registry": "node src/registry.mjs",
-    "verify": "node src/verify.mjs"
+    "certify": "node src/certify.mjs",
+    "read": "node src/read.mjs"
   },
   "dependencies": {
     "@midnight-ntwrk/compact-runtime": "0.16.0",

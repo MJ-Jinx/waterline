@@ -1,9 +1,9 @@
 node_modules/
 
 # Compiled artifacts. 11 MB of ZK keys — regenerate with `npm run compile`.
-# NOTE: deploying the demo to GitHub Pages DOES require publishing
-# build/waterline/keys/ and build/waterline/zkir/ so the browser can fetch them.
-# Publish them from the Pages workflow rather than committing them to main.
+# The tenant-facing page does NOT need these: issueCertificate publishes the
+# band to the ledger, so /check is a plain GraphQL query. Only the side that
+# proves (the registry console) needs keys, and it runs locally.
 build/
 
 # Registry secret key, contract address and commitment salts. NEVER commit:
