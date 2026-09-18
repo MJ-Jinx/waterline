@@ -1,0 +1,60 @@
+# Continuous integration.
+#
+# Two jobs on purpose. The site suite needs nothing but Node, so it gives a
+# verdict in seconds; the contract suite has to install the Compact toolchain
+# and compile first. Splitting them means a broken stylesheet does not wait on a
+# compiler download, and a toolchain outage does not hide a front-end failure.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  site:
+    name: Site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm run test:site
+
+  contract:
+    name: Contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install the Compact toolchain
+        run: |
+          curl --proto '=https' --tlsv1.2 -LsSf \
+            https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
+          echo "$HOME/.compact/bin" >> "$GITHUB_PATH"
+
+      # 0.31.1 emits runtime 0.16.0, which is what the midnight-js line we pin
+      # expects. Newer compilers emit 0.19.0 and fail at load.
+      - name: Pin the compiler
+        run: compact update 0.31.1
+
+      - name: Compile
+        run: npm run compile
+
+      - name: Test
+        run: npm run test:contract

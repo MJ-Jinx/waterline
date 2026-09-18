@@ -5,12 +5,18 @@
   "type": "module",
   "private": true,
   "license": "Apache-2.0",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "compile": "compact compile +0.31.1 contracts/waterline.compact build/waterline",
+    "test": "node --test test/contract.test.mjs test/site.test.mjs",
+    "test:site": "node --test test/site.test.mjs",
+    "test:contract": "node --test test/contract.test.mjs",
     "registry": "node src/registry.mjs",
     "certify": "node src/certify.mjs",
-    "read": "node src/read.mjs"
+    "read": "node src/read.mjs",
+    "snapshot": "node src/snapshot.mjs"
   },
   "dependencies": {
     "@midnight-ntwrk/compact-runtime": "0.16.0",
