@@ -39,7 +39,7 @@ page is a pure read. No prover keys are ever hosted for the public site.
 | `/` | `index.html` | a judge with 15 seconds |
 | `/check` | `check.html` | a tenant or 공인중개사 at the signing table, on a phone |
 | `/registry` | `registry.html` | a judge who wants to see the machinery |
-| `/attack` | `attack.html` | the sceptic — **this is the page that wins** |
+| `/why-lying-fails` | `why-lying-fails.html` | the sceptic — **this is the page that wins** |
 
 Two documentation pages ship alongside: `states.html` (the no-verdict states) and
 `foundations.html` (the design system rendered).
@@ -289,7 +289,7 @@ attack teaser, then the evidence strip.
 - Sub — *Jeonse tenants hand over years of savings against a building whose other debts they cannot
   see. Waterline lets them see one thing — whether the building is loaded past its line — and
   nothing more.*
-- CTAs — **Check a building** (primary) · **Try to cheat it** (secondary)
+- CTAs — **Check a building** (primary) · **Why a landlord can’t lie** (secondary)
 
 **Three steps:**
 
@@ -374,7 +374,7 @@ reader.
 `0x9f4c8b21…a1e8 → 0x7a2be6f0…9d14`, block `3,418,120`, tenant verdict `SAFE`. Byte counter shows
 `14,432` from step 2 onward.
 
-### 7.4 `/attack` — Try to cheat it
+### 7.4 `/why-lying-fails` — Why a landlord can’t lie
 
 **Preamble:** *The real total is hidden. So why can't the landlord just lie?*
 
@@ -460,7 +460,7 @@ waterline-design-spec/
 │   ├── index.html
 │   ├── check.html
 │   ├── registry.html
-│   ├── attack.html
+│   ├── why-lying-fails.html
 │   ├── states.html
 │   ├── foundations.html
 │   └── assets/

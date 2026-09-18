@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waterline — Why a landlord can’t lie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="wl-page" data-wl-attack>
+
+  <header class="wl-header">
+    <div class="wl-container wl-header__inner">
+      <a class="wl-wordmark" href="index.html">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="7.5" stroke="#0F2A4A" stroke-width="1.8"></circle>
+          <line x1="2" y1="12" x2="22" y2="12" stroke="#C0352B" stroke-width="1.8"></line>
+        </svg>
+        Waterline
+      </a>
+      <div class="wl-spacer"></div>
+      <nav class="wl-nav" aria-label="Main">
+        <a href="check.html">Check a building</a>
+        <a href="registry.html">Registry console</a>
+        <a href="why-lying-fails.html" aria-current="page">Why lying fails</a>
+      </nav>
+      <span class="wl-badge">landlord device, simulated</span>
+    </div>
+  </header>
+
+  <main class="wl-main">
+
+    <section class="wl-container" style="padding-block: 44px 0;">
+      <h1 class="wl-display-l" style="max-width: 880px;">The real total is hidden. So why can't the landlord just lie?</h1>
+    </section>
+
+    <section class="wl-container" style="padding-block: 34px 0;">
+      <div class="wl-cols" style="gap: 40px;">
+
+        <!-- Left: the attempt -------------------------------------------- -->
+        <div class="wl-col" style="flex: 1 1 440px;">
+
+          <div class="wl-card">
+            <div class="wl-kv" style="font-size: 13px;">
+              <div class="wl-kv__row"><span class="wl-kv__k" style="font-family: var(--wl-font);">BUILDING</span><span class="wl-kv__v" style="font-family: var(--wl-font);">Cheongnim Town, Block 3 · Bucheon</span></div>
+              <div class="wl-kv__row"><span class="wl-kv__k" style="font-family: var(--wl-font);">APPRAISED</span><span class="wl-kv__v">₩285,000,000</span></div>
+              <div class="wl-kv__row"><span class="wl-kv__k" style="font-family: var(--wl-font);">LIMIT AT 70%</span><span class="wl-kv__v">₩199,500,000</span></div>
+              <div class="wl-kv__row"><span class="wl-kv__k" style="font-family: var(--wl-font);">COMMITMENT</span><span class="wl-kv__v wl-kv__v--dim">0xc082f5d9…30b7 · block 3,416,944</span></div>
+            </div>
+          </div>
+
+          <div style="margin-top: 24px;">
+            <label for="claim" class="wl-subtitle" style="display: block; margin-bottom: 4px;">Claim a total</label>
+            <p class="wl-body-sm" style="margin: 0 0 12px;">Any number you like. Nobody can check it against the hidden one.</p>
+            <div class="wl-mono" style="font-size: 38px; color: var(--wl-navy); margin-bottom: 4px;" data-wl-claim-amount>₩165,000,000</div>
+            <input class="wl-range" id="claim" type="range" data-wl-claim
+                   min="100" max="285" step="5" value="165"
+                   aria-label="Claimed senior deposit total, in millions of won">
+            <div class="wl-range__scale">
+              <span>₩100,000,000</span><span>limit ₩199,500,000</span><span>₩285,000,000</span>
+            </div>
+          </div>
+
+          <div class="wl-row" style="gap: 16px; margin-top: 24px; align-items: stretch;">
+            <div class="wl-card" style="flex: 1 1 180px;">
+              <div class="wl-label" style="letter-spacing: 0.06em;">Honest verdict</div>
+              <div class="wl-verdict wl-verdict--sm wl-is-danger" style="margin-top: 10px;">DANGER</div>
+              <div class="wl-mono" style="color: var(--wl-ink-label); margin-top: 10px;">real total · not disclosed</div>
+            </div>
+            <div class="wl-card wl-card--quiet" style="flex: 1 1 180px;">
+              <div class="wl-label" style="letter-spacing: 0.06em;">What the lie would say</div>
+              <div class="wl-verdict wl-verdict--sm" data-wl-lie style="margin-top: 10px;">SAFE</div>
+              <div class="wl-mono" style="color: var(--wl-ink-label); margin-top: 10px;" data-wl-lie-amount>₩165,000,000</div>
+            </div>
+          </div>
+
+          <button type="button" class="wl-btn wl-btn--danger wl-btn--block" data-wl-generate style="margin-top: 24px;">Generate certificate</button>
+
+          <a class="wl-btn wl-btn--secondary wl-btn--block" href="check.html" style="margin-top: 14px;">See the real verdict</a>
+        </div>
+
+        <!-- Right: the result -------------------------------------------- -->
+        <div class="wl-col" style="flex: 1 1 440px; min-width: 320px;">
+          <div class="wl-card wl-card--flat" data-wl-result aria-live="polite">
+
+            <div data-wl-view="idle" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 80px 40px;">
+              <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#B9B2A6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="4.5" y="10.5" width="15" height="9.5" rx="2"></rect><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path>
+              </svg>
+              <p style="margin: 0; font-size: 16px; color: var(--wl-ink-muted); text-align: center; line-height: 1.8;">
+                Pick a number, then try to produce a certificate.
+              </p>
+            </div>
+
+            <div data-wl-view="proving" hidden style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 80px 40px;">
+              <svg viewBox="0 0 24 24" width="30" height="30" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="#E2DCD0" stroke-width="2.5"></circle>
+                <path d="M21 12a9 9 0 0 0-9-9" stroke="#1B5FAA" stroke-width="2.5" stroke-linecap="round"></path>
+              </svg>
+              <p style="margin: 0; font-size: 18px; color: var(--wl-ink-body);">Generating proof…</p>
+              <p class="wl-mono" style="margin: 0; color: var(--wl-ink-label); text-align: center; line-height: 1.8;">
+                assembling witness · 12,904 constraints<br>prover keys loaded · 5.1 MB
+              </p>
+            </div>
+
+            <div data-wl-view="refused" hidden style="padding: 32px 34px;">
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#C0352B" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9"></circle><path d="M8.5 8.5l7 7"></path><path d="M15.5 8.5l-7 7"></path>
+                </svg>
+                <div>
+                  <div style="font-size: 30px; font-weight: 700; color: var(--wl-danger); line-height: 1.2; letter-spacing: -0.01em;">REFUSED</div>
+                  <div class="wl-mono" style="font-size: 13px; color: var(--wl-danger); margin-top: 3px;">Stale opening</div>
+                </div>
+              </div>
+
+              <p style="font-size: 16px; color: var(--wl-ink-body); line-height: 1.85; margin: 20px 0 0;">
+                The claimed total <b style="color: var(--wl-ink);">does not open the commitment already on chain.</b>
+                The circuit stops the moment it takes the witness.
+              </p>
+
+              <!-- Tally stick: two halves whose notches no longer line up -->
+              <svg viewBox="0 0 320 150" style="width: 100%; max-width: 420px; height: auto; margin-top: 22px;"
+                   role="img" aria-label="Tally stick diagram: the notches on the committed half and the claimed half do not line up">
+                <text x="8" y="14" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#6B7A8C">Committed half, cut on chain</text>
+                <path d="M8 22 H 300 V 56 H 8 Z" fill="#EFEBE2" stroke="#B9B2A6" stroke-width="1"></path>
+                <g fill="#FFFFFF" stroke="#0F2A4A" stroke-width="1.2">
+                  <path d="M52 56 l7 -13 l7 13 z"></path><path d="M100 56 l7 -13 l7 13 z"></path>
+                  <path d="M148 56 l7 -13 l7 13 z"></path><path d="M196 56 l7 -13 l7 13 z"></path>
+                  <path d="M244 56 l7 -13 l7 13 z"></path>
+                </g>
+                <path d="M8 86 H 300 V 120 H 8 Z" fill="#EFEBE2" stroke="#B9B2A6" stroke-width="1"></path>
+                <g fill="#FFFFFF" stroke="#C0352B" stroke-width="1.2">
+                  <path d="M52 86 l7 13 l7 -13 z"></path><path d="M96 86 l7 13 l7 -13 z"></path>
+                  <path d="M140 86 l7 13 l7 -13 z"></path><path d="M184 86 l7 13 l7 -13 z"></path>
+                  <path d="M228 86 l7 13 l7 -13 z"></path>
+                </g>
+                <text x="8" y="136" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#6B7A8C">Claimed half, cut by the landlord</text>
+                <g stroke="#C0352B" stroke-width="1" stroke-dasharray="3 3">
+                  <line x1="103" y1="56" x2="103" y2="86"></line><line x1="147" y1="56" x2="147" y2="86"></line>
+                  <line x1="191" y1="56" x2="191" y2="86"></line><line x1="235" y1="56" x2="235" y2="86"></line>
+                </g>
+                <text x="312" y="76" font-family="IBM Plex Mono, monospace" font-size="10" fill="#C0352B" text-anchor="end">no fit</text>
+              </svg>
+
+              <p class="wl-body" style="margin: 16px 0 0;">
+                A split tally only fits its own other half. The half already on chain was cut with the
+                real total, the real count and the salt. A half cut from a different number does not
+                line up, and the circuit will not build a proof across a gap.
+              </p>
+
+              <!-- The honest bit. Do not soften this. -->
+              <div class="wl-callout" style="margin-top: 22px;">
+                This fails on the <b>landlord's own machine</b>, before any proof exists. Nothing was
+                submitted and nothing was rejected, because <b>no valid proof can be constructed</b>.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="wl-footer">
+    <div class="wl-container wl-footer__inner">
+      <span class="k" style="font-family: var(--wl-font);">Simulated landlord device — no real registry data</span>
+    </div>
+  </footer>
+
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

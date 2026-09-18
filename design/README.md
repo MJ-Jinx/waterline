@@ -42,7 +42,7 @@ A good opening prompt:
 | `index.html` | Landing — hero, the animated figure, three steps, evidence strip |
 | `check.html` | The tenant check. Demo chips switch buildings; verdict, figure, facts and provenance all re-derive |
 | `registry.html` | Simulated registry console with the live proving pipeline |
-| `attack.html` | Claim any total you like, then watch the certificate refuse to exist |
+| `why-lying-fails.html` | Claim any total you like, then watch the certificate refuse to exist |
 | `states.html` | The four states with no verdict: empty, loading, not registered, stale |
 | `foundations.html` | The design system rendered — palette, type scale, components, the figure in all three bands |
 

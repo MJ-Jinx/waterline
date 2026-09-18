@@ -13,7 +13,7 @@ Built on [Midnight](https://midnight.network) for the Midnight Korea Hackathon 2
 | Page | What it shows |
 |---|---|
 | [Check a building](https://mj-jinx.github.io/waterline/check.html) | the tenant view — a verdict band read straight off the ledger |
-| [Try to cheat it](https://mj-jinx.github.io/waterline/attack.html) | claim any total you like, and watch the certificate refuse to exist |
+| [Why a landlord can’t lie](https://mj-jinx.github.io/waterline/why-lying-fails.html) | claim any total you like, and watch the certificate refuse to exist |
 | [Registry console](https://mj-jinx.github.io/waterline/registry.html) | the proving pipeline, framed as a simulation |
 
 The demo buildings on those pages are fictional and labelled as such. The contract in the footer is
