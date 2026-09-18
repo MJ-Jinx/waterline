@@ -152,6 +152,12 @@ img, svg { max-width: 100%; }
 .wl-row     { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
 .wl-spacer  { flex-grow: 1; }
 
+/* The UA rule for [hidden] is only `display: none`, which ANY author display
+   declaration outranks — and an inline one outranks it absolutely. The attack
+   page's result views carry inline `display: flex`, so toggling .hidden did
+   nothing and the idle and proving panels rendered stacked, permanently. */
+[hidden] { display: none !important; }
+
 .wl-cols {
   display: flex;
   gap: 36px;
