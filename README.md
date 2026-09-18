@@ -46,7 +46,7 @@ flowchart TB
 
     subgraph CH["⛓️ Midnight ledger — public"]
         direction TB
-        COM["commit of total, count, salt<br/>304146ca81f5af7b…<br/><i>opaque — no amount visible</i>"]
+        COM["commit of total, count, salt<br/>304146ca81f5af7b…<br/>opaque — no amount visible"]
     end
 
     subgraph ZK["🔮 ZK circuit · proveSafety"]
