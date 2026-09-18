@@ -15,11 +15,12 @@ import {
   connect, disconnect, wait, ub, hx, won,
 } from './common.mjs';
 
-const TENANT_A = 300000000n; // ₩3.0억
-const TENANT_B = 250000000n; // ₩2.5억
+const TENANT_A = 300000000n; // ₩3.0억 (300 million won)
+const TENANT_B = 250000000n; // ₩2.5억 (250 million won)
 
 await connect();
-console.log(`building  ${BID.slice(0, 16)}…  (서울 관악구 다가구 101)`);
+console.log(`building  ${BID.slice(0, 16)}…  (서울 관악구 다가구 101 — Gwanak-gu, Seoul: multi-household house 101)`);
+console.log('amounts shown in 억 (eok) = 100 million won\n');
 
 // ---------------------------------------------------------------- 1. deploy
 if (!S.addr) {

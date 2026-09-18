@@ -29,7 +29,7 @@ netid.setNetworkId(NETWORK);
 export const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 export const hx = (b) => Buffer.from(b).toString('hex');
 export const ub = (h) => new Uint8Array(Buffer.from(h, 'hex'));
-/** Display KRW in 억 (100 million won), the unit Koreans actually use for deposits. */
+/** Display KRW in 억 (eok) = 100 million won — the unit Koreans use for deposits. */
 export const won = (n) => `₩${(Number(n) / 1e8).toFixed(1)}억`;
 
 // ---------------------------------------------------------------- state

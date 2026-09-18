@@ -20,6 +20,7 @@ if (!b || BigInt(b.count) === 0n) {
 }
 
 console.log('=== REGISTRY BOOKS (private, never on chain) ===');
+console.log('   amounts in 억 (eok) = 100 million won');
 console.log(`   leases        : ${b.count}`);
 console.log(`   total senior  : ${won(BigInt(b.total))}`);
 console.log(`   ON CHAIN      : ${(await stateHash(S.addr)).slice(0, 40)}…  <- opaque, reveals no amount\n`);
@@ -52,7 +53,7 @@ async function verdict(appraised, pct, label, lie) {
     );
 
     const safe = built.private.result;
-    console.log(`   circuit OK -> verdict: ${safe === true ? '✅ 안전 (SAFE)' : '⚠️  위험 (UNSAFE)'}  [raw ${safe}]`);
+    console.log(`   circuit OK -> verdict: ${safe === true ? '✅ 안전 anjeon (SAFE)' : '⚠️  위험 wiheom (UNSAFE)'}  [raw ${safe}]`);
 
     // Generate the real proof, so the verdict is not merely asserted.
     try {
