@@ -12,6 +12,7 @@
 // waterline.config.json and are both public on chain.
 
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import * as rt from '@midnight-ntwrk/compact-runtime';
 import * as netid from '@midnight-ntwrk/midnight-js-network-id';
@@ -58,7 +59,18 @@ if (!action) {
   process.exit(1);
 }
 
-const contractState = rt.ContractState.deserialize(new Uint8Array(Buffer.from(action.state, 'hex')));
+const stateBytes = Buffer.from(action.state.replace(/^0x/, ''), 'hex');
+const contractState = rt.ContractState.deserialize(new Uint8Array(stateBytes));
+
+// A fingerprint of the raw ledger state, so the browser can confirm this
+// snapshot still matches the chain without decoding anything. The tenant page
+// re-fetches the same field from the indexer, hashes it with SubtleCrypto and
+// compares — no WASM, no keys, no wallet, and the visitor watches it happen.
+//
+// Coarse on purpose: it changes when ANY building is written, not just one. It
+// can therefore over-report staleness but never under-report it, which is the
+// safe direction for a check whose whole job is to not reassure wrongly.
+const stateHash = crypto.createHash('sha256').update(stateBytes).digest('hex');
 const l = ledger(contractState.data);
 const tip = {
   block: action.transaction.block.height,
@@ -100,6 +112,7 @@ const snapshot = {
   contract: cfg.contract,
   explorer: cfg.explorer + cfg.contract,
   takenAt: new Date().toISOString(),
+  stateHash,
   block: tip?.block ?? null,
   blockTimestamp: tip?.timestamp ?? null,
   buildings,

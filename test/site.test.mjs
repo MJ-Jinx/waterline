@@ -138,6 +138,29 @@ test('the claimed-verdict boundaries match the stated limit', () => {
     'the slider defaults to a figure that would flip the verdict, so the stakes are visible');
 });
 
+test('the page can verify itself against the chain', () => {
+  // The verdict renders instantly from a snapshot, which is what keeps this
+  // page free of WASM, keys and a wallet — but it also means a visitor cannot
+  // tell a real reading from a convincing mock. So the page re-fetches the raw
+  // ledger state from the public indexer, hashes it, and compares.
+  const snapPath = path.join(SITE, 'data/certificates.json');
+  assert.ok(fs.existsSync(snapPath), 'a snapshot ships with the site');
+  const snap = JSON.parse(fs.readFileSync(snapPath, 'utf8'));
+
+  assert.match(snap.stateHash || '', /^[0-9a-f]{64}$/,
+    'the snapshot records a sha256 fingerprint of the raw ledger state');
+  assert.match(snap.contract, /^[0-9a-f]{64}$/, 'and the contract it was taken from');
+
+  assert.match(appjs, /function verifyAgainstChain/, 'the page implements the check');
+  assert.match(appjs, /crypto\.subtle\.digest\('SHA-256'/, 'hashing happens in the browser');
+  // It must report a mismatch, not just a match, or it proves nothing.
+  assert.match(appjs, /status: live === snap\.stateHash \? 'match' : 'moved'/,
+    'and distinguishes a moved ledger from a matching one');
+
+  const check = fs.readFileSync(path.join(SITE, 'check.html'), 'utf8');
+  assert.match(check, /data-wl-verify/, 'the result has somewhere to land');
+});
+
 test('the site hosts no ZK prover keys', () => {
   // The tenant page is a ledger read. If keys ever appear under site/, the
   // "no key material is published" claim in the README stops being true.
@@ -151,10 +174,14 @@ test('every internal link resolves', () => {
   for (const page of pages) {
     const html = fs.readFileSync(path.join(SITE, page), 'utf8');
     for (const m of html.matchAll(/(?:href|src)="([^"#:]+)"/g)) {
-      const target = m[1];
-      if (target.startsWith('//') || target.startsWith('data:')) continue;
+      const raw = m[1];
+      if (raw.startsWith('//') || raw.startsWith('data:')) continue;
+      // Strip the query: check.html?b=<id> is a deep link, and the file that
+      // has to exist is check.html.
+      const target = raw.split('?')[0];
+      if (!target) continue;
       assert.ok(fs.existsSync(path.join(SITE, target)),
-        `${page} links to ${target}, which does not exist`);
+        `${page} links to ${raw}, and ${target} does not exist`);
     }
   }
 });

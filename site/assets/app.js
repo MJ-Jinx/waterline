@@ -403,6 +403,58 @@
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
   }
 
+  /**
+   * Confirm, in the browser, that what this page shows still matches the chain.
+   *
+   * The verdict renders instantly from a snapshot, which is what keeps this
+   * page free of WASM, prover keys and a wallet — but it also means a visitor
+   * has no way to tell a real reading from a convincing mock. So the page asks
+   * the public indexer directly: fetch the contract's raw ledger state over
+   * plain HTTP, hash it, and compare against the fingerprint recorded when the
+   * snapshot was taken.
+   *
+   * No decoding, so no WASM. The indexer sends
+   * `access-control-allow-origin: *`, so the request works from any origin.
+   * Nothing here can forge a pass: the bytes come from the indexer, not us.
+   */
+  function verifyAgainstChain(snap, onResult) {
+    if (!snap || !snap.contract || !snap.stateHash || !window.crypto || !window.crypto.subtle) {
+      return onResult({ status: 'unavailable' });
+    }
+    var endpoint = 'https://indexer.' + (snap.network || 'preprod') +
+                   '.midnight.network/api/v4/graphql';
+
+    fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: '{ contractAction(address: "' + snap.contract + '") { ' +
+               'state transaction { block { height } } } }',
+      }),
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        var a = j && j.data && j.data.contractAction;
+        if (!a) return onResult({ status: 'absent' });
+
+        var hex = String(a.state).replace(/^0x/, '');
+        var bytes = new Uint8Array(hex.length / 2);
+        for (var i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+
+        return window.crypto.subtle.digest('SHA-256', bytes).then(function (buf) {
+          var live = Array.prototype.map.call(new Uint8Array(buf), function (b) {
+            return ('0' + b.toString(16)).slice(-2);
+          }).join('');
+          onResult({
+            status: live === snap.stateHash ? 'match' : 'moved',
+            block: a.transaction && a.transaction.block && a.transaction.block.height,
+            liveHash: live,
+          });
+        });
+      })
+      .catch(function () { onResult({ status: 'unreachable' }); });
+  }
+
   function initCheck() {
     var root = $('[data-wl-check]');
     if (!root) return;
@@ -536,6 +588,28 @@
       buildChips();
       select(0);
       selectFromUrl();
+
+      // Then prove it to the visitor, against the indexer, in front of them.
+      var el = $('[data-wl-verify]', root);
+      if (!el) return;
+      verifyAgainstChain(snap, function (res) {
+        var block = res.block ? String(res.block).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '?';
+        if (res.status === 'match') {
+          el.textContent = 'confirmed against the live ledger at block ' + block +
+                           ' — unchanged since this reading';
+          el.style.color = 'var(--wl-safe)';
+        } else if (res.status === 'moved') {
+          el.textContent = 'the ledger has advanced to block ' + block +
+                           ' since this reading — re-check before relying on it';
+          el.style.color = 'var(--wl-caution)';
+        } else if (res.status === 'absent') {
+          el.textContent = 'the indexer does not know this contract';
+          el.style.color = 'var(--wl-danger)';
+        } else {
+          el.textContent = 'could not reach the indexer from this browser';
+          el.style.color = 'var(--wl-ink-muted)';
+        }
+      });
     });
   }
 
