@@ -8,13 +8,18 @@ A ship loaded past its waterline is unsafe. So is a building carrying more lease
 
 Built on [Midnight](https://midnight.network) for the Midnight Korea Hackathon 2026.
 
-**▶ Live demo: [mj-jinx.github.io/waterline](https://mj-jinx.github.io/waterline/)** — no wallet, no extension, no signup.
+**▶ Live site: [mj-jinx.github.io/waterline](https://mj-jinx.github.io/waterline/)**
+&nbsp;·&nbsp; **▶ Slide deck: [mj-jinx.github.io/waterline/deck.html](https://mj-jinx.github.io/waterline/deck.html)**
+
+No wallet, no extension, no signup, no testnet tokens. Open the link.
 
 | Page | What it shows |
 |---|---|
-| [Check a building](https://mj-jinx.github.io/waterline/check.html) | the tenant view — a verdict band read straight off the ledger |
+| [Check a building](https://mj-jinx.github.io/waterline/check.html) | the tenant view — a verdict band read off the live ledger, with a downloadable QR certificate |
 | [Why a landlord can’t lie](https://mj-jinx.github.io/waterline/why-lying-fails.html) | claim any total you like, and watch the certificate refuse to exist |
 | [Registry console](https://mj-jinx.github.io/waterline/registry.html) | the proving pipeline, framed as a simulation |
+| [Slide deck](https://mj-jinx.github.io/waterline/deck.html) | twelve slides: problem, mechanism, privacy, business model, evidence. Press <kbd>P</kbd> to print to PDF |
+| [Design system](https://mj-jinx.github.io/waterline/foundations.html) | palette, type scale, components, the figure in all three bands |
 
 The demo buildings on those pages are fictional and labelled as such. The contract in the footer is
 real: [`e99711c0…3ac2`](https://explorer.preprod.midnight.network/contracts/e99711c00fbcb7ee9a12f81a75e151367bf7899cbda96a1c54c75393494f3ac2)
@@ -281,10 +286,30 @@ cd site && python3 -m http.server 8080   # or just open site/index.html
 tenant page is a read rather than a proof — which is why the public site needs no WASM, no keys and
 no wallet. The ~11 MB of prover keys stay on the registry side, which runs locally.
 
+`site/deck.html` is the slide deck — the same tokens and typeface as the rest of the site, twelve slides, arrow keys to move and <kbd>P</kbd> to print to PDF. `site/assets/qr.js` is a dependency-free QR encoder: a page that tells you whether a building is safe should not also tell a CDN which building you asked about.
+
 `design/` holds the specification behind it: [`BUILD-SPEC.md`](design/BUILD-SPEC.md), the design
 tokens, and the original canvas artboards. The one rule worth repeating here — **the water surface is
 drawn as a hatched band, never a level.** The page genuinely does not know the total, so a precise
 surface would be either a lie or a disclosure.
+
+### Testing
+
+```bash
+npm test              # everything (32 tests)
+npm run test:site     # front end + QR only; needs no toolchain, runs in ~0.1s
+npm run test:contract # circuits; needs a compiled contract
+```
+
+No test framework and no dependencies — `node:test` against a local simulator. The contract suite runs circuits in-process through `compact-runtime`, so a failed assert surfaces exactly as it does on a prover's machine.
+
+It pins the band boundaries at the cap (`load <= cap` is 안전, one won over is not), proves 선순위 liens count against the building, proves a forged opening cannot be executed, and asserts the privacy claim directly: **two buildings with different books that land in the same band produce certificates identical except for the opaque commitment.**
+
+The suite can fail — mutating `load <= safeCap` to `<` in the contract and recompiling fails exactly one test, the boundary test, and no others.
+
+The front-end suite is one test per defect that actually shipped: a pipeline that could never finish, chips that ignored `min-height` because they were inline, and result views that rendered stacked because an inline `display` outranks the UA `[hidden]` rule. It also guards that no prover keys appear under `site/`, that every DOM hook exists, and that the water surface is never a line.
+
+[CI](.github/workflows/ci.yml) runs both on every push. A clean clone compiles in **6.3s**.
 
 ### Gotchas worth knowing
 

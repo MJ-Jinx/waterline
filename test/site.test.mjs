@@ -157,21 +157,22 @@ test('every DOM hook app.js queries exists in the markup', () => {
   }
 });
 
-test('no product page ships a wallet interface', () => {
+test('no page ships a wallet interface', () => {
   // A hard rule: no connect button, address, balance, seed phrase or network
-  // switcher anywhere. Their absence is the product's main usability claim.
-  //
-  // foundations.html is excluded because it is the design system rendered, and
-  // states that rule in prose — matching it there is the documentation working,
-  // not a violation.
-  const banned = /connect wallet|connect a wallet|seed phrase|private key|wallet address|network switcher/i;
-  const product = pages.filter((p) => p !== 'foundations.html');
-  for (const page of product) {
+  // switcher anywhere. Their absence is the product's main usability claim —
+  // which the pages also state out loud ("No seed phrase to lose at a signing
+  // table"). So a bare keyword match flags the claim as loudly as a violation.
+  // Only an UNNEGATED mention counts.
+  const banned = /connect wallet|connect a wallet|seed phrase|private key|wallet address|network switcher/gi;
+  const negated = /\b(no|not|never|without|nor)\b[^.]{0,40}$/i;
+
+  for (const page of pages) {
     const html = fs.readFileSync(path.join(SITE, page), 'utf8');
-    const hit = html.match(banned);
-    // Assert on the match, not the document, so a failure names the offending
-    // phrase instead of printing the whole page.
-    assert.equal(hit, null, `${page} must not present wallet UI (found: ${hit && hit[0]})`);
+    for (const m of html.matchAll(banned)) {
+      const before = html.slice(Math.max(0, m.index - 60), m.index);
+      assert.ok(negated.test(before),
+        `${page} mentions "${m[0]}" without negating it — is this real wallet UI?`);
+    }
   }
 });
 

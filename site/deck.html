@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waterline — deck</title>
+<meta name="description" content="Waterline: prove a jeonse property isn't over-leveraged, without revealing anyone's deposit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  /* One slide on screen at a time; every slide on paper. Printing to PDF is
+     how this becomes a deck a judge can keep. */
+  body { background: var(--wl-ground); margin: 0; }
+  .deck { max-width: 1060px; margin: 0 auto; padding: 0 20px 80px; }
+  .slide {
+    min-height: 74vh; display: none; flex-direction: column; justify-content: center;
+    padding: 40px 0; border-bottom: 1px solid var(--wl-line-quiet);
+  }
+  .slide.is-current { display: flex; }
+  .slide__num {
+    font-family: var(--wl-font-mono); font-size: 11px; color: var(--wl-ink-label);
+    letter-spacing: 0.08em; margin-bottom: 18px;
+  }
+  .slide h2 {
+    font-size: clamp(26px, 3.6vw, 40px); font-weight: 700; letter-spacing: -0.03em;
+    line-height: 1.12; color: var(--wl-navy); margin: 0 0 18px;
+  }
+  .slide h3 {
+    font-size: 15px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--wl-ink-label); margin: 0 0 10px;
+  }
+  .slide p { font-size: clamp(15px, 1.5vw, 18px); line-height: 1.7; margin: 0 0 14px; max-width: 70ch; }
+  .slide li { font-size: clamp(14px, 1.4vw, 17px); line-height: 1.75; margin: 6px 0; }
+  .lead { font-size: clamp(17px, 2vw, 22px); color: var(--wl-ink); }
+  .two { display: flex; gap: 40px; flex-wrap: wrap; align-items: flex-start; }
+  .two > * { flex: 1 1 320px; min-width: 260px; }
+  .stat { font-family: var(--wl-font-mono); font-size: clamp(28px, 4vw, 46px); color: var(--wl-navy); }
+  .stat small { display: block; font-family: var(--wl-font); font-size: 13px; color: var(--wl-ink-muted); letter-spacing: 0; margin-top: 4px; }
+  .nav {
+    position: fixed; left: 0; right: 0; bottom: 0; background: var(--wl-surface);
+    border-top: 1px solid var(--wl-line); padding: 10px 20px;
+    display: flex; gap: 12px; align-items: center; justify-content: center;
+  }
+  .nav__count { font-family: var(--wl-font-mono); font-size: 12px; color: var(--wl-ink-label); min-width: 68px; text-align: center; }
+  kbd {
+    font-family: var(--wl-font-mono); font-size: 11px; border: 1px solid var(--wl-line-strong);
+    border-bottom-width: 2px; border-radius: 4px; padding: 1px 5px; color: var(--wl-ink-muted);
+  }
+  @media print {
+    .nav, [data-deck-chrome] { display: none; }
+    .slide { display: flex !important; page-break-after: always; min-height: 0; border: 0; }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body>
+
+<!-- The site header, so the deck reads as the same product rather than a
+     separate artefact. Hidden when printing. -->
+<header class="wl-header" data-deck-chrome>
+  <div class="wl-container wl-header__inner">
+    <a class="wl-wordmark" href="index.html">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="7.5" stroke="#0F2A4A" stroke-width="1.8"></circle>
+        <line x1="2" y1="12" x2="22" y2="12" stroke="#C0352B" stroke-width="1.8"></line>
+      </svg>
+      Waterline
+    </a>
+    <div class="wl-spacer"></div>
+    <nav class="wl-nav" aria-label="Main">
+      <a href="check.html">Check a building</a>
+      <a href="registry.html">Registry console</a>
+      <a href="why-lying-fails.html">Why lying fails</a>
+    </nav>
+    <span class="wl-badge wl-badge--ok">Deck</span>
+  </div>
+</header>
+
+<div class="deck" data-deck>
+
+  <!-- 1 ------------------------------------------------------------------ -->
+  <section class="slide is-current">
+    <div class="slide__num">WATERLINE · 워터라인</div>
+    <h2 style="font-size: clamp(34px, 5.5vw, 62px);">Is your deposit above the line?</h2>
+    <p class="lead">
+      Prove a <b>전세 (jeonse)</b> property isn’t over-leveraged — without revealing the total,
+      the lease count, or anyone’s deposit.
+    </p>
+    <p style="color: var(--wl-ink-muted);">
+      Zero-knowledge senior-claim proofs on Midnight. Built for the Midnight Korea Hackathon 2026.
+    </p>
+    <div class="wl-chips" style="margin-top: 18px;">
+      <span class="wl-chip" style="cursor: default;">No wallet</span>
+      <span class="wl-chip" style="cursor: default;">No fees</span>
+      <span class="wl-chip" style="cursor: default;">No server</span>
+      <span class="wl-chip" style="cursor: default;">Live on preprod</span>
+    </div>
+  </section>
+
+  <!-- 2 ------------------------------------------------------------------ -->
+  <section class="slide">
+    <div class="slide__num">01 · THE PROBLEM</div>
+    <h2>A tenant hands over years of savings against debts they cannot see</h2>
+    <div class="two">
+      <div>
+        <p>
+          In a <b>다가구주택 (dagagu jutaek — a multi-household house under one owner)</b> there is one
+          owner and one title register for the whole building. Units are not separately registered.
+        </p>
+        <p>
+          So a tenant <b>cannot see how many other tenants already rank ahead of them.</b> Those
+          deposits live in 확정일자 records at the 주민센터, not in the property register.
+        </p>
+        <p style="color: var(--wl-ink-muted);">
+          That asymmetry is the primary mechanism of <b>전세사기 (jeonse fraud)</b>.
+        </p>
+      </div>
+      <div>
+        <div class="wl-card" style="padding: 24px 26px;">
+          <div class="stat">40,936<small>recognised 전세사기 victims, cumulative to Aug 2026</small></div>
+          <div style="height: 1px; background: var(--wl-line); margin: 18px 0;"></div>
+          <div class="stat">₩400bn<small>debt carried by the 3,898 people in the special restructuring scheme</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 ------------------------------------------------------------------ -->
+  <section class="slide">
+    <div class="slide__num">02 · THE OPENING</div>
+    <h2>The duty to disclose already exists. Both ways of satisfying it overshare.</h2>
+    <p>
+      <b>주택임대차보호법 제3조의7</b> already obliges a landlord, at signing, to present 확정일자 and
+      deposit information, plus tax-clearance certificates under <b>국세징수법 제108조</b> — or to consent
+      to a lookup instead.
+    </p>
+    <div class="two" style="margin-top: 10px;">
+      <div class="wl-card" style="padding: 20px 24px; border-left: 3px solid var(--wl-danger);">
+        <h3 style="margin-bottom: 6px;">Route 1 — hand over documents</h3>
+        <p style="font-size: 15px; margin: 0;">Exposes tax arrears, credit standing, every other tenant’s deposit, total portfolio leverage.</p>
+      </div>
+      <div class="wl-card" style="padding: 20px 24px; border-left: 3px solid var(--wl-danger);">
+        <h3 style="margin-bottom: 6px;">Route 2 — consent to a lookup</h3>
+        <p style="font-size: 15px; margin: 0;">Same exposure, by a different door. This is why landlords refuse, and why refusing looks reasonable.</p>
+      </div>
+    </div>
+    <p style="margin-top: 20px;" class="lead">
+      Waterline is a <b>third route to the same statutory duty</b>, disclosing only a band. Compliance
+      becomes cheap — which turns <b>refusal into a signal</b>.
+    </p>
+  </section>
+
+  <!-- 4 ------------------------------------------------------------------ -->
+  <section class="slide">
+    <div class="slide__num">03 · THE PRODUCT</div>
+    <h2>One band. Nothing else.</h2>
+    <div class="two">
+      <div>
+        <p>The tenant learns which side of the line the building sits on:</p>
+        <div class="wl-chips" style="margin: 18px 0 22px;">
+          <span class="wl-chip" style="cursor: default; background: rgba(31,122,92,0.10); border-color: rgba(31,122,92,0.45); color: var(--wl-safe); font-weight: 700; border-radius: 4px; letter-spacing: 0.06em;">안전 SAFE</span>
+          <span class="wl-chip" style="cursor: default; background: rgba(168,112,26,0.10); border-color: rgba(168,112,26,0.45); color: var(--wl-caution); font-weight: 700; border-radius: 4px; letter-spacing: 0.06em;">주의 CAUTION</span>
+          <span class="wl-chip" style="cursor: default; background: rgba(192,53,43,0.10); border-color: rgba(192,53,43,0.45); color: var(--wl-danger); font-weight: 700; border-radius: 4px; letter-spacing: 0.06em;">위험 DANGER</span>
+        </div>
+        <p>
+          A ship loaded past its waterline is unsafe. So is a building carrying more lease deposits
+          than its value can cover.
+        </p>
+        <p style="color: var(--wl-ink-muted);">
+          The surface is drawn as a <b>hatched band, never a level</b> — the page genuinely does not
+          know the total, so a precise line would be either a lie or a disclosure.
+        </p>
+      </div>
+      <div class="wl-figure" style="flex: 0 1 300px;">
+        <div data-wl-band="danger" style="max-width: 260px; margin: 0 auto;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 ------------------------------------------------------------------ -->
+  <section class="slide">
+    <div class="slide__num">04 · THE MECHANISM</div>
+    <h2>A chained commitment, not a Merkle tree</h2>
+    <p>
+      A Merkle tree proves a lease is <i>included</i>. It cannot prove the set is <i>complete</i> —
+      and a landlord who omits leases is exactly the attack.
+    </p>
+    <p>
+      Waterline keeps <b>one commitment per building</b> over <code>{total, count}</code> and a salt.
+      Every new lease must open the current commitment before it can write the next one, so the
+      chain of openings <i>is</i> the proof of exhaustiveness.
+    </p>
+    <div class="wl-card wl-card--note" style="margin-top: 8px;">
+      <p style="margin: 0;">
+        This is the proof-of-liabilities problem from exchange reserves, applied to a building.
+        The registry cannot quietly forget a tenant, because the next write would not verify.
+      </p>
+    </div>
+  </section>
+
+  <!-- 6 ------------------------------------------------------------------ -->
+  <section class="slide">
+    <div class="slide__num">05 · THE ATTACK</div>
+    <h2>Understating the total is impossible, not merely detectable</h2>
+    <p>
+      A landlord who claims a smaller total cannot produce a witness that opens the commitment
+      already on chain. The circuit halts on <code>Stale opening</code>.
+    </p>
+    <p class="lead">
+      That failure happens on the <b>landlord’s own machine, before any proof exists</b>. Nothing is
+      submitted and nothing is rejected — there is simply no provable lie.
+    </p>
+    <p style="color: var(--wl-ink-muted);">
+      Verified on preprod: honest ₩5.5억 against a ₩6.0억 appraisal gives 위험 DANGER; the ₩3.0억 lie
+      that would have flipped it to 안전 never builds.
+    </p>
+  </section>
+
+  <!-- 7 ------------------------------------------------------------------ -->
+  <section class="slide">
+    <div class="slide__num">06 · PRIVACY</div>
+    <h2>What crosses the boundary</h2>
+    <div class="two">
+      <div class="wl-card" style="padding: 22px 26px;">
+        <h3 style="color: var(--wl-safe);">Disclosed</h3>
+        <ul style="padding-left: 18px; margin: 0;">
+          <li>The verdict band</li>
+          <li>The appraised value</li>
+          <li>Both threshold percentages</li>
+          <li>An opaque 32-byte commitment</li>
+          <li>The block it was written in</li>
+        </ul>
+      </div>
+      <div class="wl-card" style="padding: 22px 26px;">
+        <h3>Never disclosed</h3>
+        <ul style="padding-left: 18px; margin: 0;">
+          <li>Any individual deposit</li>
+          <li>The total of senior deposits</li>
+          <li>The number of prior leases</li>
+          <li>The commitment salt</li>
+          <li>Any tenant’s identity</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top: 20px;">
+      <b>No honeypot.</b> The incumbent approach pools 행정안전부, 국세청, 한국부동산원 and HUG data into
+      one store. Under the <b>2026 PIPA amendment</b> (in force 11 Sept 2026) that store now carries
+      penalties up to <b>10% of total sales</b>. PIPA restricts the join; zero-knowledge lets you
+      compute the answer without it.
+    </p>
+  </section>
+
+  <!-- 8 ------------------------------------------------------------------ -->
+  <section class="slide">
+    <div class="slide__num">07 · ARCHITECTURE</div>
+    <h2>No wallet, no fees, no server</h2>
+    <div class="two">
+      <div>
+        <h3>The tenant side reads</h3>
+        <p style="font-size: 15px;">
+          <code>issueCertificate</code> writes the band to the ledger, so checking a building is a
+          GraphQL read. No prover keys, no WASM, no wallet, no extension. It loads in under a second
+          on a phone at the signing table.
+        </p>
+        <h3 style="margin-top: 18px;">The registry side proves</h3>
+        <p style="font-size: 15px;">
+          Witness assembly and proving happen where the books already are. Fees are sponsored, so
+          nothing costs the operator anything.
+        </p>
+      </div>
+      <div>
+        <div class="wl-card" style="padding: 22px 26px;">
+          <h3>Why that matters</h3>
+          <ul style="padding-left: 18px; margin: 0;">
+            <li>A tenant needs no crypto knowledge whatsoever</li>
+            <li>No seed phrase to lose at a signing table</li>
+            <li>No testnet tokens, no faucet, no gas</li>
+            <li>Hosted free on GitHub Pages, with no key material published</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 ------------------------------------------------------------------ -->
+  <section class="slide">
+    <div class="slide__num">08 · BUSINESS MODEL</div>
+    <h2>A court has already priced this risk</h2>
+    <p>
+      On <b>4 September 2026</b> the Seoul Central District Court raised <b>공인중개사 (licensed broker)</b>
+      liability in two jeonse-fraud damages suits to <b>60%</b> and <b>70%</b>.
+    </p>
+    <p>
+      The 60% case is directly on point: a 다가구주택 where the broker <b>misstated the building’s value
+      and the 선순위 임차보증금</b> — the exact fact this system proves. ₩108m awarded on a ₩180m deposit.
+    </p>
+    <div class="two" style="margin-top: 10px;">
+      <div class="wl-card" style="padding: 20px 24px;">
+        <h3>Who pays</h3>
+        <p style="font-size: 15px; margin: 0;">Brokers, per certificate, to discharge their 설명의무 (duty to explain) with evidence rather than assertion.</p>
+      </div>
+      <div class="wl-card" style="padding: 20px 24px;">
+        <h3>Why they pay</h3>
+        <p style="font-size: 15px; margin: 0;">Court-established, effectively uninsurable exposure to a single factual claim — one that a certificate answers directly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 ----------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="slide__num">09 · EVIDENCE</div>
+    <h2>It runs, and it is tested</h2>
+    <div class="two">
+      <div>
+        <h3>On chain</h3>
+        <p style="font-size: 15px;">
+          Contract <span class="wl-mono" style="font-size: 13px;">e99711c0…3ac2</span> on Midnight
+          preprod. All three bands issued and read back; the attack refused. The
+          <a href="check.html">check page</a> reads this contract, not a mock.
+        </p>
+        <h3 style="margin-top: 16px;">Tested</h3>
+        <p style="font-size: 15px;">
+          32 tests, no dependencies. Band boundaries pinned at the cap, senior liens counted, the
+          forged opening proven unexecutable, and the privacy claim asserted directly: two buildings
+          with different books in the same band produce identical certificates.
+        </p>
+      </div>
+      <div>
+        <div class="wl-card" style="padding: 22px 26px;">
+          <h3>Verified, not assumed</h3>
+          <ul style="padding-left: 18px; margin: 0;">
+            <li>A clean clone compiles in <b>6.3s</b> in CI</li>
+            <li>Mutating <code>&lt;=</code> to <code>&lt;</code> fails exactly one test</li>
+            <li>The QR encoder matched an independent implementation byte for byte and decoded</li>
+            <li>No prover keys are published under <code>site/</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 ----------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="slide__num">10 · LIMITS</div>
+    <h2>What this does not claim</h2>
+    <ul style="padding-left: 20px; max-width: 74ch;">
+      <li><b>Trust is reduced, not eliminated.</b> It reduces to “the registry inserts leases correctly” — the same trust already placed in the 주민센터.</li>
+      <li><b>The registry here is simulated.</b> The ZK layer is real and on chain; the issuer is a demo console. Wiring a government registry is not a hackathon deliverable.</li>
+      <li><b>Thresholds are parameters, not legal advice.</b> 70% is illustrative, not a statutory ratio.</li>
+      <li><b>Prior art exists.</b> Blockchain approaches to jeonse fraud have been proposed academically. The contribution here is the chained-commitment construction plus a working wallet-free deployment.</li>
+    </ul>
+  </section>
+
+  <!-- 12 ----------------------------------------------------------------- -->
+  <section class="slide">
+    <div class="slide__num">11 · TRY IT</div>
+    <h2>No wallet. No signup. Open the link.</h2>
+    <div class="two">
+      <div>
+        <p><a href="check.html"><b>Check a building</b></a> — a verdict read off the ledger, with a downloadable QR certificate.</p>
+        <p><a href="why-lying-fails.html"><b>Why a landlord can’t lie</b></a> — claim any total you like and watch the certificate refuse to exist.</p>
+        <p><a href="registry.html"><b>Registry console</b></a> — the proving pipeline, framed as a simulation.</p>
+      </div>
+      <div>
+        <div class="wl-card" style="padding: 22px 26px;">
+          <h3>Repository</h3>
+          <p class="wl-mono" style="font-size: 13px; margin: 0 0 12px;">github.com/MJ-Jinx/waterline</p>
+          <h3>Live</h3>
+          <p class="wl-mono" style="font-size: 13px; margin: 0;">mj-jinx.github.io/waterline</p>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top: 22px; color: var(--wl-ink-muted);">
+      Apache-2.0. Demo buildings are fictional; the contract and blocks are real.
+    </p>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button type="button" class="wl-btn wl-btn--secondary" data-deck-prev style="min-height: 40px; padding: 0 16px;">← Prev</button>
+  <span class="nav__count" data-deck-count>1 / 12</span>
+  <button type="button" class="wl-btn wl-btn--secondary" data-deck-next style="min-height: 40px; padding: 0 16px;">Next →</button>
+  <span style="margin-left: 12px; font-size: 12px; color: var(--wl-ink-label);">
+    <kbd>←</kbd> <kbd>→</kbd> to move · <kbd>P</kbd> to print all
+  </span>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var count = document.querySelector('[data-deck-count]');
+  var i = 0;
+
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, k) { s.classList.toggle('is-current', k === i); });
+    count.textContent = (i + 1) + ' / ' + slides.length;
+    location.hash = i === 0 ? '' : String(i + 1);
+    window.scrollTo(0, 0);
+  }
+
+  document.querySelector('[data-deck-prev]').addEventListener('click', function () { show(i - 1); });
+  document.querySelector('[data-deck-next]').addEventListener('click', function () { show(i + 1); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { show(i + 1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { show(i - 1); e.preventDefault(); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key === 'p' || e.key === 'P') window.print();
+  });
+
+  var start = parseInt(location.hash.slice(1), 10);
+  show(isNaN(start) ? 0 : start - 1);
+})();
+</script>
+</body>
+</html>
