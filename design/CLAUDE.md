@@ -45,6 +45,11 @@ Do not "improve" any of these. Each one exists because breaking it breaks the pr
   iOS zoom-on-focus).
 - **SVG gotchas.** Unique `<defs>` ids per instance, and literal hex in presentation attributes —
   CSS custom properties are not reliable in `fill=` / `stroke=`.
+- **Chips must stay `inline-flex`.** They ship as both `<span>` (static — landing, foundations,
+  states) and `<button>` (interactive — `/check`). `min-height` does nothing on a non-replaced
+  inline element, so a `<span>` chip set to `display: inline` is neither sized nor centred.
+- **A progress run needs a state past its last step.** Otherwise the final step reads `running`
+  forever. See §7.3 of `BUILD-SPEC.md`.
 
 ## Speed budgets
 

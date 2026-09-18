@@ -339,15 +339,36 @@ Right column: the live pipeline, the before/after commitment pair, the proof pay
 
 **Pipeline steps and timing** (ms from click):
 
-| # | Step | Detail | Fires at |
-|---|---|---|---|
-| 1 | Building the contract call | `5,168 B · registerLease()` | 0 |
-| 2 | Proving, locally | `2–5s · 12,904 constraints · 5.1 MB key` | 1100 |
-| 3 | Fee sponsored | `0.0142 tDUST · paid by the registry` | 4200 |
-| 4 | Submitted to the node | `14,432 B · preprod` | 5200 |
-| 5 | Landed in a block | `block 3,418,120 · final` | 6600 |
+| # | Step | Detail | Starts at | Takes |
+|---|---|---|---|---|
+| 1 | Building the contract call | `5,168 B · registerLease()` | 0 | 1100 |
+| 2 | Proving, locally | `2–5s · 12,904 constraints · 5.1 MB key` | 1100 | 3100 |
+| 3 | Fee sponsored | `0.0142 tDUST · paid by the registry` | 4200 | 1000 |
+| 4 | Submitted to the node | `14,432 B · preprod` | 5200 | 1400 |
+| 5 | Landed in a block | `block 3,418,120 · final` | 6600 | 2400 |
+| — | *complete* | | 9000 | |
 
-Step 2 is deliberately the long one. Meter width = `min(100, step × 20)%`.
+Step 2 is deliberately the long one.
+
+**Each step owns its duration, and the schedule is derived from those durations.**
+Do not hand-write the offset table: an offset table that stops at the last step
+leaves that step reading `running` forever, with no ✓ and no way to tell whether
+it is still working. The run needs a terminal state *past* the final step.
+
+State is `0` idle, `1…N` that step in flight, `N+1` complete. Treating `step === N`
+as complete is the bug — it fires while the last step is still running.
+
+**Meter width = completed steps, `(step − 1) / N × 100`%** — clamped to 0–100. It
+reads 80% while the final step is in flight and 100% only once the run finishes.
+A meter that hits 100% during the last step is claiming work that has not happened.
+
+**Progress readouts.** The in-flight step pulses (`wl-pulse` on its dot) and shows
+`elapsed / ~estimate`; waiting steps show the estimate alone; finished steps show
+what they took. A total sits under the meter. The pulse is behind
+`prefers-reduced-motion`; the text readouts stay, since they are information rather
+than decoration. The pipeline list is `aria-live="polite"`, so the clocks carry
+`aria-hidden="true"` — a counter ticking ten times a second would flood a screen
+reader.
 
 **On completion:** total `₩275,000,000 → ₩355,000,000`, count `3 → 4`, commitment
 `0x9f4c8b21…a1e8 → 0x7a2be6f0…9d14`, block `3,418,120`, tenant verdict `SAFE`. Byte counter shows

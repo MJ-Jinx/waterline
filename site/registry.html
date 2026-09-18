@@ -122,6 +122,14 @@
                 </div>
               </div>
               <div class="wl-meter"><div class="wl-meter__fill" data-wl-meter></div></div>
+              <!-- Overall phase and clock. aria-hidden: the pipeline list below is
+                   the aria-live source of truth, and a ticking total would double
+                   up every announcement. -->
+              <div class="wl-body-sm" style="margin-top: 8px; display: flex; align-items: baseline; gap: 10px;" aria-hidden="true">
+                <span data-wl-phase>Idle</span>
+                <span class="wl-spacer"></span>
+                <span class="wl-mono" style="font-size: 11px; color: var(--wl-ink-label);" data-wl-elapsed></span>
+              </div>
             </div>
 
             <div class="wl-card" style="flex: 1 1 280px;">

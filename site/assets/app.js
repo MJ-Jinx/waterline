@@ -165,17 +165,29 @@
     }
   ];
 
+  // Each step carries its own duration, and the schedule below is derived from
+  // them. Previously the durations were implicit in a hand-written offset table
+  // that stopped at step 5, so the final step stayed "running" forever.
+  // Step 2 (proving) is deliberately the long one — a spinner would hide the
+  // single most interesting fact about the system.
   var PIPELINE = [
-    { name: 'Building the contract call', detail: '5,168 B · registerLease()' },
-    { name: 'Proving, locally',           detail: '2–5s · 12,904 constraints · 5.1 MB key' },
-    { name: 'Fee sponsored',              detail: '0.0142 tDUST · paid by the registry' },
-    { name: 'Submitted to the node',      detail: '14,432 B · preprod' },
-    { name: 'Landed in a block',          detail: 'block 3,418,120 · final' }
+    { name: 'Building the contract call', detail: '5,168 B · registerLease()',              ms: 1100 },
+    { name: 'Proving, locally',           detail: '2–5s · 12,904 constraints · 5.1 MB key', ms: 3100 },
+    { name: 'Fee sponsored',              detail: '0.0142 tDUST · paid by the registry',    ms: 1000 },
+    { name: 'Submitted to the node',      detail: '14,432 B · preprod',                     ms: 1400 },
+    { name: 'Landed in a block',          detail: 'block 3,418,120 · final',                ms: 2400 }
   ];
 
-  // Wall-clock offsets, ms. Step 2 (proving) is deliberately the long one —
-  // a spinner would hide the single most interesting fact about the system.
-  var PIPELINE_TIMING = [[1100, 2], [4200, 3], [5200, 4], [6600, 5]];
+  // Cumulative offsets from the click, so schedule and durations cannot drift.
+  // Each entry advances to the NEXT step, so the final entry lands one past the
+  // last step — that is what marks the whole run complete.
+  var PIPELINE_TIMING = (function () {
+    var out = [], t = 0;
+    PIPELINE.forEach(function (s, i) { t += s.ms; out.push([t, i + 2]); });
+    return out;
+  })();
+
+  var PIPELINE_TOTAL = PIPELINE.reduce(function (a, s) { return a + s.ms; }, 0);
 
   var ATTACK = {
     building: 'Cheongnim Town, Block 3 · Bucheon',
@@ -299,7 +311,18 @@
     var list   = $('[data-wl-pipeline]', root);
     var runBtn = $('[data-wl-run]', root);
     var timers = [];
+    var ticker = null;
+
+    // step 0 = idle, 1..N = that step is in flight, N+1 = the run is complete.
+    // The extra terminal value is what lets the last step finish; treating
+    // step === N as "done" is what left it pulsing forever.
+    var DONE = PIPELINE.length + 1;
     var step = 0;
+    var stepStart = 0;   // Date.now() when the in-flight step began
+    var runStart = 0;    // Date.now() at the click
+
+    function secs(ms) { return (ms / 1000).toFixed(1) + 's'; }
+    function eta(ms)  { return '~' + Math.round(ms / 1000) + 's'; }
 
     PIPELINE.forEach(function (s, i) {
       var row = document.createElement('div');
@@ -309,12 +332,38 @@
         '<div class="wl-step__dot">' + (i + 1) + '</div>' +
         '<div class="wl-step__name">' + s.name + '</div>' +
         '<div class="wl-step__detail">—</div>' +
-        '<div class="wl-step__status">waiting</div>';
+        '<div class="wl-step__status">' +
+          '<span class="wl-step__state">waiting</span>' +
+          // The list is aria-live; a clock ticking ten times a second would
+          // flood a screen reader, so it stays out of the accessibility tree.
+          '<span class="wl-step__clock" aria-hidden="true"></span>' +
+        '</div>';
       list.appendChild(row);
     });
 
+    /** Clock text for one row: estimate when waiting, elapsed vs estimate while
+     *  running, and the measured duration once done. */
+    function clockFor(i, state) {
+      if (state === 'idle') return eta(PIPELINE[i].ms);
+      if (state === 'done') return secs(PIPELINE[i].ms);
+      return secs(Date.now() - stepStart) + ' / ' + eta(PIPELINE[i].ms);
+    }
+
+    /** Cheap path: only the in-flight clocks move, so do not repaint the rest. */
+    function tick() {
+      var row = $('.wl-step[data-state="now"]', list);
+      if (row) {
+        var i = $$('.wl-step', list).indexOf(row);
+        $('.wl-step__clock', row).textContent = clockFor(i, 'now');
+      }
+      var el = $('[data-wl-elapsed]', root);
+      if (el) el.textContent = secs(Date.now() - runStart) + ' / ' + eta(PIPELINE_TOTAL) + ' total';
+    }
+
+    function stopTicker() { if (ticker) { clearInterval(ticker); ticker = null; } }
+
     function paint() {
-      var done = step >= PIPELINE.length;
+      var done = step >= DONE;
 
       $$('.wl-step', list).forEach(function (row, i) {
         var idx = i + 1;
@@ -322,8 +371,9 @@
         row.dataset.state = state;
         $('.wl-step__dot', row).textContent = state === 'done' ? '✓' : String(idx);
         $('.wl-step__detail', row).textContent = state === 'idle' ? '—' : PIPELINE[i].detail;
-        $('.wl-step__status', row).textContent =
+        $('.wl-step__state', row).textContent =
           state === 'done' ? 'done' : (state === 'now' ? 'running' : 'waiting');
+        $('.wl-step__clock', row).textContent = clockFor(i, state);
       });
 
       var set = function (sel, text) { var e = $(sel, root); if (e) e.textContent = text; };
@@ -342,8 +392,23 @@
         if (!done) verdict.style.color = 'var(--wl-ink-idle)'; else verdict.style.color = '';
       }
 
+      // Progress is COMPLETED steps, not the index in flight: the meter must not
+      // read 100% while the final step is still working.
       var fill = $('[data-wl-meter]', root);
-      if (fill) fill.style.width = Math.min(100, step * 20) + '%';
+      if (fill) {
+        var pct = (step - 1) / PIPELINE.length * 100;
+        fill.style.width = Math.max(0, Math.min(100, pct)) + '%';
+      }
+
+      set('[data-wl-phase]', step === 0
+        ? 'Idle'
+        : (done ? 'Complete · landed in block 3,418,120'
+                : 'Step ' + step + ' of ' + PIPELINE.length + ' · ' + PIPELINE[step - 1].name));
+
+      set('[data-wl-elapsed]', step === 0
+        ? eta(PIPELINE_TOTAL) + ' total'
+        : (done ? secs(PIPELINE_TOTAL) + ' total'
+                : secs(Date.now() - runStart) + ' / ' + eta(PIPELINE_TOTAL) + ' total'));
 
       runBtn.textContent = step === 0 ? 'Register lease' : (done ? 'Run again' : 'Registering…');
       runBtn.className = 'wl-btn wl-btn--block ' +
@@ -354,10 +419,21 @@
     runBtn.addEventListener('click', function () {
       timers.forEach(clearTimeout);
       timers = [];
+      stopTicker();
+
+      runStart = stepStart = Date.now();
       step = 1;
       paint();
+      ticker = setInterval(tick, 100);
+
       PIPELINE_TIMING.forEach(function (pair) {
-        timers.push(setTimeout(function () { step = pair[1]; paint(); }, pair[0]));
+        timers.push(setTimeout(function () {
+          step = pair[1];
+          stepStart = Date.now();
+          // The last entry advances past the final step, which ends the run.
+          if (step >= DONE) stopTicker();
+          paint();
+        }, pair[0]));
       });
     });
 

@@ -252,6 +252,10 @@ img, svg { max-width: 100%; }
 
 .wl-chips { display: flex; gap: 8px; flex-wrap: wrap; }
 .wl-chip {
+  /* inline-flex, not inline: min-height does nothing on a non-replaced inline
+     element, so the <span> chips on the landing page were left uncentred and
+     unsized. Centring here covers both the <span> and <button> forms. */
+  display: inline-flex; align-items: center; justify-content: center;
   min-height: var(--wl-touch);
   padding: 0 16px;
   border-radius: var(--wl-radius-pill);
@@ -399,7 +403,16 @@ img, svg { max-width: 100%; }
 }
 .wl-step__name   { flex: 0 1 220px; min-width: 150px; font-size: 15px; color: var(--wl-ink-disabled); }
 .wl-step__detail { flex: 1 1 200px; font-family: var(--wl-font-mono); font-size: 12px; color: var(--wl-ink-muted); }
-.wl-step__status { flex-shrink: 0; width: 78px; text-align: right; font-size: 12px; color: var(--wl-ink-idle); }
+.wl-step__status {
+  flex-shrink: 0; width: 104px; font-size: 12px; color: var(--wl-ink-idle);
+  display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+}
+/* Elapsed / estimate. Reserve the line height so rows do not jump as steps
+   change state. Kept neutral so the done-state green stays on the word. */
+.wl-step__clock {
+  font-family: var(--wl-font-mono); font-size: 11px;
+  color: var(--wl-ink-label); min-height: 14px; letter-spacing: 0.02em;
+}
 
 .wl-step[data-state="now"]  .wl-step__dot,
 .wl-step[data-state="now"]  .wl-step__status { border-color: var(--wl-cobalt); color: var(--wl-cobalt); }
@@ -435,12 +448,23 @@ img, svg { max-width: 100%; }
   80% { transform: translateX(3px); }
 }
 
+@keyframes wl-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(27,95,170,0.38); }
+  70%  { box-shadow: 0 0 0 9px rgba(27,95,170,0); }
+  100% { box-shadow: 0 0 0 0 rgba(27,95,170,0); }
+}
+
+/* The in-flight step pulses until it completes. Without this the final step
+   looked identical whether it was still working or finished. */
+.wl-step[data-state="now"] .wl-step__dot { animation: wl-pulse 1400ms ease-out infinite; }
+
 .wl-water-anim { animation: wl-rise 1500ms cubic-bezier(.16,.84,.26,1) 260ms both; }
 .wl-mark-anim  { animation: wl-fade 700ms ease-out 1500ms both; }
 .wl-refused    { animation: wl-shake 420ms ease-in-out both; }
 
 @media (prefers-reduced-motion: reduce) {
   .wl-water-anim, .wl-mark-anim, .wl-refused { animation: none; }
+  .wl-step[data-state="now"] .wl-step__dot { animation: none; }
   .wl-meter__fill { transition: none; }
 }
 
