@@ -271,6 +271,114 @@
     };
   }
 
+  /**
+   * Build a self-contained verification document.
+   *
+   * The QR carries a link back to this page for the same building, so scanning
+   * re-reads the ledger rather than trusting the paper; the commitment and
+   * block are printed beside it so a reader can check the evidence without
+   * scanning anything. Everything is inlined — no network, no fonts, no
+   * scripts — so the saved file still works years later on a machine that has
+   * never heard of this site.
+   */
+  function certificateDocument(b) {
+    var url = location.origin + location.pathname + '?b=' + encodeURIComponent(b.id);
+    var band = b.band ? BANDS[b.band] : null;
+    var word = band ? band.label : (b.registered ? 'NO CERTIFICATE' : 'NOT REGISTERED');
+    var hue = band ? band.hex : '#5A6B7E';
+    var qr = (typeof WaterlineQR !== 'undefined')
+      ? WaterlineQR.svg(url, { dark: '#14243A', label: 'Scan to re-check this building' })
+      : '';
+
+    function row(k, v) {
+      return '<tr><th>' + k + '</th><td>' + v + '</td></tr>';
+    }
+
+    return '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+      '<title>Waterline verification — ' + word + '</title><style>' +
+      '*{box-sizing:border-box}body{margin:0;padding:32px;background:#F5F3EE;' +
+      'font:15px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;color:#33455C}' +
+      '.doc{max-width:720px;margin:0 auto;background:#fff;border:1px solid #E2DCD0;' +
+      'border-radius:8px;padding:34px 38px}' +
+      'h1{margin:0;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#6B7A8C}' +
+      '.verdict{font-size:54px;font-weight:700;line-height:1;letter-spacing:-.012em;' +
+      'margin:14px 0 6px;color:' + hue + '}' +
+      '.sentence{margin:0 0 22px;font-size:16px;color:#14243A}' +
+      'table{width:100%;border-collapse:collapse;margin:0 0 20px}' +
+      'th,td{text-align:left;padding:9px 0;border-bottom:1px solid #EFEBE2;vertical-align:top}' +
+      'th{width:40%;font-weight:600;color:#6B7A8C;font-size:12px;letter-spacing:.06em;' +
+      'text-transform:uppercase}' +
+      'td{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:#14243A;' +
+      'word-break:break-all}' +
+      '.split{display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap}' +
+      '.qr{width:190px;flex:0 0 190px}.qr svg{width:100%;height:auto;display:block;' +
+      'border:1px solid #E2DCD0;border-radius:6px}' +
+      '.qr p{font-size:11px;color:#6B7A8C;margin:8px 0 0;text-align:center}' +
+      '.notes{flex:1 1 300px;font-size:13px}' +
+      '.notes h2{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#6B7A8C;' +
+      'margin:0 0 8px}' +
+      '.notes ul{margin:0 0 16px;padding-left:18px}.notes li{margin:3px 0}' +
+      '.warn{border-left:3px solid #A8701A;background:rgba(168,112,26,.07);padding:10px 14px;' +
+      'font-size:13px;margin:0 0 16px}' +
+      '.foot{margin-top:24px;padding-top:16px;border-top:1px solid #EFEBE2;font-size:12px;' +
+      'color:#6B7A8C}' +
+      '@media print{body{background:#fff;padding:0}.doc{border:0;padding:0}}' +
+      '</style></head><body><div class="doc">' +
+      '<h1>Waterline — deposit safety verification</h1>' +
+      '<div class="verdict">' + word + '</div>' +
+      '<p class="sentence">' + (band ? band.sentence :
+        (b.registered ? 'Registered, but no verdict has been published for this building.'
+                      : 'This building has no entry in the registry. That is not the same as safe.')) +
+      '</p>' +
+      (b.fresh === false
+        ? '<div class="warn"><b>Superseded.</b> The registry’s books moved after this ' +
+          'certificate was issued, so it no longer describes the building. Ask for a current one.</div>'
+        : '') +
+      '<table>' +
+      row('Building', b.place) +
+      row('Reference', b.id) +
+      row('Appraised value', b.appraised) +
+      row('Limit at ' + (b.live ? '70' : '70') + '%', b.limit) +
+      row('Senior deposit total', '<span style="color:#7D8B9B">not disclosed</span>') +
+      row('Commitment', b.fullHash || b.hash) +
+      row('Block', b.block) +
+      row('Read at', b.issued) +
+      row('Network', 'Midnight ' + (b.network || 'preprod')) +
+      '</table>' +
+      '<div class="split"><div class="qr">' + qr +
+      '<p>Scan to re-check<br>against the live ledger</p></div>' +
+      '<div class="notes">' +
+      '<h2>What this shows</h2><ul>' +
+      '<li>Which band the building falls in</li>' +
+      '<li>The appraised value and the threshold</li>' +
+      '<li>The commitment and the block it was read at</li></ul>' +
+      '<h2>What it does not show</h2><ul>' +
+      '<li>Any individual deposit</li>' +
+      '<li>The total of senior deposits</li>' +
+      '<li>How many prior leases exist</li>' +
+      '<li>The commitment salt</li></ul>' +
+      '</div></div>' +
+      '<p class="foot">This document records a reading, not a guarantee. The verdict was ' +
+      'computed inside a zero-knowledge circuit and written to the Midnight ledger by the ' +
+      'registry; this page only read it. A building’s books can change after a reading, ' +
+      'so scan the code above to check the current state rather than relying on this sheet.' +
+      '<br><br>' + url + '</p>' +
+      '</div></body></html>';
+  }
+
+  function downloadCertificate(b) {
+    var html = certificateDocument(b);
+    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'waterline-' + (b.band || 'unverified') + '-' + String(b.id).slice(0, 12) + '.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+  }
+
   function initCheck() {
     var root = $('[data-wl-check]');
     if (!root) return;
@@ -373,8 +481,25 @@
       });
     }
 
+    var saveBtn = $('[data-wl-save]', root);
+    if (saveBtn) {
+      saveBtn.addEventListener('click', function () { downloadCertificate(list[current]); });
+    }
+
+    /** Honour ?b=<id> so a scanned QR lands on the building it was issued for. */
+    function selectFromUrl() {
+      var want = (location.search.match(/[?&]b=([^&]+)/) || [])[1];
+      if (!want) return false;
+      want = decodeURIComponent(want);
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id === want || String(list[i].fullHash || '') === want) { select(i); return true; }
+      }
+      return false;
+    }
+
     buildChips();
     select(0);
+    selectFromUrl();
 
     // Upgrade to the real ledger read as soon as it arrives. Same-origin and
     // under a kilobyte, so in practice this lands before a first paint is
@@ -386,6 +511,7 @@
       current = 0;
       buildChips();
       select(0);
+      selectFromUrl();
     });
   }
 
@@ -634,6 +760,7 @@
     GEO: GEO, BANDS: BANDS, BUILDINGS: BUILDINGS,
     PIPELINE: PIPELINE, PIPELINE_TIMING: PIPELINE_TIMING, ATTACK: ATTACK,
     waterlineSVG: waterlineSVG, bandForClaim: bandForClaim, won: won,
+    certificateDocument: certificateDocument,
     LOAD_LINE_Y: LOAD_LINE_Y
   };
 })();
