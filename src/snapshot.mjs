@@ -13,7 +13,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { indexerPublicDataProvider } from '@midnight-ntwrk/midnight-js-indexer-public-data-provider';
+import * as rt from '@midnight-ntwrk/compact-runtime';
 import * as netid from '@midnight-ntwrk/midnight-js-network-id';
 import { ledger } from '../build/waterline/contract/index.js';
 
@@ -22,41 +22,49 @@ const OUT = process.env.SNAPSHOT_OUT || 'site/data/certificates.json';
 
 netid.setNetworkId(cfg.network);
 const IDX = `https://indexer.${cfg.network}.midnight.network/api/v4/graphql`;
-const IDXWS = `wss://indexer.${cfg.network}.midnight.network/api/v4/graphql/ws`;
 
 const ub = (h) => new Uint8Array(Buffer.from(h, 'hex'));
 const hx = (b) => Buffer.from(b).toString('hex');
 const BANDS = ['danger', 'caution', 'safe'];
 
-/** Latest on-chain action for the contract — gives us a real block height. */
-async function chainTip() {
+/**
+ * Fetch the contract's latest action: its serialized state plus the block it
+ * landed in, over plain HTTP.
+ *
+ * Deliberately NOT indexerPublicDataProvider. That opens a graphql-ws
+ * subscription, which needs a WebSocket implementation — absent as a global
+ * before Node 22, so it worked locally on Node 24 and failed in CI on Node 20.
+ * This script issues exactly one query and never subscribes, so the socket was
+ * pure cost.
+ */
+async function fetchAction() {
   const r = await fetch(IDX, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       query: `{ contractAction(address: "${cfg.contract}") {
-        __typename transaction { hash block { height timestamp } } } }`,
+        state transaction { hash block { height timestamp } } } }`,
     }),
   });
+  if (!r.ok) throw new Error(`indexer ${r.status}: ${(await r.text()).slice(0, 200)}`);
   const j = await r.json();
-  const a = j?.data?.contractAction;
-  if (!a) return null;
-  return {
-    block: a.transaction.block.height,
-    timestamp: a.transaction.block.timestamp,
-    tx: a.transaction.hash,
-  };
+  if (j.errors) throw new Error(`indexer: ${JSON.stringify(j.errors).slice(0, 200)}`);
+  return j?.data?.contractAction ?? null;
 }
 
-const provider = indexerPublicDataProvider(IDX, IDXWS);
-const state = await provider.queryContractState(cfg.contract);
-if (!state) {
+const action = await fetchAction();
+if (!action) {
   console.error(`Contract ${cfg.contract} is not visible on the ${cfg.network} indexer.`);
   process.exit(1);
 }
 
-const l = ledger(state.data);
-const tip = await chainTip();
+const contractState = rt.ContractState.deserialize(new Uint8Array(Buffer.from(action.state, 'hex')));
+const l = ledger(contractState.data);
+const tip = {
+  block: action.transaction.block.height,
+  timestamp: action.transaction.block.timestamp,
+  tx: action.transaction.hash,
+};
 
 const buildings = cfg.buildings.map((b) => {
   const id = ub(b.id);
