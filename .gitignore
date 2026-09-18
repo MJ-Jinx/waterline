@@ -10,6 +10,12 @@ build/
 # registryPk is sealed at construction, so this file is the only way to write
 # to a deployed contract.
 state.json
+# ...and every variant of it. A state.v1.json.bak was committed once; it carried
+# the registry secret key, the commitment salt and the real total — the exact
+# four values this project exists to keep private.
+state*.json
+state*.json.*
+*.bak
 
 *.log
 *.bin

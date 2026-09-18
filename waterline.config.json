@@ -1,0 +1,12 @@
+{
+  "network": "preprod",
+  "contract": "e99711c00fbcb7ee9a12f81a75e151367bf7899cbda96a1c54c75393494f3ac2",
+  "explorer": "https://explorer.preprod.midnight.network/contracts/",
+  "buildings": [
+    {
+      "id": "189285d39e578cbe1e357d330fe58326c644d93500d9ad7a424212fc9de44c47",
+      "chip": "Live",
+      "label": "Live registry entry · Midnight preprod"
+    }
+  ]
+}
