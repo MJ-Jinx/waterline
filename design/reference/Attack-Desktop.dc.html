@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waterline — Try to cheat it</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;background:#F5F3EE;color:#14243A;-webkit-font-smoothing:antialiased}
+a{color:#1B5FAA}a:hover{color:#0F2A4A}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:#E4DFD4;border:1px solid #C3BCAE}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:28px;height:28px;border-radius:999px;background:#0F2A4A;border:2px solid #FFFFFF;margin-top:-11px}
+input[type=range]::-moz-range-track{height:8px;border-radius:4px;background:#E4DFD4;border:1px solid #C3BCAE}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:999px;background:#0F2A4A;border:2px solid #FFFFFF}
+@keyframes wl-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+.wl-refused{animation:wl-shake 420ms ease-in-out both}
+@media (prefers-reduced-motion: reduce){.wl-refused{animation:none}}
+</style>
+</helmet>
+
+<div style="width: 100%; min-height: 100vh; box-sizing: border-box; background: #F5F3EE; display: flex; flex-direction: column;">
+
+  <div style="background: #FFFFFF; border-bottom: 1px solid #E2DCD0;">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 18px 32px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="7.5" stroke="#0F2A4A" stroke-width="1.8"></circle><line x1="2" y1="12" x2="22" y2="12" stroke="#C0352B" stroke-width="1.8"></line></svg>
+      <a href="Landing-Desktop.dc.html" style="font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 23px; font-weight: 700; color: #0F2A4A; text-decoration: none;">Waterline</a>
+      <div style="flex-grow: 1;"></div>
+      <a href="Check-Desktop.dc.html" style="font-size: 15px; color: #33455C; text-decoration: none; padding: 10px 14px;">Check a building</a>
+      <a href="Registry-Desktop.dc.html" style="font-size: 15px; color: #33455C; text-decoration: none; padding: 10px 14px;">Registry console</a>
+      <a href="Attack-Desktop.dc.html" style="font-size: 15px; color: #0F2A4A; font-weight: 600; text-decoration: none; padding: 10px 14px; border-bottom: 2px solid #C0352B;">Try to cheat it</a>
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #5A6B7E; border: 1px solid #D5CEC0; border-radius: 999px; padding: 6px 12px; margin-left: 8px;">landlord device, simulated</span>
+    </div>
+  </div>
+
+  <div style="max-width: 1180px; width: 100%; margin: 0 auto; box-sizing: border-box; padding: 44px 32px 0 32px;">
+    <h1 style="margin: 0; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 52px; font-weight: 700; line-height: 1.1; letter-spacing: -0.034em; max-width: 880px; color: #0F2A4A;">The real total is hidden. So why can't the landlord just lie?</h1>
+  </div>
+
+  <div style="max-width: 1180px; width: 100%; margin: 0 auto; box-sizing: border-box; padding: 34px 32px 0 32px; display: flex; gap: 40px; flex-wrap: wrap; align-items: flex-start;">
+
+    <div style="flex: 1 1 440px; min-width: 300px; display: flex; flex-direction: column; gap: 24px;">
+
+      <div style="padding: 16px 20px; border-radius: 8px; background: #FFFFFF; border: 1px solid #E2DCD0; font-size: 13px; line-height: 2.0;">
+        <div style="display: flex; justify-content: space-between; gap: 12px;"><span style="color: #6B7A8C;">BUILDING</span><span style="color: #33455C;">Cheongnim Town, Block 3 · Bucheon</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: #6B7A8C;">APPRAISED</span><span style="font-family: 'IBM Plex Mono', monospace; color: #33455C;">₩285,000,000</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: #6B7A8C;">LIMIT AT 70%</span><span style="font-family: 'IBM Plex Mono', monospace; color: #33455C;">₩199,500,000</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: #6B7A8C;">COMMITMENT</span><span style="font-family: 'IBM Plex Mono', monospace; color: #7D8B9B;">0xc082f5d9…30b7 · block 3,416,944</span></div>
+      </div>
+
+      <div>
+        <label for="claimd" style="display: block; font-size: 16px; font-weight: 600; margin-bottom: 4px;">Claim a total</label>
+        <div style="font-size: 13px; color: #5A6B7E; margin-bottom: 12px;">Any number you like. Nobody can check it against the hidden one.</div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 38px; color: #0F2A4A; margin-bottom: 4px;">{{v.claimWon}}</div>
+        <input id="claimd" type="range" min="100" max="285" step="5" value="{{v.claim}}" onChange="{{v.onClaim}}" aria-label="Claimed senior deposit total">
+        <div style="display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6B7A8C; margin-top: -4px;"><span>₩100,000,000</span><span>limit ₩199,500,000</span><span>₩285,000,000</span></div>
+      </div>
+
+      <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+        <div style="flex: 1 1 180px; padding: 18px 20px; border-radius: 8px; background: #FFFFFF; border: 1px solid #E2DCD0;">
+          <div style="font-size: 11px; color: #6B7A8C; letter-spacing: 0.06em;">HONEST VERDICT</div>
+          <div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 44px; font-weight: 700; color: #C0352B; margin-top: 10px; line-height: 1;">DANGER</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6B7A8C; margin-top: 10px;">real total · not disclosed</div>
+        </div>
+        <div style="flex: 1 1 180px; padding: 18px 20px; border-radius: 8px; background: #EFEBE2; border: 1px dashed #C3BCAE;">
+          <div style="font-size: 11px; color: #6B7A8C; letter-spacing: 0.06em;">WHAT THE LIE WOULD SAY</div>
+          <div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 44px; font-weight: 700; color: {{v.lieColor}}; margin-top: 10px; line-height: 1;">{{v.lieEn}}</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6B7A8C; margin-top: 10px;">{{v.claimWon}}</div>
+        </div>
+      </div>
+
+      <button type="button" onClick="{{v.go}}" style="{{v.goStyle}}">{{v.goLabel}}</button>
+
+      <a href="Check-Desktop.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 56px; border-radius: 6px; background: #FFFFFF; border: 1px solid #C3BCAE; color: #14243A; text-decoration: none; font-size: 16px; font-weight: 500;">See the real verdict</a>
+    </div>
+
+    <div style="flex: 1 1 440px; min-width: 320px;">
+      <div style="{{v.panelStyle}}" class="{{v.panelClass}}">
+        <sc-if value="{{v.idle}}" hint-placeholder-val="{{true}}">
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 80px 40px;">
+            <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#B9B2A6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="9.5" rx="2"></rect><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path></svg>
+            <div style="font-size: 16px; color: #5A6B7E; text-align: center; line-height: 1.8;">Pick a number, then try to produce a certificate.</div>
+          </div>
+        </sc-if>
+        <sc-if value="{{v.proving}}" hint-placeholder-val="{{false}}">
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 80px 40px;">
+            <svg viewBox="0 0 24 24" width="30" height="30" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#E2DCD0" stroke-width="2.5"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke="#1B5FAA" stroke-width="2.5" stroke-linecap="round"></path></svg>
+            <div style="font-size: 18px; color: #33455C;">Generating proof…</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #6B7A8C; text-align: center; line-height: 1.8;">assembling witness · 12,904 constraints<br>prover keys loaded · 5.1 MB</div>
+          </div>
+        </sc-if>
+        <sc-if value="{{v.refused}}" hint-placeholder-val="{{false}}">
+          <div style="padding: 32px 34px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#C0352B" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8.5 8.5l7 7"></path><path d="M15.5 8.5l-7 7"></path></svg>
+              <div>
+                <div style="font-size: 30px; font-weight: 700; color: #C0352B; line-height: 1.2;">REFUSED</div>
+                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #C0352B; margin-top: 3px;">Stale opening</div>
+              </div>
+            </div>
+
+            <div style="font-size: 16px; color: #33455C; line-height: 1.85; margin-top: 20px;">The claimed total <b style="color: #14243A;">does not open the commitment already on chain.</b> The circuit stops the moment it takes the witness.</div>
+
+            <svg viewBox="0 0 320 150" style="width: 100%; max-width: 420px; height: auto; margin-top: 22px;" role="img" aria-label="Tally stick diagram: the notches on the committed half and the claimed half do not line up">
+              <text x="8" y="14" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#6B7A8C">Committed half, cut on chain</text>
+              <path d="M8 22 H 300 V 56 H 8 Z" fill="#EFEBE2" stroke="#B9B2A6" stroke-width="1"></path>
+              <g fill="#FFFFFF" stroke="#0F2A4A" stroke-width="1.2">
+                <path d="M52 56 l7 -13 l7 13 z"></path><path d="M100 56 l7 -13 l7 13 z"></path><path d="M148 56 l7 -13 l7 13 z"></path><path d="M196 56 l7 -13 l7 13 z"></path><path d="M244 56 l7 -13 l7 13 z"></path>
+              </g>
+              <path d="M8 86 H 300 V 120 H 8 Z" fill="#EFEBE2" stroke="#B9B2A6" stroke-width="1"></path>
+              <g fill="#FFFFFF" stroke="#C0352B" stroke-width="1.2">
+                <path d="M52 86 l7 13 l7 -13 z"></path><path d="M96 86 l7 13 l7 -13 z"></path><path d="M140 86 l7 13 l7 -13 z"></path><path d="M184 86 l7 13 l7 -13 z"></path><path d="M228 86 l7 13 l7 -13 z"></path>
+              </g>
+              <text x="8" y="136" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#6B7A8C">Claimed half, cut by the landlord</text>
+              <g stroke="#C0352B" stroke-width="1" stroke-dasharray="3 3">
+                <line x1="103" y1="56" x2="103" y2="86"></line><line x1="147" y1="56" x2="147" y2="86"></line><line x1="191" y1="56" x2="191" y2="86"></line><line x1="235" y1="56" x2="235" y2="86"></line>
+              </g>
+              <text x="312" y="76" font-family="IBM Plex Mono, monospace" font-size="10" fill="#C0352B" text-anchor="end">no fit</text>
+            </svg>
+
+            <div style="font-size: 14px; color: #5A6B7E; line-height: 1.85; margin-top: 16px;">A split tally only fits its own other half. The half already on chain was cut with the real total, the real count and the salt. A half cut from a different number does not line up, and the circuit will not build a proof across a gap.</div>
+
+            <div style="margin-top: 22px; padding: 20px 22px; border-radius: 6px; background: rgba(192,53,43,0.06); border: 1px solid rgba(192,53,43,0.35); border-left-width: 4px;">
+              <div style="font-size: 15px; color: #14243A; line-height: 1.9;">This fails on the <b>landlord's own machine</b>, before any proof exists. Nothing was submitted and nothing was rejected, because <b>no valid proof can be constructed</b>.</div>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1;"></div>
+  <div style="padding: 40px;"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1080}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { claim: 165, phase: 'refused' };
+    this.timer = null;
+  }
+  componentWillUnmount() { if (this.timer) clearTimeout(this.timer); }
+  go() {
+    var self = this;
+    if (this.timer) clearTimeout(this.timer);
+    this.setState({ phase: 'proving' });
+    this.timer = setTimeout(function () { self.setState({ phase: 'refused' }); }, 2600);
+  }
+  renderVals() {
+    var self = this;
+    var claim = this.state.claim;
+    var phase = this.state.phase;
+    var LIMIT = 199.5;
+    var en = claim > LIMIT ? 'DANGER' : (claim > LIMIT * 0.9 ? 'CAUTION' : 'SAFE');
+    var col = claim > LIMIT ? '#C0352B' : (claim > LIMIT * 0.9 ? '#A8701A' : '#1F7A5C');
+    return {
+      v: {
+        claim: claim,
+        claimWon: '₩' + (claim * 1000000).toLocaleString('en-US'),
+        lieEn: en,
+        lieColor: col,
+        onClaim: function (e) { self.setState({ claim: Number(e.target.value), phase: 'idle' }); },
+        go: function () { self.go(); },
+        goLabel: phase === 'proving' ? 'Generating proof…' : (phase === 'refused' ? 'Try again' : 'Generate certificate'),
+        goStyle: 'width: 100%; min-height: 60px; border-radius: 6px; border: none; font-size: 18px;'
+          + 'font-weight: 700; font-family: IBM Plex Sans, sans-serif; cursor: pointer;'
+          + (phase === 'proving' ? 'background: #E4DFD4; color: #6B7A8C;' : 'background: #C0352B; color: #FFFFFF;'),
+        idle: phase === 'idle',
+        proving: phase === 'proving',
+        refused: phase === 'refused',
+        panelClass: phase === 'refused' ? 'wl-refused' : '',
+        panelStyle: 'border-radius: 8px; background: #FFFFFF; border: 1px solid '
+          + (phase === 'refused' ? '#C0352B' : '#E2DCD0') + ';'
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waterline — Check a building</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="wl-page" data-wl-check>
+
+  <header class="wl-header">
+    <div class="wl-container wl-header__inner">
+      <a class="wl-wordmark" href="index.html">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="7.5" stroke="#0F2A4A" stroke-width="1.8"></circle>
+          <line x1="2" y1="12" x2="22" y2="12" stroke="#C0352B" stroke-width="1.8"></line>
+        </svg>
+        Waterline
+      </a>
+      <div class="wl-spacer"></div>
+      <nav class="wl-nav" aria-label="Main">
+        <a href="check.html" aria-current="page">Check a building</a>
+        <a href="registry.html">Registry console</a>
+        <a href="attack.html">Try to cheat it</a>
+      </nav>
+      <span class="wl-badge wl-badge--ok">preprod · read only</span>
+    </div>
+  </header>
+
+  <main class="wl-main">
+
+    <!-- Lookup ------------------------------------------------------------ -->
+    <section class="wl-container wl-container--wide" style="padding-block: 34px 0;">
+      <div class="wl-row" style="align-items: flex-end; gap: 16px;">
+        <div class="wl-field" style="flex: 0 1 360px; min-width: 260px;">
+          <label for="building-id">Building ID</label>
+          <input class="wl-input" id="building-id" type="text" data-wl-id value="SEO-2019-0412"
+                 autocomplete="off" spellcheck="false" inputmode="text">
+        </div>
+        <div class="wl-chips" data-wl-chips aria-label="Demo buildings"></div>
+        <div class="wl-spacer"></div>
+        <p class="wl-body-sm" style="padding-bottom: 14px;">Demo buildings are fictional</p>
+      </div>
+    </section>
+
+    <!-- Verdict ----------------------------------------------------------- -->
+    <section class="wl-container wl-container--wide" style="padding-block: 34px 0;">
+      <div class="wl-cols">
+
+        <div class="wl-col" style="flex: 1 1 380px;">
+          <p class="wl-body-sm" data-wl-place style="margin: 0;">&nbsp;</p>
+          <p class="wl-verdict" data-wl-verdict aria-live="polite" style="margin: 10px 0 0;">&nbsp;</p>
+          <p data-wl-sentence style="font-size: 17px; line-height: 1.65; color: var(--wl-ink-body); margin: 16px 0 0;">&nbsp;</p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 22px;">
+            <div class="wl-card" style="padding: 14px 16px;">
+              <div class="wl-label" style="font-size: 11px; letter-spacing: 0.06em;">Appraised</div>
+              <div class="wl-mono" style="font-size: 14px; margin-top: 6px;" data-wl-appraised></div>
+            </div>
+            <div class="wl-card" style="padding: 14px 16px;">
+              <div class="wl-label" style="font-size: 11px; letter-spacing: 0.06em;">Limit at 70%</div>
+              <div class="wl-mono" style="font-size: 14px; margin-top: 6px;" data-wl-limit></div>
+            </div>
+            <div class="wl-card wl-card--quiet" style="padding: 14px 16px;">
+              <div class="wl-label" style="font-size: 11px; letter-spacing: 0.06em;">Senior total</div>
+              <div class="wl-mono" style="font-size: 14px; margin-top: 6px; color: var(--wl-ink-dim);">not disclosed</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- The signature figure ---------------------------------------- -->
+        <div class="wl-col wl-col--fig wl-figure">
+          <div data-wl-figure style="width: 100%; max-width: 250px;"></div>
+          <p class="wl-figure__caption" style="margin: 0;">
+            <span data-wl-caption></span>
+            <small>exact depth not disclosed</small>
+          </p>
+        </div>
+
+        <!-- Privacy receipt ---------------------------------------------- -->
+        <div class="wl-col" style="flex: 1 1 400px; min-width: 300px;">
+          <section class="wl-receipt">
+            <div class="wl-receipt__head">
+              <h2 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--wl-navy);">Privacy receipt</h2>
+              <p class="wl-body-sm" style="margin: 2px 0 0;">What this check did and did not reveal</p>
+            </div>
+            <div class="wl-receipt__cols">
+              <div class="wl-receipt__col wl-receipt__col--shown">
+                <div class="wl-receipt__head-row">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#1F7A5C" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6z"></path><circle cx="12" cy="12" r="2.6"></circle>
+                  </svg>
+                  <span class="wl-label" style="color: var(--wl-safe); font-size: 10px; letter-spacing: 0.07em;">Disclosed to you</span>
+                </div>
+                <ul>
+                  <li>Verdict band</li>
+                  <li>Appraised value</li>
+                  <li>Threshold percentage</li>
+                  <li>Commitment hash &amp; block</li>
+                  <li>Timestamp</li>
+                </ul>
+              </div>
+              <div class="wl-receipt__col wl-receipt__col--never">
+                <div class="wl-receipt__head-row">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#5A6B7E" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="4.5" y="10.5" width="15" height="9.5" rx="2"></rect><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path>
+                  </svg>
+                  <span class="wl-label" style="font-size: 10px; letter-spacing: 0.07em;">Never disclosed</span>
+                </div>
+                <ul>
+                  <li>Individual deposits</li>
+                  <li>Total senior deposits</li>
+                  <li>Number of prior leases</li>
+                  <li>The salt</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <div class="wl-card wl-card--note" style="margin-top: 14px;">
+            <p class="wl-body" style="margin: 0;">
+              This page proves nothing. It reads a verdict already written to the ledger — no prover
+              keys, no wallet, no WASM. That is why it loads in under a second on a phone at the
+              signing table.
+            </p>
+          </div>
+
+          <a class="wl-btn wl-btn--secondary wl-btn--block" href="attack.html" style="margin-top: 14px; justify-content: space-between; font-size: 16px;">
+            <span>Why can't the landlord just lie?</span>
+            <span style="color: var(--wl-cobalt);">→</span>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Provenance ---------------------------------------------------------
+         Last on the page on every width: the verdict, then the figure that
+         explains it, then the receipt, then where it came from. -->
+    <section class="wl-container wl-container--wide" style="padding-block: 34px 0;">
+      <div class="wl-kv" style="padding-top: 18px; border-top: 1px solid var(--wl-line); display: flex; gap: 36px; flex-wrap: wrap;">
+        <div class="wl-kv__row" style="flex: 1 1 260px;"><span class="wl-kv__k">COMMITMENT</span><button type="button" class="wl-copy" data-wl-hash title="Copy"></button></div>
+        <div class="wl-kv__row" style="flex: 1 1 160px;"><span class="wl-kv__k">BLOCK</span><span class="wl-kv__v" data-wl-block></span></div>
+        <div class="wl-kv__row" style="flex: 1 1 220px;"><span class="wl-kv__k">ISSUED</span><span class="wl-kv__v" data-wl-issued></span></div>
+        <div class="wl-kv__row" style="flex: 0 1 140px;"><span class="wl-kv__k">INDEXER</span><span class="wl-kv__v"><a href="registry.html">open →</a></span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wl-footer">
+    <div class="wl-container wl-container--wide wl-footer__inner">
+      <p class="wl-body-sm" data-wl-proofnote style="margin: 0; font-family: var(--wl-font);"></p>
+    </div>
+  </footer>
+
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

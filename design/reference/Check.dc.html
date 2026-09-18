@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waterline — Check a building (mobile)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+html,body{overflow:hidden}
+body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;background:#F5F3EE;color:#14243A;-webkit-font-smoothing:antialiased}
+a{color:#1B5FAA}a:hover{color:#0F2A4A}
+</style>
+</helmet>
+
+<div style="width: 390px; height: 1100px; box-sizing: border-box; overflow: hidden; background: #F5F3EE; display: flex; flex-direction: column;">
+
+  <div style="display: flex; align-items: center; gap: 10px; padding: 16px 20px; background: #FFFFFF; border-bottom: 1px solid #E2DCD0;">
+    <a href="Main.dc.html" aria-label="Back" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; margin-left: -6px; text-decoration: none;">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#5A6B7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+    </a>
+    <div style="font-size: 16px; font-weight: 600; color: #0F2A4A;">Check a building</div>
+    <div style="flex-grow: 1;"></div>
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #1F7A5C; border: 1px solid rgba(31,122,92,0.4); border-radius: 999px; padding: 4px 9px;">read only</span>
+  </div>
+
+  <div style="padding: 18px 20px 0 20px;">
+    <label for="bid" style="display: block; font-size: 12px; color: #5A6B7E; margin-bottom: 8px; letter-spacing: 0.04em;">BUILDING ID</label>
+    <input id="bid" type="text" value="{{v.id}}" style="width: 100%; box-sizing: border-box; min-height: 52px; padding: 0 16px; border-radius: 6px; background: #FFFFFF; border: 1px solid #C3BCAE; color: #14243A; font-family: 'IBM Plex Mono', monospace; font-size: 16px; letter-spacing: 0.02em;">
+    <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
+      <sc-for list="{{v.chips}}" as="c" hint-placeholder-count="3">
+        <button type="button" onClick="{{c.pick}}" style="{{c.style}}">{{c.label}}</button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="padding: 20px 20px 0 20px;">
+    <div style="font-size: 13px; color: #5A6B7E; line-height: 1.5;">{{v.place}}</div>
+    <div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 60px; font-weight: 700; line-height: 1.05; letter-spacing: -0.012em; color: {{v.color}}; margin-top: 4px;">{{v.en}}</div>
+    <div style="font-size: 14px; color: #33455C; line-height: 1.6; margin-top: 8px;">{{v.line}}</div>
+  </div>
+
+  <div style="padding: 12px 20px 0 20px; display: flex; gap: 14px; align-items: center;">
+    <svg viewBox="0 0 240 372" style="width: 164px; height: 254px; flex-shrink: 0;" role="img" aria-label="{{v.alt}}">
+      <defs>
+        <pattern id="ch-safe" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="7" stroke="#1F7A5C" stroke-width="2.4"></line></pattern>
+        <pattern id="ch-caut" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="7" stroke="#A8701A" stroke-width="2.4"></line></pattern>
+        <pattern id="ch-dang" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="7" stroke="#C0352B" stroke-width="2.4"></line></pattern>
+        <linearGradient id="cg-safe" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1F7A5C" stop-opacity="0"></stop><stop offset="55%" stop-color="#1F7A5C" stop-opacity="0.26"></stop><stop offset="100%" stop-color="#1F7A5C" stop-opacity="0.22"></stop></linearGradient>
+        <linearGradient id="cg-caut" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#A8701A" stop-opacity="0"></stop><stop offset="55%" stop-color="#A8701A" stop-opacity="0.26"></stop><stop offset="100%" stop-color="#A8701A" stop-opacity="0.22"></stop></linearGradient>
+        <linearGradient id="cg-dang" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C0352B" stop-opacity="0"></stop><stop offset="55%" stop-color="#C0352B" stop-opacity="0.26"></stop><stop offset="100%" stop-color="#C0352B" stop-opacity="0.22"></stop></linearGradient>
+      </defs>
+      <rect x="48" y="28" width="144" height="308" fill="#FFFFFF" stroke="#0F2A4A" stroke-width="1.5"></rect>
+      <g stroke="#DCD6C9" stroke-width="1"><line x1="48" y1="79" x2="192" y2="79"></line><line x1="48" y1="130" x2="192" y2="130"></line><line x1="48" y1="181" x2="192" y2="181"></line><line x1="48" y1="232" x2="192" y2="232"></line><line x1="48" y1="283" x2="192" y2="283"></line></g>
+      <rect x="49" y="{{v.waterY}}" width="142" height="{{v.waterH}}" fill="{{v.grad}}"></rect>
+      <rect x="49" y="{{v.waterY}}" width="142" height="36" fill="{{v.hatch}}" opacity="0.45"></rect>
+      <line x1="49" y1="{{v.waterY}}" x2="191" y2="{{v.waterY}}" stroke="{{v.color}}" stroke-width="1" stroke-dasharray="3 4" opacity="0.7"></line>
+      <line x1="49" y1="{{v.bandBottom}}" x2="191" y2="{{v.bandBottom}}" stroke="{{v.color}}" stroke-width="1" stroke-dasharray="3 4" opacity="0.7"></line>
+      <line x1="26" y1="120" x2="208" y2="120" stroke="#C0352B" stroke-width="2"></line>
+      <circle cx="48" cy="120" r="13" fill="none" stroke="#C0352B" stroke-width="2"></circle>
+      <text x="206" y="{{v.labelY}}" font-family="IBM Plex Mono, monospace" font-size="11" fill="#C0352B" text-anchor="end">LIMIT 70%</text>
+      <g stroke="#B9B2A6" stroke-width="1" fill="none"><path d="M 30 28 L 22 28 L 22 336 L 30 336"></path></g>
+      <text x="16" y="182" font-family="IBM Plex Mono, monospace" font-size="10" fill="#6B7A8C" text-anchor="middle" transform="rotate(-90 16 182)">APPRAISED</text>
+    </svg>
+
+    <div style="display: flex; flex-direction: column; gap: 11px; min-width: 0;">
+      <div>
+        <div style="font-size: 10px; color: #6B7A8C; letter-spacing: 0.06em;">APPRAISED VALUE</div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #14243A; margin-top: 2px;">{{v.appraised}}</div>
+      </div>
+      <div>
+        <div style="font-size: 10px; color: #6B7A8C; letter-spacing: 0.06em;">LIMIT AT 70%</div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #14243A; margin-top: 2px;">{{v.limitWon}}</div>
+      </div>
+      <div>
+        <div style="font-size: 10px; color: #6B7A8C; letter-spacing: 0.06em;">SENIOR TOTAL</div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #7D8B9B; margin-top: 2px;">not disclosed</div>
+      </div>
+      <div style="padding: 10px 12px; border-radius: 6px; background: #FFFFFF; border: 1px solid #E2DCD0;">
+        <div style="font-size: 12px; color: #33455C; line-height: 1.55;">{{v.caption}}</div>
+        <div style="font-size: 11px; color: #6B7A8C; line-height: 1.5; margin-top: 3px;">exact depth not disclosed</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin: 18px 20px 0 20px; border: 1px solid #E2DCD0; border-radius: 8px; overflow: hidden; background: #FFFFFF;">
+    <div style="padding: 12px 16px; background: #EFEBE2; border-bottom: 1px solid #E2DCD0;">
+      <div style="font-size: 14px; font-weight: 700; color: #0F2A4A;">Privacy receipt</div>
+      <div style="font-size: 11px; color: #5A6B7E; margin-top: 2px;">What this check did and did not reveal</div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));">
+      <div style="padding: 14px 16px; border-right: 1px solid #E2DCD0;">
+        <div style="display: flex; align-items: center; gap: 7px; margin-bottom: 10px;">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#1F7A5C" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6z"></path><circle cx="12" cy="12" r="2.6"></circle></svg>
+          <span style="font-size: 10px; font-weight: 700; color: #1F7A5C; letter-spacing: 0.08em;">DISCLOSED TO YOU</span>
+        </div>
+        <div style="font-size: 12px; line-height: 1.95; color: #33455C;">Verdict band<br>Appraised value<br>Threshold percentage<br>Commitment hash &amp; block<br>Timestamp</div>
+      </div>
+      <div style="padding: 14px 16px;">
+        <div style="display: flex; align-items: center; gap: 7px; margin-bottom: 10px;">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#5A6B7E" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="9.5" rx="2"></rect><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path></svg>
+          <span style="font-size: 10px; font-weight: 700; color: #5A6B7E; letter-spacing: 0.08em;">NEVER DISCLOSED</span>
+        </div>
+        <div style="font-size: 12px; line-height: 1.95; color: #6B7A8C;">Individual deposits<br>Total senior deposits<br>Number of prior leases<br>The salt</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1;"></div>
+
+  <div style="margin: 16px 20px 20px 20px; padding-top: 14px; border-top: 1px solid #E2DCD0; display: flex; flex-direction: column; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px;">
+    <div style="display: flex; justify-content: space-between; gap: 10px;"><span style="color: #6B7A8C;">COMMITMENT</span><button type="button" style="background: none; border: none; padding: 0; color: #33455C; font-family: 'IBM Plex Mono', monospace; font-size: 11px; cursor: pointer; text-decoration: underline dotted;">{{v.hash}} ⧉</button></div>
+    <div style="display: flex; justify-content: space-between;"><span style="color: #6B7A8C;">BLOCK</span><span style="color: #33455C;">{{v.block}}</span></div>
+    <div style="display: flex; justify-content: space-between;"><span style="color: #6B7A8C;">ISSUED</span><span style="color: #33455C;">{{v.stamp}}</span></div>
+    <div style="font-size: 11px; color: #6B7A8C; line-height: 1.6; margin-top: 2px; font-family: 'IBM Plex Sans', sans-serif;">Proof verified by the Midnight network at block {{v.block}}. This page only reads the ledger.</div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1100}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { i: 0 };
+  }
+  renderVals() {
+    var BANDS = {
+      safe: { en: 'SAFE', color: '#1F7A5C', waterY: 173, waterH: 162, bandBottom: 209, labelY: 111,
+        grad: 'url(#cg-safe)', hatch: 'url(#ch-safe)',
+        caption: 'Level: below the line',
+        line: 'Senior deposits sit below this building’s appraisal limit.',
+        alt: 'Building cross-section, safe: the water band sits below the load line' },
+      caution: { en: 'CAUTION', color: '#A8701A', waterY: 102, waterH: 233, bandBottom: 138, labelY: 90,
+        grad: 'url(#cg-caut)', hatch: 'url(#ch-caut)',
+        caption: 'Level: straddling the line',
+        line: 'Senior deposits sit close to the limit. Ask before you sign.',
+        alt: 'Building cross-section, caution: the water band straddles the load line' },
+      danger: { en: 'DANGER', color: '#C0352B', waterY: 53, waterH: 282, bandBottom: 89, labelY: 141,
+        grad: 'url(#cg-dang)', hatch: 'url(#ch-dang)',
+        caption: 'Level: above the line',
+        line: 'Senior deposits exceed this building’s appraisal limit.',
+        alt: 'Building cross-section, danger: the water band sits above the load line' }
+    };
+    var ROWS = [
+      { id: 'SEO-2019-0412', chip: 'Seocho', place: 'Seocho-gu, Seoul · Serim Heights, Block 102',
+        appraised: '₩1,050,000,000', limitWon: '₩735,000,000', band: 'safe',
+        hash: '0x9f4c8b21…a1e8', block: '3,417,882', stamp: '18 Sep 2026, 11:04 KST' },
+      { id: 'MPO-2017-0883', chip: 'Mapo', place: 'Mapo-gu, Seoul · Eunha Villa, Block A',
+        appraised: '₩620,000,000', limitWon: '₩434,000,000', band: 'caution',
+        hash: '0x3d71ae04…5c92', block: '3,417,601', stamp: '18 Sep 2026, 09:47 KST' },
+      { id: 'BCN-2014-1176', chip: 'Bucheon', place: 'Bucheon, Gyeonggi · Cheongnim Town, Block 3',
+        appraised: '₩285,000,000', limitWon: '₩199,500,000', band: 'danger',
+        hash: '0xc082f5d9…30b7', block: '3,416,944', stamp: '17 Sep 2026, 18:22 KST' }
+    ];
+
+    var self = this;
+    var cur = ROWS[this.state.i] || ROWS[0];
+    var b = BANDS[cur.band];
+
+    var chips = ROWS.map(function (r, n) {
+      var on = n === self.state.i;
+      return {
+        label: r.chip,
+        pick: function () { self.setState({ i: n }); },
+        style: 'min-height: 44px; padding: 0 16px; border-radius: 999px; cursor: pointer;'
+          + 'font-family: IBM Plex Sans, sans-serif; font-size: 13px;'
+          + (on
+            ? 'background: #FFFFFF; border: 1.5px solid ' + BANDS[r.band].color + '; color: #14243A; font-weight: 700;'
+            : 'background: transparent; border: 1px solid #C3BCAE; color: #5A6B7E; font-weight: 400;')
+      };
+    });
+
+    return {
+      v: {
+        id: cur.id, place: cur.place, appraised: cur.appraised, limitWon: cur.limitWon,
+        hash: cur.hash, block: cur.block, stamp: cur.stamp,
+        en: b.en, color: b.color, line: b.line, alt: b.alt, caption: b.caption,
+        waterY: b.waterY, waterH: b.waterH, bandBottom: b.bandBottom, labelY: b.labelY,
+        grad: b.grad, hatch: b.hatch,
+        chips: chips
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waterline — Check a building</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;background:#F5F3EE;color:#14243A;-webkit-font-smoothing:antialiased}
+a{color:#1B5FAA}a:hover{color:#0F2A4A}
+</style>
+</helmet>
+
+<div style="width: 100%; min-height: 100vh; box-sizing: border-box; background: #F5F3EE; display: flex; flex-direction: column;">
+
+  <div style="background: #FFFFFF; border-bottom: 1px solid #E2DCD0;">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 18px 32px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="7.5" stroke="#0F2A4A" stroke-width="1.8"></circle><line x1="2" y1="12" x2="22" y2="12" stroke="#C0352B" stroke-width="1.8"></line></svg>
+      <a href="Landing-Desktop.dc.html" style="font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 23px; font-weight: 700; color: #0F2A4A; text-decoration: none;">Waterline</a>
+      <div style="flex-grow: 1;"></div>
+      <a href="Check-Desktop.dc.html" style="font-size: 15px; color: #0F2A4A; font-weight: 600; text-decoration: none; padding: 10px 14px; border-bottom: 2px solid #C0352B;">Check a building</a>
+      <a href="Registry-Desktop.dc.html" style="font-size: 15px; color: #33455C; text-decoration: none; padding: 10px 14px;">Registry console</a>
+      <a href="Attack-Desktop.dc.html" style="font-size: 15px; color: #33455C; text-decoration: none; padding: 10px 14px;">Try to cheat it</a>
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #1F7A5C; border: 1px solid rgba(31,122,92,0.4); border-radius: 999px; padding: 6px 12px; margin-left: 8px;">preprod · read only</span>
+    </div>
+  </div>
+
+  <div style="max-width: 1180px; width: 100%; margin: 0 auto; box-sizing: border-box; padding: 34px 32px 0 32px; display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+    <div style="flex: 0 1 360px; min-width: 260px;">
+      <label for="bidd" style="display: block; font-size: 12px; color: #5A6B7E; margin-bottom: 8px; letter-spacing: 0.04em;">BUILDING ID</label>
+      <input id="bidd" type="text" value="{{v.id}}" style="width: 100%; box-sizing: border-box; min-height: 52px; padding: 0 16px; border-radius: 6px; background: #FFFFFF; border: 1px solid #C3BCAE; color: #14243A; font-family: 'IBM Plex Mono', monospace; font-size: 16px;">
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <sc-for list="{{v.chips}}" as="c" hint-placeholder-count="3">
+        <button type="button" onClick="{{c.pick}}" style="{{c.style}}">{{c.label}}</button>
+      </sc-for>
+    </div>
+    <div style="flex-grow: 1;"></div>
+    <div style="font-size: 13px; color: #6B7A8C; padding-bottom: 14px;">Demo buildings are fictional</div>
+  </div>
+
+  <div style="max-width: 1180px; width: 100%; margin: 0 auto; box-sizing: border-box; padding: 34px 32px 0 32px; display: flex; gap: 36px; flex-wrap: wrap; align-items: flex-start;">
+
+    <div style="flex: 1 1 400px; min-width: 300px; display: flex; flex-direction: column; gap: 22px;">
+      <div>
+        <div style="font-size: 15px; color: #5A6B7E;">{{v.place}}</div>
+        <div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 84px; font-weight: 700; line-height: 1; letter-spacing: -0.015em; color: {{v.color}}; margin-top: 10px;">{{v.en}}</div>
+        <div style="font-size: 17px; color: #33455C; line-height: 1.65; margin-top: 16px;">{{v.line}}</div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+        <div style="padding: 14px 16px; border-radius: 6px; background: #FFFFFF; border: 1px solid #E2DCD0;">
+          <div style="font-size: 11px; color: #6B7A8C; letter-spacing: 0.06em;">APPRAISED</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; margin-top: 6px;">{{v.appraised}}</div>
+        </div>
+        <div style="padding: 14px 16px; border-radius: 6px; background: #FFFFFF; border: 1px solid #E2DCD0;">
+          <div style="font-size: 11px; color: #6B7A8C; letter-spacing: 0.06em;">LIMIT AT 70%</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; margin-top: 6px;">{{v.limitWon}}</div>
+        </div>
+        <div style="padding: 14px 16px; border-radius: 6px; background: #EFEBE2; border: 1px dashed #C3BCAE;">
+          <div style="font-size: 11px; color: #6B7A8C; letter-spacing: 0.06em;">SENIOR TOTAL</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; margin-top: 6px; color: #7D8B9B;">not disclosed</div>
+        </div>
+      </div>
+
+      <div style="padding-top: 18px; border-top: 1px solid #E2DCD0; display: flex; flex-direction: column; gap: 9px; font-family: 'IBM Plex Mono', monospace; font-size: 12px;">
+        <div style="display: flex; justify-content: space-between; gap: 12px;"><span style="color: #6B7A8C;">COMMITMENT</span><button type="button" style="background: none; border: none; padding: 0; color: #33455C; font-family: 'IBM Plex Mono', monospace; font-size: 12px; cursor: pointer; text-decoration: underline dotted;">{{v.hash}} ⧉</button></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: #6B7A8C;">BLOCK</span><span style="color: #33455C;">{{v.block}}</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: #6B7A8C;">ISSUED</span><span style="color: #33455C;">{{v.stamp}}</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: #6B7A8C;">INDEXER</span><a href="Registry-Desktop.dc.html" style="text-decoration: none;">open →</a></div>
+      </div>
+    </div>
+
+    <div style="flex: 0 0 260px; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+      <svg viewBox="0 0 240 372" style="width: 250px; height: 388px;" role="img" aria-label="{{v.alt}}">
+        <defs>
+          <pattern id="dh-safe" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="7" stroke="#1F7A5C" stroke-width="2.4"></line></pattern>
+          <pattern id="dh-caut" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="7" stroke="#A8701A" stroke-width="2.4"></line></pattern>
+          <pattern id="dh-dang" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="7" stroke="#C0352B" stroke-width="2.4"></line></pattern>
+          <linearGradient id="dg-safe" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1F7A5C" stop-opacity="0"></stop><stop offset="55%" stop-color="#1F7A5C" stop-opacity="0.26"></stop><stop offset="100%" stop-color="#1F7A5C" stop-opacity="0.22"></stop></linearGradient>
+          <linearGradient id="dg-caut" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#A8701A" stop-opacity="0"></stop><stop offset="55%" stop-color="#A8701A" stop-opacity="0.26"></stop><stop offset="100%" stop-color="#A8701A" stop-opacity="0.22"></stop></linearGradient>
+          <linearGradient id="dg-dang" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C0352B" stop-opacity="0"></stop><stop offset="55%" stop-color="#C0352B" stop-opacity="0.26"></stop><stop offset="100%" stop-color="#C0352B" stop-opacity="0.22"></stop></linearGradient>
+        </defs>
+        <rect x="48" y="28" width="144" height="308" fill="#FFFFFF" stroke="#0F2A4A" stroke-width="1.5"></rect>
+        <g stroke="#DCD6C9" stroke-width="1"><line x1="48" y1="79" x2="192" y2="79"></line><line x1="48" y1="130" x2="192" y2="130"></line><line x1="48" y1="181" x2="192" y2="181"></line><line x1="48" y1="232" x2="192" y2="232"></line><line x1="48" y1="283" x2="192" y2="283"></line></g>
+        <rect x="49" y="{{v.waterY}}" width="142" height="{{v.waterH}}" fill="{{v.grad}}"></rect>
+        <rect x="49" y="{{v.waterY}}" width="142" height="36" fill="{{v.hatch}}" opacity="0.45"></rect>
+        <line x1="49" y1="{{v.waterY}}" x2="191" y2="{{v.waterY}}" stroke="{{v.color}}" stroke-width="1" stroke-dasharray="3 4" opacity="0.7"></line>
+        <line x1="49" y1="{{v.bandBottom}}" x2="191" y2="{{v.bandBottom}}" stroke="{{v.color}}" stroke-width="1" stroke-dasharray="3 4" opacity="0.7"></line>
+        <line x1="22" y1="120" x2="212" y2="120" stroke="#C0352B" stroke-width="2"></line>
+        <circle cx="48" cy="120" r="13" fill="none" stroke="#C0352B" stroke-width="2"></circle>
+        <text x="210" y="{{v.labelY}}" font-family="IBM Plex Mono, monospace" font-size="11" fill="#C0352B" text-anchor="end">LOAD LINE 70%</text>
+        <g stroke="#B9B2A6" stroke-width="1" fill="none"><path d="M 30 28 L 22 28 L 22 336 L 30 336"></path></g>
+        <text x="14" y="182" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7A8C" text-anchor="middle" transform="rotate(-90 14 182)">APPRAISED VALUE</text>
+      </svg>
+      <div style="text-align: center;">
+        <div style="font-size: 14px; color: #33455C;">{{v.caption}}</div>
+        <div style="font-size: 12px; color: #6B7A8C; margin-top: 3px;">exact depth not disclosed</div>
+      </div>
+    </div>
+
+    <div style="flex: 1 1 320px; min-width: 280px; display: flex; flex-direction: column; gap: 14px;">
+      <div style="border: 1px solid #E2DCD0; border-radius: 8px; overflow: hidden; background: #FFFFFF;">
+        <div style="padding: 14px 18px; background: #EFEBE2; border-bottom: 1px solid #E2DCD0;">
+          <div style="font-size: 15px; font-weight: 700; color: #0F2A4A;">Privacy receipt</div>
+          <div style="font-size: 12px; color: #5A6B7E; margin-top: 2px;">What this check did and did not reveal</div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));">
+          <div style="padding: 16px 18px; border-right: 1px solid #E2DCD0;">
+            <div style="display: flex; align-items: center; gap: 7px; margin-bottom: 12px;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#1F7A5C" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6z"></path><circle cx="12" cy="12" r="2.6"></circle></svg>
+              <span style="font-size: 10px; font-weight: 700; color: #1F7A5C; letter-spacing: 0.08em;">DISCLOSED TO YOU</span>
+            </div>
+            <div style="font-size: 13px; line-height: 2.0; color: #33455C;">Verdict band<br>Appraised value<br>Threshold percentage<br>Commitment hash &amp; block<br>Timestamp</div>
+          </div>
+          <div style="padding: 16px 18px;">
+            <div style="display: flex; align-items: center; gap: 7px; margin-bottom: 12px;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#5A6B7E" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="9.5" rx="2"></rect><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path></svg>
+              <span style="font-size: 10px; font-weight: 700; color: #5A6B7E; letter-spacing: 0.08em;">NEVER DISCLOSED</span>
+            </div>
+            <div style="font-size: 13px; line-height: 2.0; color: #6B7A8C;">Individual deposits<br>Total senior deposits<br>Number of prior leases<br>The salt</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding: 16px 18px; border-radius: 8px; background: #FFFFFF; border: 1px solid #E2DCD0; border-left: 4px solid #1B5FAA;">
+        <div style="font-size: 14px; line-height: 1.8; color: #33455C;">This page proves nothing. It reads a verdict already written to the ledger — no prover keys, no wallet, no WASM. That is why it loads in under a second on a phone at the signing table.</div>
+      </div>
+
+      <a href="Attack-Desktop.dc.html" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 60px; padding: 14px 20px; border-radius: 6px; background: #FFFFFF; border: 1px solid #C3BCAE; color: #14243A; text-decoration: none; font-size: 16px; font-weight: 500;">
+        <span>Why can't the landlord just lie?</span>
+        <span style="color: #1B5FAA;">→</span>
+      </a>
+    </div>
+
+  </div>
+
+  <div style="flex-grow: 1;"></div>
+  <div style="padding: 40px;"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { i: 1 };
+  }
+  renderVals() {
+    var BANDS = {
+      safe: { en: 'SAFE', color: '#1F7A5C', waterY: 173, waterH: 162, bandBottom: 209, labelY: 111,
+        grad: 'url(#dg-safe)', hatch: 'url(#dh-safe)',
+        caption: 'Level: below the line',
+        line: 'Senior deposits sit below this building’s appraisal limit.',
+        alt: 'Building cross-section, safe: the water band sits below the load line' },
+      caution: { en: 'CAUTION', color: '#A8701A', waterY: 102, waterH: 233, bandBottom: 138, labelY: 90,
+        grad: 'url(#dg-caut)', hatch: 'url(#dh-caut)',
+        caption: 'Level: straddling the line',
+        line: 'Senior deposits sit close to the limit. Ask before you sign.',
+        alt: 'Building cross-section, caution: the water band straddles the load line' },
+      danger: { en: 'DANGER', color: '#C0352B', waterY: 53, waterH: 282, bandBottom: 89, labelY: 141,
+        grad: 'url(#dg-dang)', hatch: 'url(#dh-dang)',
+        caption: 'Level: above the line',
+        line: 'Senior deposits exceed this building’s appraisal limit.',
+        alt: 'Building cross-section, danger: the water band sits above the load line' }
+    };
+    var ROWS = [
+      { id: 'SEO-2019-0412', chip: 'Seocho', place: 'Seocho-gu, Seoul · Serim Heights, Block 102',
+        appraised: '₩1,050,000,000', limitWon: '₩735,000,000', band: 'safe',
+        hash: '0x9f4c8b21…a1e8', block: '3,417,882', stamp: '18 Sep 2026, 11:04 KST' },
+      { id: 'MPO-2017-0883', chip: 'Mapo', place: 'Mapo-gu, Seoul · Eunha Villa, Block A',
+        appraised: '₩620,000,000', limitWon: '₩434,000,000', band: 'caution',
+        hash: '0x3d71ae04…5c92', block: '3,417,601', stamp: '18 Sep 2026, 09:47 KST' },
+      { id: 'BCN-2014-1176', chip: 'Bucheon', place: 'Bucheon, Gyeonggi · Cheongnim Town, Block 3',
+        appraised: '₩285,000,000', limitWon: '₩199,500,000', band: 'danger',
+        hash: '0xc082f5d9…30b7', block: '3,416,944', stamp: '17 Sep 2026, 18:22 KST' }
+    ];
+    var self = this;
+    var cur = ROWS[this.state.i] || ROWS[0];
+    var b = BANDS[cur.band];
+    var chips = ROWS.map(function (r, n) {
+      var on = n === self.state.i;
+      return {
+        label: r.chip,
+        pick: function () { self.setState({ i: n }); },
+        style: 'min-height: 52px; padding: 0 18px; border-radius: 999px; cursor: pointer;'
+          + 'font-family: IBM Plex Sans, sans-serif; font-size: 14px;'
+          + (on
+            ? 'background: #FFFFFF; border: 1.5px solid ' + BANDS[r.band].color + '; color: #14243A; font-weight: 700;'
+            : 'background: transparent; border: 1px solid #C3BCAE; color: #5A6B7E; font-weight: 400;')
+      };
+    });
+    return {
+      v: {
+        id: cur.id, place: cur.place, appraised: cur.appraised, limitWon: cur.limitWon,
+        hash: cur.hash, block: cur.block, stamp: cur.stamp,
+        en: b.en, color: b.color, line: b.line, alt: b.alt, caption: b.caption,
+        waterY: b.waterY, waterH: b.waterH, bandBottom: b.bandBottom, labelY: b.labelY,
+        grad: b.grad, hatch: b.hatch, chips: chips
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

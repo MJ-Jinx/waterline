@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waterline — Is your deposit above the line?</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;background:#F5F3EE;color:#14243A;-webkit-font-smoothing:antialiased}
+a{color:#1B5FAA}a:hover{color:#0F2A4A}
+@keyframes wl-rise{from{transform:translateY(46px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes wl-mark{from{opacity:0}to{opacity:1}}
+.wl-water{animation:wl-rise 1500ms cubic-bezier(.16,.84,.26,1) 260ms both}
+.wl-mark{animation:wl-mark 700ms ease-out 1500ms both}
+@media (prefers-reduced-motion: reduce){.wl-water,.wl-mark{animation:none}}
+</style>
+</helmet>
+
+<div style="width: 100%; min-height: 100vh; box-sizing: border-box; background: #F5F3EE; display: flex; flex-direction: column;">
+
+  <div style="background: #FFFFFF; border-bottom: 1px solid #E2DCD0;">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 18px 32px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="7.5" stroke="#0F2A4A" stroke-width="1.8"></circle><line x1="2" y1="12" x2="22" y2="12" stroke="#C0352B" stroke-width="1.8"></line></svg>
+      <div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 23px; font-weight: 700; letter-spacing: -0.01em; color: #0F2A4A;">Waterline</div>
+      <div style="flex-grow: 1;"></div>
+      <a href="Check-Desktop.dc.html" style="font-size: 15px; color: #33455C; text-decoration: none; padding: 10px 14px;">Check a building</a>
+      <a href="Registry-Desktop.dc.html" style="font-size: 15px; color: #33455C; text-decoration: none; padding: 10px 14px;">Registry console</a>
+      <a href="Attack-Desktop.dc.html" style="font-size: 15px; color: #33455C; text-decoration: none; padding: 10px 14px;">Try to cheat it</a>
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #1F7A5C; border: 1px solid rgba(31,122,92,0.4); border-radius: 999px; padding: 6px 12px; margin-left: 8px;">Midnight preprod</span>
+    </div>
+  </div>
+
+  <div style="max-width: 1180px; width: 100%; margin: 0 auto; box-sizing: border-box; padding: 72px 32px 0 32px; display: flex; gap: 56px; align-items: flex-start; flex-wrap: wrap;">
+    <div style="flex: 1 1 520px; min-width: 300px;">
+      <h1 style="margin: 0; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 68px; font-weight: 700; line-height: 1.04; letter-spacing: -0.038em; color: #0F2A4A;">Is your deposit above the line?</h1>
+      <p style="margin: 28px 0 0 0; font-size: 20px; line-height: 1.75; color: #33455C; max-width: 560px;">Find out whether a building's senior deposits sit below its appraisal limit — <b style="color: #14243A;">without the registry disclosing the total</b>, the count, or a single amount.</p>
+      <p style="margin: 14px 0 0 0; font-size: 15px; line-height: 1.75; color: #5A6B7E; max-width: 560px;">Jeonse tenants hand over years of savings against a building whose other debts they cannot see. Waterline lets them see one thing — whether the building is loaded past its line — and nothing more.</p>
+
+      <div style="display: flex; gap: 14px; margin-top: 40px; flex-wrap: wrap;">
+        <a href="Check-Desktop.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 60px; padding: 0 32px; border-radius: 6px; background: #0F2A4A; color: #FFFFFF; text-decoration: none; font-size: 18px; font-weight: 700;">Check a building</a>
+        <a href="Attack-Desktop.dc.html" style="display: flex; align-items: center; justify-content: center; min-height: 60px; padding: 0 32px; border-radius: 6px; background: #FFFFFF; border: 1px solid #C3BCAE; color: #14243A; text-decoration: none; font-size: 18px; font-weight: 500;">Try to cheat it</a>
+      </div>
+    </div>
+
+    <div style="flex: 0 1 380px; min-width: 280px; display: flex; flex-direction: column; align-items: center; gap: 14px;">
+      <svg viewBox="0 0 240 372" style="width: 100%; max-width: 330px; height: auto;" role="img" aria-label="Building cross-section. Full height is the appraised value, the horizontal load line is the limit, and the hatched band is the undisclosed water level.">
+        <defs>
+          <pattern id="lh" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="7" stroke="#1F7A5C" stroke-width="2.4"></line></pattern>
+          <linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1F7A5C" stop-opacity="0"></stop><stop offset="55%" stop-color="#1F7A5C" stop-opacity="0.26"></stop><stop offset="100%" stop-color="#1F7A5C" stop-opacity="0.22"></stop></linearGradient>
+        </defs>
+        <rect x="48" y="28" width="144" height="308" fill="#FFFFFF" stroke="#0F2A4A" stroke-width="1.5"></rect>
+        <g stroke="#DCD6C9" stroke-width="1"><line x1="48" y1="79" x2="192" y2="79"></line><line x1="48" y1="130" x2="192" y2="130"></line><line x1="48" y1="181" x2="192" y2="181"></line><line x1="48" y1="232" x2="192" y2="232"></line><line x1="48" y1="283" x2="192" y2="283"></line></g>
+        <g class="wl-water">
+          <rect x="49" y="173" width="142" height="162" fill="url(#lg)"></rect>
+          <rect x="49" y="173" width="142" height="36" fill="url(#lh)" opacity="0.45"></rect>
+          <line x1="49" y1="173" x2="191" y2="173" stroke="#1F7A5C" stroke-width="1" stroke-dasharray="3 4" opacity="0.7"></line>
+          <line x1="49" y1="209" x2="191" y2="209" stroke="#1F7A5C" stroke-width="1" stroke-dasharray="3 4" opacity="0.7"></line>
+        </g>
+        <g class="wl-mark">
+          <line x1="20" y1="120" x2="216" y2="120" stroke="#C0352B" stroke-width="2"></line>
+          <circle cx="48" cy="120" r="13" fill="none" stroke="#C0352B" stroke-width="2"></circle>
+          <text x="214" y="111" font-family="IBM Plex Mono, monospace" font-size="10" fill="#C0352B" text-anchor="end">LOAD LINE 70%</text>
+        </g>
+        <g stroke="#B9B2A6" stroke-width="1" fill="none"><path d="M 30 28 L 22 28 L 22 336 L 30 336"></path></g>
+        <text x="14" y="182" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7A8C" text-anchor="middle" transform="rotate(-90 14 182)">APPRAISED VALUE</text>
+      </svg>
+      <div style="text-align: center; font-size: 13px; color: #5A6B7E; line-height: 1.6;">The water surface is drawn as a band, never a level.<br>The page does not know the real total.</div>
+    </div>
+  </div>
+
+  <div style="max-width: 1180px; width: 100%; margin: 0 auto; box-sizing: border-box; padding: 72px 32px 0 32px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+      <div style="padding: 28px 30px; border-radius: 8px; background: #FFFFFF; border: 1px solid #E2DCD0;">
+        <div style="width: 32px; height: 32px; border-radius: 999px; border: 1px solid #1B5FAA; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #1B5FAA;">1</div>
+        <div style="font-size: 20px; font-weight: 600; line-height: 1.4; margin-top: 18px; color: #14243A;">The registry commits the total</div>
+        <div style="font-size: 15px; color: #5A6B7E; line-height: 1.75; margin-top: 12px;">A hash over the total, the lease count and a salt goes on chain. The amounts themselves never do.</div>
+      </div>
+      <div style="padding: 28px 30px; border-radius: 8px; background: #FFFFFF; border: 1px solid #E2DCD0;">
+        <div style="width: 32px; height: 32px; border-radius: 999px; border: 1px solid #1B5FAA; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #1B5FAA;">2</div>
+        <div style="font-size: 20px; font-weight: 600; line-height: 1.4; margin-top: 18px; color: #14243A;">The circuit compares load to limit</div>
+        <div style="font-size: 15px; color: #5A6B7E; line-height: 1.75; margin-top: 12px;">The comparison happens inside the proof. Only someone who can open the commitment can produce one.</div>
+      </div>
+      <div style="padding: 28px 30px; border-radius: 8px; background: #FFFFFF; border: 1px solid #E2DCD0;">
+        <div style="width: 32px; height: 32px; border-radius: 999px; border: 1px solid #1B5FAA; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #1B5FAA;">3</div>
+        <div style="font-size: 20px; font-weight: 600; line-height: 1.4; margin-top: 18px; color: #14243A;">The tenant sees one band</div>
+        <div style="display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;">
+          <span style="padding: 7px 14px; border-radius: 4px; background: rgba(31,122,92,0.10); border: 1px solid rgba(31,122,92,0.45); color: #1F7A5C; font-size: 13px; font-weight: 700; letter-spacing: 0.06em;">SAFE</span>
+          <span style="padding: 7px 14px; border-radius: 4px; background: rgba(168,112,26,0.10); border: 1px solid rgba(168,112,26,0.45); color: #A8701A; font-size: 13px; font-weight: 700; letter-spacing: 0.06em;">CAUTION</span>
+          <span style="padding: 7px 14px; border-radius: 4px; background: rgba(192,53,43,0.10); border: 1px solid rgba(192,53,43,0.45); color: #C0352B; font-size: 13px; font-weight: 700; letter-spacing: 0.06em;">DANGER</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width: 1180px; width: 100%; margin: 0 auto; box-sizing: border-box; padding: 28px 32px 0 32px;">
+    <a href="Attack-Desktop.dc.html" style="display: flex; align-items: center; gap: 28px; padding: 30px 34px; border-radius: 8px; background: #FFFFFF; border: 1px solid #C0352B; border-left-width: 4px; text-decoration: none; flex-wrap: wrap;">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#C0352B" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8.5 8.5l7 7"></path><path d="M15.5 8.5l-7 7"></path></svg>
+      <div style="flex: 1 1 340px;">
+        <div style="font-size: 22px; font-weight: 700; color: #14243A;">The total is hidden. So why can't the landlord just lie?</div>
+        <div style="font-size: 15px; color: #5A6B7E; line-height: 1.7; margin-top: 6px;">Claim any total you like on the next page, and watch the certificate refuse to exist.</div>
+      </div>
+      <span style="color: #1B5FAA; font-size: 22px;">→</span>
+    </a>
+  </div>
+
+  <div style="flex-grow: 1;"></div>
+
+  <div style="max-width: 1180px; width: 100%; margin: 0 auto; box-sizing: border-box; padding: 40px 32px 44px 32px;">
+    <div style="padding-top: 22px; border-top: 1px solid #E2DCD0; display: flex; align-items: center; gap: 36px; flex-wrap: wrap; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #33455C;">
+      <div><span style="color: #6B7A8C;">CONTRACT</span> &nbsp;0200c4f1…7d3b</div>
+      <div><span style="color: #6B7A8C;">BLOCK</span> &nbsp;3,417,882</div>
+      <div><span style="color: #6B7A8C;">NETWORK</span> &nbsp;<span style="color: #1F7A5C;">Midnight preprod · verified</span></div>
+      <div style="flex-grow: 1;"></div>
+      <a href="Registry-Desktop.dc.html" style="text-decoration: none;">View in the indexer →</a>
+      <span style="color: #6B7A8C; font-family: 'IBM Plex Sans', sans-serif;">Demo buildings are fictional</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1240}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

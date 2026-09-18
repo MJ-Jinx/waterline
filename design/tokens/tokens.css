@@ -1,0 +1,58 @@
+/* Waterline design tokens — drop-in custom properties.
+   Identical to the :root block in standalone/assets/styles.css.
+   Import this if you are building with your own component layer. */
+
+:root {
+  /* Ground & surfaces */
+  --wl-ground:          #F5F3EE;
+  --wl-surface:         #FFFFFF;
+  --wl-surface-sunken:  #EFEBE2;
+  --wl-surface-muted:   #FBFAF7;
+
+  /* Lines */
+  --wl-line:            #E2DCD0;
+  --wl-line-strong:     #C3BCAE;
+  --wl-line-soft:       #DCD6C9;
+  --wl-line-quiet:      #DDD6C8;
+  --wl-bracket:         #B9B2A6;
+
+  /* Ink */
+  --wl-ink:             #14243A;
+  --wl-ink-body:        #33455C;
+  --wl-ink-muted:       #5A6B7E;
+  --wl-ink-label:       #6B7A8C;
+  --wl-ink-dim:         #7D8B9B;   /* large text only: >=18.66px bold or >=24px */
+  --wl-ink-disabled:    #8C8B82;
+  --wl-ink-idle:        #A9A294;
+
+  /* Chrome */
+  --wl-navy:            #0F2A4A;
+  --wl-cobalt:          #1B5FAA;
+
+  /* Verdicts — reserved for verdicts only */
+  --wl-safe:            #1F7A5C;
+  --wl-caution:         #A8701A;
+  --wl-caution-ink:     #8A5A11;
+  --wl-danger:          #C0352B;
+
+  --wl-on-dark:         #FFFFFF;
+
+  /* Type */
+  --wl-font:      'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --wl-font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Geometry */
+  --wl-radius-control: 6px;
+  --wl-radius-card:    8px;
+  --wl-radius-frame:   20px;
+  --wl-radius-pill:    999px;
+  --wl-container:      1180px;
+  --wl-container-wide: 1320px;
+  --wl-gutter:         20px;
+  --wl-touch:          44px;
+  --wl-control-h:      52px;
+}
+
+@media (min-width: 900px) {
+  :root { --wl-gutter: 32px; }
+}

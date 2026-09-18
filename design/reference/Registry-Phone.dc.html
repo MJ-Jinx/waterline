@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waterline — Registry console (mobile)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+html,body{overflow:hidden}
+body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;background:#F5F3EE;color:#14243A;-webkit-font-smoothing:antialiased}
+a{color:#1B5FAA}a:hover{color:#0F2A4A}
+</style>
+</helmet>
+
+<div style="width: 390px; height: 1280px; box-sizing: border-box; overflow: hidden; background: #F5F3EE; display: flex; flex-direction: column;">
+
+  <div style="display: flex; align-items: center; gap: 10px; padding: 12px 20px; background: repeating-linear-gradient(135deg, rgba(168,112,26,0.16) 0 14px, rgba(168,112,26,0.05) 14px 28px); border-bottom: 1px solid rgba(168,112,26,0.5);">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#A8701A" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.5l8.5 15h-17z"></path><path d="M12 10v4"></path><path d="M12 17h.01"></path></svg>
+    <div style="font-size: 12px; font-weight: 700; color: #8A5A11; line-height: 1.5;">Simulation — not a government system</div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px; padding: 14px 20px; background: #FFFFFF; border-bottom: 1px solid #E2DCD0;">
+    <a href="Main.dc.html" aria-label="Back" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; margin-left: -6px; text-decoration: none;">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#5A6B7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+    </a>
+    <div style="font-size: 16px; font-weight: 600; color: #0F2A4A;">Registry console</div>
+  </div>
+
+  <div style="padding: 18px 20px 0 20px; display: flex; flex-direction: column; gap: 14px;">
+    <div>
+      <label for="pb" style="display: block; font-size: 12px; color: #5A6B7E; margin-bottom: 7px; letter-spacing: 0.04em;">BUILDING ID</label>
+      <input id="pb" type="text" value="SEO-2019-0412" style="width: 100%; box-sizing: border-box; min-height: 52px; padding: 0 16px; border-radius: 6px; background: #FFFFFF; border: 1px solid #C3BCAE; color: #14243A; font-family: 'IBM Plex Mono', monospace; font-size: 16px;">
+    </div>
+    <div>
+      <label for="pd" style="display: block; font-size: 12px; color: #5A6B7E; margin-bottom: 7px; letter-spacing: 0.04em;">DEPOSIT (KRW)</label>
+      <input id="pd" type="text" value="80,000,000" style="width: 100%; box-sizing: border-box; min-height: 52px; padding: 0 16px; border-radius: 6px; background: #FFFFFF; border: 1px solid #C3BCAE; color: #14243A; font-family: 'IBM Plex Mono', monospace; font-size: 16px;">
+    </div>
+    <button type="button" onClick="{{v.run}}" style="{{v.runStyle}}">{{v.runLabel}}</button>
+  </div>
+
+  <div style="padding: 18px 20px 0 20px;">
+    <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #6B7A8C; margin-bottom: 10px;">PIPELINE</div>
+    <div style="border: 1px solid #E2DCD0; border-radius: 8px; overflow: hidden; background: #FFFFFF;">
+      <sc-for list="{{v.steps}}" as="s" hint-placeholder-count="5">
+        <div style="{{s.rowStyle}}">
+          <div style="{{s.dotStyle}}">{{s.dot}}</div>
+          <div style="flex-grow: 1; min-width: 0;">
+            <div style="{{s.titleStyle}}">{{s.label}}</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6B7A8C; margin-top: 2px;">{{s.detail}}</div>
+          </div>
+          <div style="{{s.statusStyle}}">{{s.status}}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="padding: 16px 20px 0 20px;">
+    <div style="padding: 14px 16px; border-radius: 8px; background: #FFFFFF; border: 1px solid #E2DCD0; font-family: 'IBM Plex Mono', monospace; font-size: 12px;">
+      <div style="display: flex; justify-content: space-between;"><span style="color: #6B7A8C;">BEFORE</span><span style="color: #7D8B9B;">0x9f4c8b21…a1e8</span></div>
+      <div style="display: flex; justify-content: space-between; margin-top: 8px;"><span style="color: #6B7A8C;">AFTER</span><span style="color: {{v.afterColor}};">{{v.afterHash}}</span></div>
+      <div style="display: flex; justify-content: space-between; margin-top: 8px;"><span style="color: #6B7A8C;">BLOCK</span><span style="color: {{v.afterColor}};">{{v.afterBlock}}</span></div>
+    </div>
+  </div>
+
+  <div style="padding: 16px 20px 0 20px;">
+    <div style="padding: 12px 14px; border-radius: 8px; border: 1px dashed #A8701A; background: rgba(168,112,26,0.06); margin-bottom: 10px;">
+      <div style="font-size: 12px; font-weight: 700; color: #8A5A11; line-height: 1.5;">This panel exists only on the registry's machine</div>
+    </div>
+    <div style="padding: 14px 16px; border-radius: 8px; background: #FFFFFF; border: 1px solid #E2DCD0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; line-height: 1.9;">
+      <div style="display: flex; justify-content: space-between;"><span style="color: #6B7A8C;">LEASES 1–3</span><span style="color: #33455C;">₩120M · ₩95M · ₩60M</span></div>
+      <div style="display: flex; justify-content: space-between; color: {{v.newRowColor}};"><span>LEASE 4 (new)</span><span>{{v.newRow}}</span></div>
+      <div style="height: 1px; background: #E2DCD0; margin: 7px 0;"></div>
+      <div style="display: flex; justify-content: space-between;"><span style="color: #6B7A8C;">TOTAL · COUNT</span><span style="color: {{v.totalColor}};">{{v.total}} · {{v.count}}</span></div>
+      <div style="display: flex; justify-content: space-between;"><span style="color: #6B7A8C;">SALT</span><span style="color: #7D8B9B;">0x5e19…c47a</span></div>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1;"></div>
+
+  <div style="margin: 16px 20px 22px 20px; padding: 16px; border-radius: 8px; background: #FFFFFF; border: 1px solid #E2DCD0;">
+    <div style="font-size: 11px; color: #6B7A8C; margin-bottom: 8px; letter-spacing: 0.06em;">WHAT THE TENANT WILL SEE</div>
+    <div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 40px; font-weight: 700; color: {{v.verdictColor}}; line-height: 1;">{{v.verdict}}</div>
+    <div style="font-size: 13px; color: #5A6B7E; line-height: 1.7; margin-top: 12px;">And nothing else. The amounts, the count and the salt above never leave this machine.</div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1280}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { step: 0 };
+    this.timers = [];
+  }
+  componentWillUnmount() {
+    this.timers.forEach(function (t) { clearTimeout(t); });
+  }
+  start() {
+    var self = this;
+    this.timers.forEach(function (t) { clearTimeout(t); });
+    this.timers = [];
+    this.setState({ step: 1 });
+    [[1100, 2], [4200, 3], [5200, 4], [6600, 5]].forEach(function (pair) {
+      self.timers.push(setTimeout(function () { self.setState({ step: pair[1] }); }, pair[0]));
+    });
+  }
+  renderVals() {
+    var self = this;
+    var step = this.state.step;
+    var done = step >= 5;
+    var DEFS = [
+      { label: 'Building the call', detail: '5,168 B · registerLease()' },
+      { label: 'Proving', detail: 'local · 2–5s · 5.1 MB key' },
+      { label: 'Fee sponsored', detail: '0.0142 tDUST' },
+      { label: 'Submitted', detail: '14,432 B · preprod' },
+      { label: 'Landed in a block', detail: 'block 3,418,120' }
+    ];
+    var steps = DEFS.map(function (d, n) {
+      var idx = n + 1;
+      var state = step > idx ? 'done' : (step === idx ? 'now' : 'idle');
+      var col = state === 'done' ? '#1F7A5C' : (state === 'now' ? '#1B5FAA' : '#A9A294');
+      return {
+        label: d.label,
+        detail: state === 'idle' ? '—' : d.detail,
+        dot: state === 'done' ? '✓' : String(idx),
+        rowStyle: 'display: flex; align-items: center; gap: 12px; padding: 12px 14px;'
+          + (n < 4 ? 'border-bottom: 1px solid #EFEBE2;' : '')
+          + (state === 'now' ? 'background: rgba(27,95,170,0.06);' : ''),
+        dotStyle: 'flex-shrink: 0; width: 24px; height: 24px; border-radius: 999px; display: flex;'
+          + 'align-items: center; justify-content: center; font-family: IBM Plex Mono, monospace;'
+          + 'font-size: 11px; border: 1px solid ' + col + '; color: ' + col + ';'
+          + (state === 'done' ? 'background: rgba(31,122,92,0.10);' : ''),
+        titleStyle: 'font-size: 13px; font-weight: 500; color: ' + (state === 'idle' ? '#8C8B82' : '#14243A') + ';',
+        status: state === 'done' ? 'done' : (state === 'now' ? 'running' : 'waiting'),
+        statusStyle: 'flex-shrink: 0; font-size: 11px; color: ' + col + ';'
+      };
+    });
+    return {
+      v: {
+        steps: steps,
+        run: function () { self.start(); },
+        runLabel: step === 0 ? 'Register lease' : (done ? 'Run again' : 'Registering…'),
+        runStyle: 'min-height: 56px; border-radius: 6px; border: none; font-size: 17px; font-weight: 700;'
+          + 'font-family: IBM Plex Sans, sans-serif; cursor: pointer;'
+          + (step === 0 || done ? 'background: #0F2A4A; color: #FFFFFF;' : 'background: #E4DFD4; color: #6B7A8C;'),
+        newRow: step === 0 ? '—' : '₩80,000,000',
+        newRowColor: step === 0 ? '#A9A294' : '#1B5FAA',
+        total: done ? '₩355M' : '₩275M',
+        count: done ? '4' : '3',
+        totalColor: done ? '#1B5FAA' : '#33455C',
+        afterHash: done ? '0x7a2be6f0…9d14' : 'pending',
+        afterBlock: done ? '3,418,120' : '—',
+        afterColor: done ? '#1B5FAA' : '#7D8B9B',
+        verdict: done ? 'SAFE' : '—',
+        verdictColor: done ? '#1F7A5C' : '#A9A294'
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

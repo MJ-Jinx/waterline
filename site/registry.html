@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waterline — Registry console (simulated)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="wl-page" data-wl-registry>
+
+  <!-- Framed unmistakably as a simulation. Never let anyone mistake this for
+       a real government system. -->
+  <div class="wl-simbanner">
+    <div class="wl-container wl-container--wide wl-simbanner__inner">
+      <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#A8701A" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 4.5l8.5 15h-17z"></path><path d="M12 10v4"></path><path d="M12 17h.01"></path>
+      </svg>
+      <span>Simulation of a registry office console</span>
+      <span class="sub">Not a government system, and not connected to one.</span>
+    </div>
+  </div>
+
+  <header class="wl-header">
+    <div class="wl-container wl-container--wide wl-header__inner">
+      <a class="wl-wordmark" href="index.html">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="7.5" stroke="#0F2A4A" stroke-width="1.8"></circle>
+          <line x1="2" y1="12" x2="22" y2="12" stroke="#C0352B" stroke-width="1.8"></line>
+        </svg>
+        Waterline
+      </a>
+      <div class="wl-spacer"></div>
+      <nav class="wl-nav" aria-label="Main">
+        <a href="check.html">Check a building</a>
+        <a href="registry.html" aria-current="page">Registry console</a>
+        <a href="attack.html">Try to cheat it</a>
+      </nav>
+      <span class="wl-badge">prover keys loaded · 5.1 MB</span>
+    </div>
+  </header>
+
+  <main class="wl-main">
+    <section class="wl-container wl-container--wide" style="padding-block: 32px 0;">
+      <div class="wl-cols" style="gap: 32px;">
+
+        <!-- Left: the form and the private ledger ------------------------ -->
+        <div class="wl-col" style="flex: 0 1 320px; min-width: 280px;">
+          <h1 class="wl-label" style="letter-spacing: 0.12em; margin: 0 0 18px;">New lease</h1>
+
+          <div class="wl-field" style="margin-bottom: 18px;">
+            <label for="r-building">Building ID</label>
+            <input class="wl-input" id="r-building" type="text" value="SEO-2019-0412" autocomplete="off" spellcheck="false">
+          </div>
+
+          <div class="wl-field" style="margin-bottom: 18px;">
+            <label for="r-deposit">Deposit (KRW)</label>
+            <input class="wl-input" id="r-deposit" type="text" value="80,000,000" autocomplete="off" inputmode="numeric">
+          </div>
+
+          <button type="button" class="wl-btn wl-btn--primary wl-btn--block" data-wl-run>Register lease</button>
+
+          <p class="wl-body" style="margin: 18px 0;">
+            Registering publishes a commitment over the total, the lease count and a salt.
+            The amounts themselves never go on chain.
+          </p>
+
+          <div class="wl-private">
+            This panel exists only on the registry's machine
+            <span style="display: block; font-weight: 400; margin-top: 6px; opacity: 0.85;">Nothing below it is ever served to a tenant.</span>
+          </div>
+
+          <div class="wl-card" style="margin-top: 18px;">
+            <h2 class="wl-label" style="letter-spacing: 0.06em; color: var(--wl-navy); margin: 0 0 12px;">Private ledger</h2>
+            <div class="wl-kv">
+              <div class="wl-kv__row"><span class="wl-kv__k">Lease 1</span><span class="wl-kv__v">₩120,000,000</span></div>
+              <div class="wl-kv__row"><span class="wl-kv__k">Lease 2</span><span class="wl-kv__v">₩95,000,000</span></div>
+              <div class="wl-kv__row"><span class="wl-kv__k">Lease 3</span><span class="wl-kv__v">₩60,000,000</span></div>
+              <div class="wl-kv__row"><span class="wl-kv__k">Lease 4 (new)</span><span class="wl-kv__v" style="color: var(--wl-cobalt);" data-wl-newlease>—</span></div>
+              <div style="height: 1px; background: var(--wl-line); margin: 8px 0;"></div>
+              <div class="wl-kv__row"><span class="wl-kv__k">Total</span><span class="wl-kv__v" data-wl-total>₩275,000,000</span></div>
+              <div class="wl-kv__row"><span class="wl-kv__k">Count</span><span class="wl-kv__v" data-wl-count>3</span></div>
+              <div class="wl-kv__row"><span class="wl-kv__k">Salt</span><span class="wl-kv__v wl-kv__v--dim">0x5e19…c47a</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: the pipeline ------------------------------------------ -->
+        <div class="wl-col" style="flex: 1 1 560px; min-width: 320px;">
+          <h2 class="wl-label" style="letter-spacing: 0.12em; margin: 0 0 18px;">Live pipeline</h2>
+
+          <div class="wl-pipeline" data-wl-pipeline aria-live="polite"></div>
+
+          <div class="wl-row" style="gap: 20px; margin-top: 18px; align-items: stretch;">
+            <div class="wl-card" style="flex: 1 1 240px;">
+              <div class="wl-label" style="letter-spacing: 0.06em;">Commitment before</div>
+              <div class="wl-mono" style="font-size: 17px; color: var(--wl-ink-dim); margin-top: 10px; word-break: break-all;">0x9f4c8b21…a1e8</div>
+              <div class="wl-mono" style="color: var(--wl-ink-label); margin-top: 8px;">block 3,417,882</div>
+            </div>
+            <div class="wl-card" style="flex: 1 1 240px;">
+              <div class="wl-label" style="letter-spacing: 0.06em;">Commitment after</div>
+              <div class="wl-mono" style="font-size: 17px; color: var(--wl-cobalt); margin-top: 10px; word-break: break-all;" data-wl-after>pending</div>
+              <div class="wl-mono" style="color: var(--wl-ink-label); margin-top: 8px;" data-wl-afterblock>—</div>
+            </div>
+          </div>
+
+          <div class="wl-row" style="gap: 20px; margin-top: 18px; align-items: stretch;">
+            <div class="wl-card" style="flex: 1 1 280px;">
+              <div class="wl-label" style="letter-spacing: 0.06em;">Proof payload</div>
+              <div style="display: flex; align-items: flex-end; gap: 20px; margin: 12px 0;">
+                <div>
+                  <div class="wl-mono" style="font-size: 26px; color: var(--wl-ink-body);">5,168</div>
+                  <div class="wl-body-sm" style="margin-top: 3px;">bytes, call only</div>
+                </div>
+                <div style="color: var(--wl-bracket); font-size: 18px; padding-bottom: 8px;">→</div>
+                <div>
+                  <div class="wl-mono" style="font-size: 26px; color: var(--wl-cobalt);" data-wl-bytes>—</div>
+                  <div class="wl-body-sm" style="margin-top: 3px;">bytes, with proof</div>
+                </div>
+              </div>
+              <div class="wl-meter"><div class="wl-meter__fill" data-wl-meter></div></div>
+            </div>
+
+            <div class="wl-card" style="flex: 1 1 280px;">
+              <div class="wl-label" style="letter-spacing: 0.06em; margin-bottom: 12px;">What the tenant will see</div>
+              <div class="wl-verdict wl-verdict--sm" data-wl-outcome>—</div>
+              <p class="wl-body" style="margin: 14px 0 0;">
+                And nothing else. The amounts, the count and the salt never leave this machine.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="wl-footer">
+    <div class="wl-container wl-container--wide wl-footer__inner">
+      <div><span class="k">CONTRACT</span> &nbsp;<span title="e99711c00fbcb7ee9a12f81a75e151367bf7899cbda96a1c54c75393494f3ac2">e99711c0…3ac2</span></div>
+      <div><span class="k">NETWORK</span> &nbsp;<span style="color: var(--wl-safe);">Midnight preprod</span></div>
+      <div class="wl-spacer"></div>
+      <span class="k" style="font-family: var(--wl-font);">Simulated console — no real registry data</span>
+    </div>
+  </footer>
+
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

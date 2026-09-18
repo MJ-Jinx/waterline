@@ -1,0 +1,47 @@
+{
+  "v": 3,
+  "attachments": {},
+  "createdOnFiles": { "at": "2026-09-18T03:30:00Z", "v": 1 },
+  "title": "Waterline",
+  "launch": { "view": "focused", "file": "Landing-Desktop.dc.html" },
+  "pages": [],
+  "designSystems": [],
+  "boards": {
+    "Landing-Desktop.dc.html": { "x": 470, "y": 0, "w": 1280, "h": 1240, "title": "01 Landing — website", "is_interactive": true, "expand": "fill" },
+    "Main.dc.html": { "x": 0, "y": 0, "w": 390, "h": 1420, "title": "01 Landing — mobile", "is_interactive": true },
+
+    "Check.dc.html": { "x": 0, "y": 1780, "w": 390, "h": 1100, "title": "02 Check — mobile (chips switch the verdict)", "is_interactive": true },
+    "Check-Desktop.dc.html": { "x": 470, "y": 1780, "w": 1280, "h": 900, "title": "02 Check — website", "is_interactive": true, "expand": "fill" },
+    "Check-States.dc.html": { "x": 1830, "y": 1780, "w": 1360, "h": 920, "title": "02 Check — the other states" },
+
+    "Registry-Phone.dc.html": { "x": 0, "y": 3240, "w": 390, "h": 1280, "title": "03 Registry console — mobile", "is_interactive": true },
+    "Registry-Desktop.dc.html": { "x": 470, "y": 3240, "w": 1440, "h": 1040, "title": "03 Registry console — website (run the pipeline)", "is_interactive": true, "expand": "fill" },
+
+    "Attack.dc.html": { "x": 0, "y": 4880, "w": 390, "h": 1340, "title": "04 Try to cheat it — mobile", "is_interactive": true },
+    "Attack-Desktop.dc.html": { "x": 470, "y": 4880, "w": 1280, "h": 1080, "title": "04 Try to cheat it — website", "is_interactive": true, "expand": "fill" },
+
+    "Foundations.dc.html": { "x": 0, "y": 6580, "w": 1400, "h": 1180, "title": "05 Foundations — colour, type, components, the visual" }
+  },
+  "order": [
+    "Main.dc.html",
+    "Landing-Desktop.dc.html",
+    "Check.dc.html",
+    "Check-Desktop.dc.html",
+    "Check-States.dc.html",
+    "Registry-Phone.dc.html",
+    "Registry-Desktop.dc.html",
+    "Attack.dc.html",
+    "Attack-Desktop.dc.html",
+    "Foundations.dc.html"
+  ],
+  "notes": {
+    "n1": { "kind": "title1", "maxW": 1750, "text": "01 · Landing", "w": 240, "x": 0, "y": -150 },
+    "n2": { "kind": "title1", "maxW": 3190, "text": "02 · Tenant check", "w": 240, "x": 0, "y": 1540 },
+    "n3": { "kind": "title1", "maxW": 1910, "text": "03 · Registry console (simulated)", "w": 240, "x": 0, "y": 3000 },
+    "n4": { "kind": "title1", "maxW": 1750, "text": "04 · Try to cheat it", "w": 240, "x": 0, "y": 4640 },
+    "n5": { "kind": "title1", "maxW": 1400, "text": "05 · Foundations", "w": 240, "x": 0, "y": 6340 },
+    "s1": { "color": "teal", "w": 340, "x": 3270, "y": 1780, "text": "Safe, caution and danger switch on the mobile check board via the demo chips. These four are the cases with no verdict.\n\nThe hatched band never renders an exact water level — the page does not know the real total, so a precise level would be either a lie or a disclosure." },
+    "s2": { "color": "orange", "w": 340, "x": 1830, "y": 4880, "text": "The differentiator.\n\nThe slider defaults to a number that flips DANGER to SAFE. Generate certificate → 2.6s pause → REFUSED.\n\nThe copy has to stay honest: the failure happens on the landlord's machine, before a proof exists. Nothing was submitted and nothing was rejected." },
+    "s3": { "color": "blue", "w": 340, "x": 1970, "y": 3240, "text": "Colour: obangsaek / dancheong.\n\nCheong blue-green, hwang ochre, jeok vermilion — the temple-eave palette — over hanji ivory, with the navy-and-cobalt chrome of Korean public and financial services.\n\nRed still reads as danger here because this is safety signage (KOSHA/ISO), not a price direction — on KRX red means up." }
+  }
+}

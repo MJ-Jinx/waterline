@@ -1,0 +1,41 @@
+# Publish the static site in site/ to GitHub Pages.
+#
+# The site is plain HTML/CSS/JS with no build step, so there is nothing to
+# compile — the artifact is site/ uploaded verbatim. It hosts no ZK prover keys:
+# issueCertificate writes the verdict band to the ledger, so the tenant page is
+# a read, not a proof.
+name: Deploy site to Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Least privilege that still lets deploy-pages mint its OIDC token.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race; a half-published site is worse than a stale one.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

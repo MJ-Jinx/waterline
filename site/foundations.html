@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waterline — Foundations</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .swatch { display: flex; align-items: center; gap: 14px; }
+  .swatch__chip { width: 48px; height: 48px; border-radius: 4px; border: 1px solid var(--wl-line-strong); flex-shrink: 0; }
+  .swatch__name { font-size: 14px; font-weight: 600; }
+  .swatch__hex  { font-family: var(--wl-font-mono); font-size: 12px; color: var(--wl-ink-label); }
+</style>
+</head>
+<body>
+<div class="wl-page">
+  <main class="wl-main wl-container wl-container--wide" style="padding-block: 48px;">
+
+    <header style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end; border-bottom: 1px solid var(--wl-line-quiet); padding-bottom: 22px; margin-bottom: 30px;">
+      <h1 class="wl-display" style="font-size: 36px;">Waterline — Foundations</h1>
+      <div class="wl-spacer"></div>
+      <p class="wl-body-sm" style="max-width: 520px; margin: 0;">
+        Colour drawn from <b style="color: var(--wl-ink);">obangsaek</b> and the
+        <b style="color: var(--wl-ink);">dancheong</b> palette, with the navy-and-cobalt chrome of
+        Korean public and financial services.
+      </p>
+    </header>
+
+    <div class="wl-grid-3" style="gap: 40px;">
+
+      <!-- COLOUR -->
+      <section class="wl-stack" style="gap: 16px;">
+        <h2 class="wl-label" style="letter-spacing: 0.14em; margin: 0;">Colour</h2>
+
+        <div class="wl-stack" style="gap: 9px;">
+          <div class="swatch"><div class="swatch__chip" style="background: #F5F3EE;"></div><div><div class="swatch__name">Hanji ivory · ground</div><div class="swatch__hex">#F5F3EE</div></div></div>
+          <div class="swatch"><div class="swatch__chip" style="background: #FFFFFF;"></div><div><div class="swatch__name">Paper · surfaces</div><div class="swatch__hex">#FFFFFF</div></div></div>
+          <div class="swatch"><div class="swatch__chip" style="background: #0F2A4A;"></div><div><div class="swatch__name">Registry navy · authority</div><div class="swatch__hex">#0F2A4A</div></div></div>
+          <div class="swatch"><div class="swatch__chip" style="background: #1B5FAA;"></div><div><div class="swatch__name">Cheong cobalt · interactive</div><div class="swatch__hex">#1B5FAA</div></div></div>
+        </div>
+
+        <div style="height: 1px; background: var(--wl-line-quiet);"></div>
+
+        <div class="wl-stack" style="gap: 9px;">
+          <div class="swatch"><div class="swatch__chip" style="background: #1F7A5C;"></div><div><div class="swatch__name" style="color: var(--wl-safe);">SAFE</div><div class="swatch__hex">#1F7A5C · cheong blue-green</div></div></div>
+          <div class="swatch"><div class="swatch__chip" style="background: #A8701A;"></div><div><div class="swatch__name" style="color: var(--wl-caution);">CAUTION</div><div class="swatch__hex">#A8701A · hwang ochre</div></div></div>
+          <div class="swatch"><div class="swatch__chip" style="background: #C0352B;"></div><div><div class="swatch__name" style="color: var(--wl-danger);">DANGER</div><div class="swatch__hex">#C0352B · jeok vermilion</div></div></div>
+        </div>
+
+        <div class="wl-card wl-card--note">
+          <p class="wl-body" style="margin: 0;">
+            <b>Why red still means danger.</b> On KRX, red means <i>up</i> and blue means <i>down</i> —
+            the inverse of Western markets. That convention governs price direction, not safety.
+            This is safety signage, where Korean practice follows KOSHA and ISO: red prohibits,
+            yellow warns, green is the safe condition.
+          </p>
+        </div>
+      </section>
+
+      <!-- TYPE -->
+      <section class="wl-stack" style="gap: 16px;">
+        <h2 class="wl-label" style="letter-spacing: 0.14em; margin: 0;">Type</h2>
+
+        <div class="wl-card wl-stack" style="gap: 18px;">
+          <div>
+            <div style="font-size: 40px; font-weight: 700; line-height: 1.1; letter-spacing: -0.034em; color: var(--wl-navy);">Is your deposit above the line?</div>
+            <div class="wl-mono" style="font-size: 11px; color: var(--wl-ink-label); margin-top: 8px;">IBM Plex Sans · 700 · headings, set tight (−0.03em)</div>
+          </div>
+          <div style="height: 1px; background: var(--wl-line);"></div>
+          <div>
+            <div class="wl-verdict wl-verdict--sm wl-is-safe">SAFE</div>
+            <div class="wl-mono" style="font-size: 11px; color: var(--wl-ink-label); margin-top: 8px;">IBM Plex Sans · 700 · verdicts, tracking pulled back to −0.012em (caps)</div>
+          </div>
+          <div style="height: 1px; background: var(--wl-line);"></div>
+          <div>
+            <div class="wl-title">The senior deposit total is never disclosed</div>
+            <div class="wl-mono" style="font-size: 11px; color: var(--wl-ink-label); margin-top: 8px;">IBM Plex Sans · 600 · subheads</div>
+          </div>
+          <div style="height: 1px; background: var(--wl-line);"></div>
+          <div>
+            <div class="wl-body">The circuit compares the sealed total against the appraisal limit, and publishes only which side of the line it fell on.</div>
+            <div class="wl-mono" style="font-size: 11px; color: var(--wl-ink-label); margin-top: 8px;">IBM Plex Sans · 400 · body</div>
+          </div>
+          <div style="height: 1px; background: var(--wl-line);"></div>
+          <div>
+            <div class="wl-mono" style="font-size: 15px;">0x9f4c8b21…a1e8 · 3,417,882 · 14,432 B</div>
+            <div class="wl-mono" style="font-size: 11px; color: var(--wl-ink-label); margin-top: 8px;">IBM Plex Mono · hashes, blocks, byte counts</div>
+          </div>
+        </div>
+
+        <h2 class="wl-label" style="letter-spacing: 0.14em; margin: 4px 0 0;">Hard rules</h2>
+        <ul style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.9; color: var(--wl-ink-body);">
+          <li>No wallet UI. No connect, address, balance or seed phrase.</li>
+          <li>Never render an exact water level — hatched band only.</li>
+          <li>The three verdict colours are reserved for verdicts.</li>
+          <li>Touch targets 44px minimum; check works one-handed.</li>
+          <li>6px radii and hairline rules — registry, not startup.</li>
+        </ul>
+      </section>
+
+      <!-- COMPONENTS -->
+      <section class="wl-stack" style="gap: 16px;">
+        <h2 class="wl-label" style="letter-spacing: 0.14em; margin: 0;">Components</h2>
+
+        <div class="wl-card wl-stack" style="gap: 18px;">
+          <div class="wl-chips">
+            <span class="wl-chip" style="cursor: default; background: rgba(31,122,92,0.10); border-color: rgba(31,122,92,0.45); color: var(--wl-safe); font-weight: 700; border-radius: 4px; min-height: 34px; letter-spacing: 0.06em;">SAFE</span>
+            <span class="wl-chip" style="cursor: default; background: rgba(168,112,26,0.10); border-color: rgba(168,112,26,0.45); color: var(--wl-caution); font-weight: 700; border-radius: 4px; min-height: 34px; letter-spacing: 0.06em;">CAUTION</span>
+            <span class="wl-chip" style="cursor: default; background: rgba(192,53,43,0.10); border-color: rgba(192,53,43,0.45); color: var(--wl-danger); font-weight: 700; border-radius: 4px; min-height: 34px; letter-spacing: 0.06em;">DANGER</span>
+          </div>
+
+          <div class="wl-row" style="gap: 12px; flex-wrap: nowrap;">
+            <a class="wl-btn wl-btn--primary" href="check.html" style="flex: 1; min-height: 52px; font-size: 16px;">Primary</a>
+            <a class="wl-btn wl-btn--secondary" href="attack.html" style="flex: 1; min-height: 52px; font-size: 16px;">Secondary</a>
+          </div>
+
+          <div class="wl-field">
+            <label for="f-demo">Building ID</label>
+            <input class="wl-input" id="f-demo" type="text" value="SEO-2019-0412">
+          </div>
+
+          <div class="wl-row" style="gap: 12px; padding: 12px 14px; border-radius: 6px; background: var(--wl-surface-sunken); border: 1px solid var(--wl-line); flex-wrap: nowrap;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#5A6B7E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="4" y="10.5" width="16" height="10" rx="2"></rect><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path>
+            </svg>
+            <span class="wl-body-sm">Never-disclosed row</span>
+          </div>
+
+          <div class="wl-simbanner" style="border-radius: 6px; border: 1px solid rgba(168,112,26,0.5);">
+            <div class="wl-simbanner__inner" style="padding: 10px 14px; font-size: 12px;">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#A8701A" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 4.5l8.5 15h-17z"></path><path d="M12 10v4"></path><path d="M12 17h.01"></path>
+              </svg>
+              Simulation banner
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div style="height: 1px; background: var(--wl-line-quiet); margin: 30px 0;"></div>
+
+    <!-- THE SIGNATURE VISUAL -->
+    <section class="wl-cols" style="gap: 40px;">
+      <div style="flex: 0 0 320px;">
+        <h2 class="wl-label" style="letter-spacing: 0.14em; margin: 0 0 8px;">The signature visual</h2>
+        <p class="wl-body" style="margin: 0;">
+          Building section = appraised value. Horizontal rule = the limit, drawn as a Plimsoll mark
+          in vermilion. Water = senior-deposit exposure.
+        </p>
+        <p class="wl-body" style="margin: 14px 0 0;">
+          The surface is only ever a hatched band. The page does not know the real total, so drawing
+          a precise level would be either a lie or a disclosure.
+        </p>
+      </div>
+
+      <div class="wl-row" style="flex: 1 1 520px; gap: 24px; align-items: stretch; flex-wrap: nowrap; overflow-x: auto;">
+        <figure class="wl-card wl-figure" style="flex: 1; margin: 0;">
+          <div data-wl-band="safe" style="max-width: 172px;"></div>
+          <figcaption style="text-align: center;">
+            <div style="font-size: 15px; font-weight: 700; color: var(--wl-safe);">SAFE</div>
+            <small class="wl-body-sm">below the line</small>
+          </figcaption>
+        </figure>
+        <figure class="wl-card wl-figure" style="flex: 1; margin: 0;">
+          <div data-wl-band="caution" style="max-width: 172px;"></div>
+          <figcaption style="text-align: center;">
+            <div style="font-size: 15px; font-weight: 700; color: var(--wl-caution);">CAUTION</div>
+            <small class="wl-body-sm">straddling the line</small>
+          </figcaption>
+        </figure>
+        <figure class="wl-card wl-figure" style="flex: 1; margin: 0;">
+          <div data-wl-band="danger" style="max-width: 172px;"></div>
+          <figcaption style="text-align: center;">
+            <div style="font-size: 15px; font-weight: 700; color: var(--wl-danger);">DANGER</div>
+            <small class="wl-body-sm">above the line</small>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+  </main>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Waterline — Foundations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+html,body{overflow:hidden}
+body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;background:#F5F3EE;color:#14243A;-webkit-font-smoothing:antialiased}
+a{color:#1B5FAA}a:hover{color:#0F2A4A}
+</style>
+</helmet>
+
+<div style="width: 1400px; height: 1180px; box-sizing: border-box; overflow: hidden; background: #F5F3EE; padding: 48px 56px; display: flex; flex-direction: column; gap: 30px;">
+
+  <div style="display: flex; align-items: flex-end; gap: 20px; border-bottom: 1px solid #DDD6C8; padding-bottom: 22px;">
+    <div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 36px; font-weight: 700; letter-spacing: -0.03em; color: #0F2A4A;">Waterline — Foundations</div>
+    <div style="flex-grow: 1;"></div>
+    <div style="font-size: 13px; color: #5A6B7E; max-width: 520px; line-height: 1.7; text-align: right;">Colour drawn from <b style="color: #14243A;">obangsaek</b> and the <b style="color: #14243A;">dancheong</b> palette, with the navy-and-cobalt chrome of Korean public and financial services.</div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px;">
+
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: #6B7A8C;">COLOUR</div>
+
+      <div style="display: flex; flex-direction: column; gap: 9px;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 48px; height: 48px; border-radius: 4px; background: #F5F3EE; border: 1px solid #C3BCAE;"></div>
+          <div><div style="font-size: 14px; font-weight: 600;">Hanji ivory · ground</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #6B7A8C;">#F5F3EE</div></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 48px; height: 48px; border-radius: 4px; background: #FFFFFF; border: 1px solid #C3BCAE;"></div>
+          <div><div style="font-size: 14px; font-weight: 600;">Paper · surfaces</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #6B7A8C;">#FFFFFF</div></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 48px; height: 48px; border-radius: 4px; background: #0F2A4A;"></div>
+          <div><div style="font-size: 14px; font-weight: 600;">Registry navy · authority</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #6B7A8C;">#0F2A4A</div></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 48px; height: 48px; border-radius: 4px; background: #1B5FAA;"></div>
+          <div><div style="font-size: 14px; font-weight: 600;">Cheong cobalt · interactive</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #6B7A8C;">#1B5FAA</div></div>
+        </div>
+      </div>
+
+      <div style="height: 1px; background: #DDD6C8; margin: 2px 0;"></div>
+
+      <div style="display: flex; flex-direction: column; gap: 9px;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 48px; height: 48px; border-radius: 4px; background: #1F7A5C;"></div>
+          <div><div style="font-size: 15px; font-weight: 700; color: #1F7A5C;">SAFE</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #6B7A8C;">#1F7A5C · cheong blue-green</div></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 48px; height: 48px; border-radius: 4px; background: #A8701A;"></div>
+          <div><div style="font-size: 15px; font-weight: 700; color: #A8701A;">CAUTION</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #6B7A8C;">#A8701A · hwang ochre</div></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 48px; height: 48px; border-radius: 4px; background: #C0352B;"></div>
+          <div><div style="font-size: 15px; font-weight: 700; color: #C0352B;">DANGER</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #6B7A8C;">#C0352B · jeok vermilion</div></div>
+        </div>
+      </div>
+
+      <div style="padding: 14px 16px; border-radius: 6px; background: #FFFFFF; border: 1px solid #E2DCD0; border-left: 4px solid #1B5FAA;">
+        <div style="font-size: 13px; line-height: 1.75; color: #33455C;"><b>Why red still means danger.</b> On KRX, red means <i>up</i> and blue means <i>down</i> — the inverse of Western markets. That convention governs price direction, not safety. This is safety signage, where Korean practice follows KOSHA and ISO: red prohibits, yellow warns, green is the safe condition.</div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: #6B7A8C;">TYPE</div>
+
+      <div style="background: #FFFFFF; border: 1px solid #E2DCD0; border-radius: 8px; padding: 22px 24px; display: flex; flex-direction: column; gap: 18px;">
+        <div>
+          <div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 40px; font-weight: 700; line-height: 1.1; letter-spacing: -0.034em; color: #0F2A4A;">Is your deposit above the line?</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6B7A8C; margin-top: 8px;">IBM Plex Sans · 700 · headings, set tight (−0.03em)</div>
+        </div>
+        <div style="height: 1px; background: #E2DCD0;"></div>
+        <div>
+          <div style="font-size: 20px; font-weight: 600; line-height: 1.5;">The senior deposit total is never disclosed</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6B7A8C; margin-top: 8px;">IBM Plex Sans · 600 · subheads</div>
+        </div>
+        <div style="height: 1px; background: #E2DCD0;"></div>
+        <div>
+          <div style="font-size: 15px; line-height: 1.75; color: #33455C;">The circuit compares the sealed total against the appraisal limit, and publishes only which side of the line it fell on.</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6B7A8C; margin-top: 8px;">IBM Plex Sans · 400 · body</div>
+        </div>
+        <div style="height: 1px; background: #E2DCD0;"></div>
+        <div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; letter-spacing: 0.02em;">0x9f4c8b21…a1e8 · 3,417,882 · 14,432 B</div>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6B7A8C; margin-top: 8px;">IBM Plex Mono · hashes, blocks, byte counts</div>
+        </div>
+      </div>
+
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: #6B7A8C; margin-top: 4px;">RULES</div>
+      <ul style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.9; color: #33455C;">
+        <li>No wallet UI. No connect, address, balance or seed phrase.</li>
+        <li>Never render an exact water level — hatched band only.</li>
+        <li>The three verdict colours are reserved for verdicts.</li>
+        <li>Touch targets 44px minimum; /check works one-handed.</li>
+        <li>Square-ish 6px radii, hairline rules — registry, not startup.</li>
+      </ul>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: #6B7A8C;">COMPONENTS</div>
+
+      <div style="background: #FFFFFF; border: 1px solid #E2DCD0; border-radius: 8px; padding: 22px 24px; display: flex; flex-direction: column; gap: 18px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <span style="padding: 7px 14px; border-radius: 4px; background: rgba(31,122,92,0.10); border: 1px solid rgba(31,122,92,0.45); color: #1F7A5C; font-size: 13px; font-weight: 700; letter-spacing: 0.06em;">SAFE</span>
+          <span style="padding: 7px 14px; border-radius: 4px; background: rgba(168,112,26,0.10); border: 1px solid rgba(168,112,26,0.45); color: #A8701A; font-size: 13px; font-weight: 700; letter-spacing: 0.06em;">CAUTION</span>
+          <span style="padding: 7px 14px; border-radius: 4px; background: rgba(192,53,43,0.10); border: 1px solid rgba(192,53,43,0.45); color: #C0352B; font-size: 13px; font-weight: 700; letter-spacing: 0.06em;">DANGER</span>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <a href="Check-Desktop.dc.html" style="flex-grow: 1; display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 6px; background: #0F2A4A; color: #FFFFFF; font-size: 16px; font-weight: 700; text-decoration: none;">Primary</a>
+          <a href="Attack-Desktop.dc.html" style="flex-grow: 1; display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 6px; background: #FFFFFF; border: 1px solid #C3BCAE; color: #14243A; font-size: 16px; font-weight: 500; text-decoration: none;">Secondary</a>
+        </div>
+
+        <div>
+          <label for="f-demo" style="display: block; font-size: 12px; color: #5A6B7E; margin-bottom: 8px; letter-spacing: 0.04em;">BUILDING ID</label>
+          <input id="f-demo" type="text" value="SEO-2019-0412" style="width: 100%; box-sizing: border-box; min-height: 52px; padding: 0 16px; border-radius: 6px; background: #FFFFFF; border: 1px solid #C3BCAE; color: #14243A; font-family: 'IBM Plex Mono', monospace; font-size: 16px;">
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 6px; background: #EFEBE2; border: 1px solid #E2DCD0;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#5A6B7E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10" rx="2"></rect><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path></svg>
+          <span style="font-size: 13px; color: #5A6B7E;">Never-disclosed row</span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 6px; background: repeating-linear-gradient(135deg, rgba(168,112,26,0.16) 0 14px, rgba(168,112,26,0.05) 14px 28px); border: 1px solid rgba(168,112,26,0.5);">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#A8701A" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.5l8.5 15h-17z"></path><path d="M12 10v4"></path><path d="M12 17h.01"></path></svg>
+          <span style="font-size: 12px; font-weight: 700; color: #8A5A11;">Simulation banner</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height: 1px; background: #DDD6C8;"></div>
+
+  <div style="display: flex; gap: 40px; align-items: flex-start; flex-grow: 1; min-height: 0;">
+    <div style="flex-shrink: 0; width: 320px;">
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: #6B7A8C; margin-bottom: 8px;">THE SIGNATURE VISUAL</div>
+      <div style="font-size: 13px; color: #33455C; line-height: 1.75;">Building section = appraised value. Horizontal rule = the limit, drawn as a Plimsoll mark in vermilion. Water = senior-deposit exposure.<br><br>The surface is only ever a hatched band. The page does not know the real total, so drawing a precise level would be either a lie or a disclosure.</div>
+    </div>
+
+    <div style="display: flex; gap: 24px; flex-grow: 1; min-height: 0;">
+
+      <div style="flex-grow: 1; background: #FFFFFF; border: 1px solid #E2DCD0; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 0;">
+        <svg viewBox="0 0 240 372" style="width: 172px; height: 266px;" role="img" aria-label="Building cross-section, safe: the water band sits below the load line">
+          <defs>
+            <pattern id="fh-s" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="7" stroke="#1F7A5C" stroke-width="2.4"></line></pattern>
+            <linearGradient id="fg-s" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1F7A5C" stop-opacity="0"></stop><stop offset="55%" stop-color="#1F7A5C" stop-opacity="0.26"></stop><stop offset="100%" stop-color="#1F7A5C" stop-opacity="0.22"></stop></linearGradient>
+          </defs>
+          <rect x="48" y="28" width="144" height="308" fill="#FBFAF7" stroke="#0F2A4A" stroke-width="1.5"></rect>
+          <g stroke="#DCD6C9" stroke-width="1"><line x1="48" y1="79" x2="192" y2="79"></line><line x1="48" y1="130" x2="192" y2="130"></line><line x1="48" y1="181" x2="192" y2="181"></line><line x1="48" y1="232" x2="192" y2="232"></line><line x1="48" y1="283" x2="192" y2="283"></line></g>
+          <rect x="49" y="173" width="142" height="162" fill="url(#fg-s)"></rect>
+          <rect x="49" y="173" width="142" height="36" fill="url(#fh-s)" opacity="0.45"></rect>
+          <line x1="49" y1="173" x2="191" y2="173" stroke="#1F7A5C" stroke-width="1" stroke-dasharray="3 4" opacity="0.7"></line>
+          <line x1="49" y1="209" x2="191" y2="209" stroke="#1F7A5C" stroke-width="1" stroke-dasharray="3 4" opacity="0.7"></line>
+          <line x1="26" y1="120" x2="208" y2="120" stroke="#C0352B" stroke-width="2"></line>
+          <circle cx="48" cy="120" r="13" fill="none" stroke="#C0352B" stroke-width="2"></circle>
+          <text x="206" y="112" font-family="IBM Plex Mono, monospace" font-size="11" fill="#C0352B" text-anchor="end">LIMIT 70%</text>
+        </svg>
+        <div style="font-size: 15px; font-weight: 700; color: #1F7A5C;">SAFE</div>
+        <div style="font-size: 11px; color: #6B7A8C; text-align: center; line-height: 1.6;">below the line</div>
+      </div>
+
+      <div style="flex-grow: 1; background: #FFFFFF; border: 1px solid #E2DCD0; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 0;">
+        <svg viewBox="0 0 240 372" style="width: 172px; height: 266px;" role="img" aria-label="Building cross-section, caution: the water band straddles the load line">
+          <defs>
+            <pattern id="fh-c" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="7" stroke="#A8701A" stroke-width="2.4"></line></pattern>
+            <linearGradient id="fg-c" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#A8701A" stop-opacity="0"></stop><stop offset="55%" stop-color="#A8701A" stop-opacity="0.26"></stop><stop offset="100%" stop-color="#A8701A" stop-opacity="0.22"></stop></linearGradient>
+          </defs>
+          <rect x="48" y="28" width="144" height="308" fill="#FBFAF7" stroke="#0F2A4A" stroke-width="1.5"></rect>
+          <g stroke="#DCD6C9" stroke-width="1"><line x1="48" y1="79" x2="192" y2="79"></line><line x1="48" y1="130" x2="192" y2="130"></line><line x1="48" y1="181" x2="192" y2="181"></line><line x1="48" y1="232" x2="192" y2="232"></line><line x1="48" y1="283" x2="192" y2="283"></line></g>
+          <rect x="49" y="102" width="142" height="233" fill="url(#fg-c)"></rect>
+          <rect x="49" y="102" width="142" height="36" fill="url(#fh-c)" opacity="0.45"></rect>
+          <line x1="49" y1="102" x2="191" y2="102" stroke="#A8701A" stroke-width="1" stroke-dasharray="3 4" opacity="0.7"></line>
+          <line x1="49" y1="138" x2="191" y2="138" stroke="#A8701A" stroke-width="1" stroke-dasharray="3 4" opacity="0.7"></line>
+          <line x1="26" y1="120" x2="208" y2="120" stroke="#C0352B" stroke-width="2"></line>
+          <circle cx="48" cy="120" r="13" fill="none" stroke="#C0352B" stroke-width="2"></circle>
+          <text x="206" y="91" font-family="IBM Plex Mono, monospace" font-size="11" fill="#C0352B" text-anchor="end">LIMIT 70%</text>
+        </svg>
+        <div style="font-size: 15px; font-weight: 700; color: #A8701A;">CAUTION</div>
+        <div style="font-size: 11px; color: #6B7A8C; text-align: center; line-height: 1.6;">straddling the line</div>
+      </div>
+
+      <div style="flex-grow: 1; background: #FFFFFF; border: 1px solid #E2DCD0; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 0;">
+        <svg viewBox="0 0 240 372" style="width: 172px; height: 266px;" role="img" aria-label="Building cross-section, danger: the water band sits above the load line">
+          <defs>
+            <pattern id="fh-d" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="7" stroke="#C0352B" stroke-width="2.4"></line></pattern>
+            <linearGradient id="fg-d" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C0352B" stop-opacity="0"></stop><stop offset="55%" stop-color="#C0352B" stop-opacity="0.26"></stop><stop offset="100%" stop-color="#C0352B" stop-opacity="0.22"></stop></linearGradient>
+          </defs>
+          <rect x="48" y="28" width="144" height="308" fill="#FBFAF7" stroke="#0F2A4A" stroke-width="1.5"></rect>
+          <g stroke="#DCD6C9" stroke-width="1"><line x1="48" y1="79" x2="192" y2="79"></line><line x1="48" y1="130" x2="192" y2="130"></line><line x1="48" y1="181" x2="192" y2="181"></line><line x1="48" y1="232" x2="192" y2="232"></line><line x1="48" y1="283" x2="192" y2="283"></line></g>
+          <rect x="49" y="53" width="142" height="282" fill="url(#fg-d)"></rect>
+          <rect x="49" y="53" width="142" height="36" fill="url(#fh-d)" opacity="0.45"></rect>
+          <line x1="49" y1="53" x2="191" y2="53" stroke="#C0352B" stroke-width="1" stroke-dasharray="3 4" opacity="0.7"></line>
+          <line x1="49" y1="89" x2="191" y2="89" stroke="#C0352B" stroke-width="1" stroke-dasharray="3 4" opacity="0.7"></line>
+          <line x1="26" y1="120" x2="208" y2="120" stroke="#0F2A4A" stroke-width="2"></line>
+          <circle cx="48" cy="120" r="13" fill="none" stroke="#0F2A4A" stroke-width="2"></circle>
+          <text x="206" y="142" font-family="IBM Plex Mono, monospace" font-size="11" fill="#0F2A4A" text-anchor="end">LIMIT 70%</text>
+        </svg>
+        <div style="font-size: 15px; font-weight: 700; color: #C0352B;">DANGER</div>
+        <div style="font-size: 11px; color: #6B7A8C; text-align: center; line-height: 1.6;">above the line</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1400,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

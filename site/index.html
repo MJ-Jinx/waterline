@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waterline — Is your deposit above the line?</title>
+<meta name="description" content="Check whether a building's senior deposits sit below its appraisal limit — without the registry disclosing the total.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="wl-page">
+
+  <header class="wl-header">
+    <div class="wl-container wl-header__inner">
+      <a class="wl-wordmark" href="index.html">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="7.5" stroke="#0F2A4A" stroke-width="1.8"></circle>
+          <line x1="2" y1="12" x2="22" y2="12" stroke="#C0352B" stroke-width="1.8"></line>
+        </svg>
+        Waterline
+      </a>
+      <div class="wl-spacer"></div>
+      <nav class="wl-nav" aria-label="Main">
+        <a href="check.html">Check a building</a>
+        <a href="registry.html">Registry console</a>
+        <a href="attack.html">Try to cheat it</a>
+      </nav>
+      <span class="wl-badge wl-badge--ok">Midnight preprod</span>
+    </div>
+  </header>
+
+  <main class="wl-main">
+
+    <section class="wl-container" style="padding-block: 64px 0;">
+      <div class="wl-cols" style="gap: 56px;">
+        <div class="wl-col" style="flex: 1 1 520px;">
+          <h1 class="wl-display-xl">Is your deposit above the line?</h1>
+          <p class="wl-lede" style="margin: 28px 0 0; max-width: 560px;">
+            Find out whether a building's senior deposits sit below its appraisal limit —
+            <b style="color: var(--wl-ink);">without the registry disclosing the total</b>,
+            the count, or a single amount.
+          </p>
+          <p class="wl-body" style="margin: 14px 0 0; max-width: 560px; color: var(--wl-ink-muted);">
+            Jeonse tenants hand over years of savings against a building whose other debts they
+            cannot see. Waterline lets them see one thing — whether the building is loaded past
+            its line — and nothing more.
+          </p>
+          <div class="wl-row" style="margin-top: 40px; gap: 14px;">
+            <a class="wl-btn wl-btn--primary" href="check.html">Check a building</a>
+            <a class="wl-btn wl-btn--secondary" href="attack.html">Try to cheat it</a>
+          </div>
+        </div>
+
+        <div class="wl-col wl-figure" style="flex: 0 1 380px; min-width: 280px;">
+          <div data-wl-hero-figure style="width: 100%; max-width: 330px;"></div>
+          <p class="wl-body-sm" style="text-align: center;">
+            The water surface is drawn as a band, never a level.<br>
+            The page does not know the real total.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="wl-container" style="padding-block: 72px 0;">
+      <div class="wl-grid-3">
+        <article class="wl-card" style="padding: 28px 30px;">
+          <div class="wl-step__dot" style="border-color: var(--wl-cobalt); color: var(--wl-cobalt); width: 32px; height: 32px;">1</div>
+          <h2 class="wl-title" style="margin: 18px 0 0;">The registry commits the total</h2>
+          <p class="wl-body" style="margin: 12px 0 0;">A hash over the total, the lease count and a salt goes on chain. The amounts themselves never do.</p>
+        </article>
+        <article class="wl-card" style="padding: 28px 30px;">
+          <div class="wl-step__dot" style="border-color: var(--wl-cobalt); color: var(--wl-cobalt); width: 32px; height: 32px;">2</div>
+          <h2 class="wl-title" style="margin: 18px 0 0;">The circuit compares load to limit</h2>
+          <p class="wl-body" style="margin: 12px 0 0;">The comparison happens inside the proof. Only someone who can open the commitment can produce one.</p>
+        </article>
+        <article class="wl-card" style="padding: 28px 30px;">
+          <div class="wl-step__dot" style="border-color: var(--wl-cobalt); color: var(--wl-cobalt); width: 32px; height: 32px;">3</div>
+          <h2 class="wl-title" style="margin: 18px 0 0;">The tenant sees one band</h2>
+          <div class="wl-chips" style="margin-top: 16px;">
+            <span class="wl-chip" style="cursor: default; background: rgba(31,122,92,0.10); border-color: rgba(31,122,92,0.45); color: var(--wl-safe); font-weight: 700; border-radius: 4px; min-height: 34px; letter-spacing: 0.06em;">SAFE</span>
+            <span class="wl-chip" style="cursor: default; background: rgba(168,112,26,0.10); border-color: rgba(168,112,26,0.45); color: var(--wl-caution); font-weight: 700; border-radius: 4px; min-height: 34px; letter-spacing: 0.06em;">CAUTION</span>
+            <span class="wl-chip" style="cursor: default; background: rgba(192,53,43,0.10); border-color: rgba(192,53,43,0.45); color: var(--wl-danger); font-weight: 700; border-radius: 4px; min-height: 34px; letter-spacing: 0.06em;">DANGER</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="wl-container" style="padding-block: 28px 0;">
+      <a href="attack.html" class="wl-card" style="display: flex; align-items: center; gap: 28px; flex-wrap: wrap; padding: 30px 34px; text-decoration: none; border-color: var(--wl-danger); border-left-width: 4px;">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#C0352B" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9"></circle><path d="M8.5 8.5l7 7"></path><path d="M15.5 8.5l-7 7"></path>
+        </svg>
+        <div style="flex: 1 1 340px;">
+          <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--wl-ink);">The total is hidden. So why can't the landlord just lie?</div>
+          <p class="wl-body" style="margin: 6px 0 0;">Claim any total you like on the next page, and watch the certificate refuse to exist.</p>
+        </div>
+        <span style="color: var(--wl-cobalt); font-size: 22px;">→</span>
+      </a>
+    </section>
+
+  </main>
+
+  <footer class="wl-footer">
+    <div class="wl-container wl-footer__inner">
+      <div><span class="k">CONTRACT</span> &nbsp;<span title="e99711c00fbcb7ee9a12f81a75e151367bf7899cbda96a1c54c75393494f3ac2">e99711c0…3ac2</span></div>
+      <div><span class="k">BLOCK</span> &nbsp;2,598,396</div>
+      <div><span class="k">NETWORK</span> &nbsp;<span style="color: var(--wl-safe);">Midnight preprod · verified</span></div>
+      <div class="wl-spacer"></div>
+      <a href="https://explorer.preprod.midnight.network/contracts/e99711c00fbcb7ee9a12f81a75e151367bf7899cbda96a1c54c75393494f3ac2" target="_blank" rel="noopener">View in the explorer →</a>
+      <span class="k" style="font-family: var(--wl-font);">Demo buildings are fictional</span>
+    </div>
+  </footer>
+
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

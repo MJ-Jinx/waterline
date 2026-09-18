@@ -1,0 +1,461 @@
+/* ==========================================================================
+   Waterline — design system
+   Korean institutional palette: obangsaek / dancheong accents over hanji ivory.
+   One typeface (IBM Plex Sans) + IBM Plex Mono for hashes, blocks, byte counts.
+   ========================================================================== */
+
+:root {
+  /* --- Ground & surfaces ------------------------------------------------ */
+  --wl-ground:          #F5F3EE;   /* hanji ivory — page background         */
+  --wl-surface:         #FFFFFF;   /* cards, header, inputs                 */
+  --wl-surface-sunken:  #EFEBE2;   /* table heads, "not disclosed" wells    */
+  --wl-surface-muted:   #FBFAF7;   /* building interior, disabled fields    */
+
+  /* --- Lines ------------------------------------------------------------ */
+  --wl-line:            #E2DCD0;   /* default hairline                      */
+  --wl-line-strong:     #C3BCAE;   /* input + secondary button borders      */
+  --wl-line-soft:       #DCD6C9;   /* floor lines inside the building       */
+  --wl-line-quiet:      #DDD6C8;   /* section rules                         */
+  --wl-bracket:         #B9B2A6;   /* appraisal bracket on the diagram      */
+
+  /* --- Ink -------------------------------------------------------------- */
+  --wl-ink:             #14243A;   /* primary text                          */
+  --wl-ink-body:        #33455C;   /* body copy                             */
+  --wl-ink-muted:       #5A6B7E;   /* secondary / helper text               */
+  --wl-ink-label:       #6B7A8C;   /* uppercase labels, mono keys           */
+  --wl-ink-dim:         #7D8B9B;   /* "not disclosed", pending values        */
+  --wl-ink-disabled:    #8C8B82;   /* idle pipeline step titles             */
+  --wl-ink-idle:        #A9A294;   /* idle dots, em-dash placeholders       */
+
+  /* --- Brand / institutional chrome ------------------------------------- */
+  --wl-navy:            #0F2A4A;   /* authority: wordmark, primary button   */
+  --wl-cobalt:          #1B5FAA;   /* cheong 청 — links, focus, progress    */
+
+  /* --- Verdict accents (reserved for verdicts only) --------------------- */
+  --wl-safe:            #1F7A5C;   /* cheong 청 blue-green                  */
+  --wl-caution:         #A8701A;   /* hwang 황 ochre                        */
+  --wl-caution-ink:     #8A5A11;   /* ochre text on a tinted banner         */
+  --wl-danger:          #C0352B;   /* jeok 적 vermilion                     */
+
+  --wl-on-dark:         #FFFFFF;
+
+  /* --- Type ------------------------------------------------------------- */
+  --wl-font:      'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --wl-font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* --- Geometry --------------------------------------------------------- */
+  --wl-radius-control: 6px;
+  --wl-radius-card:    8px;
+  --wl-radius-frame:   20px;
+  --wl-radius-pill:    999px;
+  --wl-container:      1180px;
+  --wl-container-wide: 1320px;
+  --wl-gutter:         20px;
+  --wl-touch:          44px;
+  --wl-control-h:      52px;
+}
+
+@media (min-width: 900px) {
+  :root { --wl-gutter: 32px; }
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--wl-ground);
+  color: var(--wl-ink);
+  font-family: var(--wl-font);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--wl-cobalt); }
+a:hover { color: var(--wl-navy); }
+
+:focus-visible {
+  outline: 2px solid var(--wl-cobalt);
+  outline-offset: 2px;
+}
+
+img, svg { max-width: 100%; }
+
+.wl-visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ==========================================================================
+   Type scale
+   Headings are IBM Plex Sans 700 set TIGHT. All-caps (verdicts, labels) pulls
+   the tracking back — caps never take display tracking.
+   ========================================================================== */
+
+.wl-display    { margin: 0; font-weight: 700; letter-spacing: -0.032em; line-height: 1.1; font-size: clamp(34px, 6vw, 42px); color: var(--wl-navy); }
+.wl-display-xl { margin: 0; font-weight: 700; letter-spacing: -0.038em; line-height: 1.04; font-size: clamp(38px, 7vw, 68px); color: var(--wl-navy); }
+.wl-display-l  { margin: 0; font-weight: 700; letter-spacing: -0.034em; line-height: 1.1;  font-size: clamp(31px, 5.2vw, 52px); color: var(--wl-navy); }
+
+.wl-title      { font-size: 20px; font-weight: 600; line-height: 1.4; letter-spacing: -0.012em; }
+.wl-subtitle   { font-size: 16px; font-weight: 600; line-height: 1.45; }
+
+.wl-lede       { font-size: clamp(16px, 2vw, 20px); line-height: 1.75; color: var(--wl-ink-body); }
+.wl-body       { font-size: 15px; line-height: 1.75; color: var(--wl-ink-body); }
+.wl-body-sm    { font-size: 13px; line-height: 1.7;  color: var(--wl-ink-muted); }
+
+.wl-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wl-ink-label);
+}
+
+.wl-mono { font-family: var(--wl-font-mono); font-size: 12px; }
+
+/* Verdict word --------------------------------------------------------- */
+.wl-verdict {
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.012em;          /* caps: pulled back from display */
+  font-size: clamp(48px, 9vw, 84px);
+}
+.wl-verdict--sm { font-size: clamp(30px, 6vw, 44px); }
+
+.wl-is-safe    { color: var(--wl-safe); }
+.wl-is-caution { color: var(--wl-caution); }
+.wl-is-danger  { color: var(--wl-danger); }
+
+/* ==========================================================================
+   Layout
+   ========================================================================== */
+
+.wl-container {
+  width: 100%;
+  max-width: var(--wl-container);
+  margin: 0 auto;
+  padding-inline: var(--wl-gutter);
+}
+.wl-container--wide { max-width: var(--wl-container-wide); }
+
+.wl-page { min-height: 100vh; display: flex; flex-direction: column; }
+.wl-main { flex: 1 0 auto; }
+
+.wl-stack   { display: flex; flex-direction: column; gap: 18px; }
+.wl-row     { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+.wl-spacer  { flex-grow: 1; }
+
+.wl-cols {
+  display: flex;
+  gap: 36px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.wl-col      { flex: 1 1 400px; min-width: 300px; }
+.wl-col--fig { flex: 0 0 260px; }
+
+.wl-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+/* ==========================================================================
+   Header & footer
+   ========================================================================== */
+
+.wl-header {
+  background: var(--wl-surface);
+  border-bottom: 1px solid var(--wl-line);
+}
+.wl-header__inner {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding-block: 18px;
+}
+.wl-wordmark {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 23px; font-weight: 700; letter-spacing: -0.025em;
+  color: var(--wl-navy); text-decoration: none;
+}
+.wl-nav { display: flex; gap: 2px; flex-wrap: wrap; }
+.wl-nav a {
+  font-size: 15px; color: var(--wl-ink-body); text-decoration: none;
+  padding: 10px 14px; border-bottom: 2px solid transparent;
+}
+.wl-nav a[aria-current="page"] {
+  color: var(--wl-navy); font-weight: 600; border-bottom-color: var(--wl-danger);
+}
+
+.wl-badge {
+  font-family: var(--wl-font-mono); font-size: 11px;
+  border-radius: var(--wl-radius-pill); padding: 6px 12px;
+  color: var(--wl-ink-muted); border: 1px solid var(--wl-line-strong);
+}
+.wl-badge--ok { color: var(--wl-safe); border-color: rgba(31,122,92,0.4); }
+
+.wl-footer { padding-block: 40px 44px; }
+.wl-footer__inner {
+  padding-top: 22px; border-top: 1px solid var(--wl-line);
+  display: flex; gap: 36px; flex-wrap: wrap; align-items: center;
+  font-family: var(--wl-font-mono); font-size: 12px; color: var(--wl-ink-body);
+}
+.wl-footer__inner span.k { color: var(--wl-ink-label); }
+
+/* Back link (mobile-first sub-pages) */
+.wl-back {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; margin-left: -6px; text-decoration: none;
+}
+
+/* ==========================================================================
+   Controls
+   ========================================================================== */
+
+.wl-field label,
+.wl-field__label {
+  display: block;
+  font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--wl-ink-muted); margin-bottom: 8px;
+}
+
+.wl-input {
+  width: 100%;
+  min-height: var(--wl-control-h);
+  padding: 0 16px;
+  border-radius: var(--wl-radius-control);
+  background: var(--wl-surface);
+  border: 1px solid var(--wl-line-strong);
+  color: var(--wl-ink);
+  font-family: var(--wl-font-mono);
+  font-size: 16px;                  /* 16px minimum: stops iOS zoom-on-focus */
+}
+
+.wl-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 56px; padding: 0 28px;
+  border-radius: var(--wl-radius-control);
+  font-family: var(--wl-font); font-size: 17px; font-weight: 700;
+  text-decoration: none; cursor: pointer; border: 1px solid transparent;
+}
+.wl-btn--primary   { background: var(--wl-navy); color: var(--wl-on-dark); }
+.wl-btn--secondary { background: var(--wl-surface); border-color: var(--wl-line-strong); color: var(--wl-ink); font-weight: 500; }
+.wl-btn--danger    { background: var(--wl-danger); color: var(--wl-on-dark); }
+.wl-btn--busy      { background: #E4DFD4; color: var(--wl-ink-label); cursor: progress; }
+.wl-btn--block     { width: 100%; }
+
+.wl-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.wl-chip {
+  min-height: var(--wl-touch);
+  padding: 0 16px;
+  border-radius: var(--wl-radius-pill);
+  background: transparent;
+  border: 1px solid var(--wl-line-strong);
+  color: var(--wl-ink-muted);
+  font-family: var(--wl-font); font-size: 13px;
+  cursor: pointer;
+}
+.wl-chip[aria-pressed="true"] {
+  background: var(--wl-surface);
+  color: var(--wl-ink);
+  font-weight: 700;
+  border-width: 1.5px;
+}
+.wl-chip[aria-pressed="true"][data-band="safe"]    { border-color: var(--wl-safe); }
+.wl-chip[aria-pressed="true"][data-band="caution"] { border-color: var(--wl-caution); }
+.wl-chip[aria-pressed="true"][data-band="danger"]  { border-color: var(--wl-danger); }
+
+/* Range ---------------------------------------------------------------- */
+.wl-range {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: var(--wl-touch);
+  background: transparent; cursor: pointer;
+}
+.wl-range::-webkit-slider-runnable-track {
+  height: 8px; border-radius: 4px;
+  background: #E4DFD4; border: 1px solid var(--wl-line-strong);
+}
+.wl-range::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 28px; height: 28px; border-radius: var(--wl-radius-pill);
+  background: var(--wl-navy); border: 2px solid var(--wl-surface);
+  margin-top: -11px;
+}
+.wl-range::-moz-range-track {
+  height: 8px; border-radius: 4px;
+  background: #E4DFD4; border: 1px solid var(--wl-line-strong);
+}
+.wl-range::-moz-range-thumb {
+  width: 28px; height: 28px; border-radius: var(--wl-radius-pill);
+  background: var(--wl-navy); border: 2px solid var(--wl-surface);
+}
+.wl-range__scale {
+  display: flex; justify-content: space-between;
+  font-family: var(--wl-font-mono); font-size: 11px; color: var(--wl-ink-label);
+  margin-top: -4px;
+}
+
+/* ==========================================================================
+   Surfaces
+   ========================================================================== */
+
+.wl-card {
+  background: var(--wl-surface);
+  border: 1px solid var(--wl-line);
+  border-radius: var(--wl-radius-card);
+  padding: 18px 20px;
+}
+.wl-card--quiet   { background: var(--wl-surface-sunken); border-style: dashed; border-color: var(--wl-line-strong); }
+.wl-card--note    { border-left: 4px solid var(--wl-cobalt); }
+.wl-card--danger  { border-color: var(--wl-danger); }
+.wl-card--flat    { padding: 0; overflow: hidden; }
+
+.wl-callout {
+  border-radius: var(--wl-radius-control);
+  padding: 20px 22px;
+  background: rgba(192,53,43,0.06);
+  border: 1px solid rgba(192,53,43,0.35);
+  border-left-width: 4px;
+  font-size: 15px; line-height: 1.9; color: var(--wl-ink);
+}
+
+/* Simulation banner — hazard stripes, impossible to mistake for real ---- */
+.wl-simbanner {
+  background: repeating-linear-gradient(135deg,
+      rgba(168,112,26,0.16) 0 14px,
+      rgba(168,112,26,0.05) 14px 28px);
+  border-bottom: 1px solid rgba(168,112,26,0.5);
+}
+.wl-simbanner__inner {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding-block: 12px;
+  font-size: 14px; font-weight: 700; color: var(--wl-caution-ink);
+}
+.wl-simbanner__inner .sub { font-weight: 400; }
+
+.wl-private {
+  border: 1px dashed var(--wl-caution);
+  background: rgba(168,112,26,0.06);
+  border-radius: var(--wl-radius-card);
+  padding: 16px;
+  color: var(--wl-caution-ink);
+  font-size: 13px; font-weight: 700; line-height: 1.6;
+}
+
+/* Key/value rows -------------------------------------------------------- */
+.wl-kv { font-family: var(--wl-font-mono); font-size: 12px; }
+.wl-kv__row { display: flex; justify-content: space-between; gap: 12px; padding-block: 4px; }
+.wl-kv__k { color: var(--wl-ink-label); }
+.wl-kv__v { color: var(--wl-ink-body); text-align: right; }
+.wl-kv__v--dim { color: var(--wl-ink-dim); }
+.wl-kv__v--ok  { color: var(--wl-safe); }
+
+/* Copyable hash --------------------------------------------------------- */
+.wl-copy {
+  background: none; border: 0; padding: 0;
+  font-family: var(--wl-font-mono); font-size: inherit;
+  color: var(--wl-ink-body); cursor: pointer;
+  text-decoration: underline dotted;
+}
+
+/* ==========================================================================
+   Privacy receipt
+   ========================================================================== */
+
+.wl-receipt { border: 1px solid var(--wl-line); border-radius: var(--wl-radius-card); overflow: hidden; background: var(--wl-surface); }
+.wl-receipt__head { padding: 14px 18px; background: var(--wl-surface-sunken); border-bottom: 1px solid var(--wl-line); }
+.wl-receipt__cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.wl-receipt__col { padding: 16px 18px; }
+.wl-receipt__col + .wl-receipt__col { border-left: 1px solid var(--wl-line); }
+.wl-receipt__head-row { display: flex; align-items: center; gap: 7px; margin-bottom: 12px; }
+.wl-receipt ul { margin: 0; padding: 0; list-style: none; font-size: 13px; line-height: 2; }
+.wl-receipt__col--shown ul { color: var(--wl-ink-body); }
+.wl-receipt__col--never ul { color: var(--wl-ink-label); }
+
+/* ==========================================================================
+   Pipeline
+   ========================================================================== */
+
+.wl-pipeline { border: 1px solid var(--wl-line); border-radius: var(--wl-radius-card); overflow: hidden; background: var(--wl-surface); }
+.wl-step {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--wl-surface-sunken);
+}
+.wl-step:last-child { border-bottom: 0; }
+.wl-step[data-state="now"] { background: rgba(27,95,170,0.06); }
+
+.wl-step__dot {
+  flex-shrink: 0; width: 28px; height: 28px; border-radius: var(--wl-radius-pill);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--wl-font-mono); font-size: 13px;
+  border: 1px solid var(--wl-ink-idle); color: var(--wl-ink-idle);
+}
+.wl-step__name   { flex: 0 1 220px; min-width: 150px; font-size: 15px; color: var(--wl-ink-disabled); }
+.wl-step__detail { flex: 1 1 200px; font-family: var(--wl-font-mono); font-size: 12px; color: var(--wl-ink-muted); }
+.wl-step__status { flex-shrink: 0; width: 78px; text-align: right; font-size: 12px; color: var(--wl-ink-idle); }
+
+.wl-step[data-state="now"]  .wl-step__dot,
+.wl-step[data-state="now"]  .wl-step__status { border-color: var(--wl-cobalt); color: var(--wl-cobalt); }
+.wl-step[data-state="done"] .wl-step__dot,
+.wl-step[data-state="done"] .wl-step__status { border-color: var(--wl-safe); color: var(--wl-safe); }
+.wl-step[data-state="done"] .wl-step__dot { background: rgba(31,122,92,0.10); }
+.wl-step[data-state="now"]  .wl-step__name,
+.wl-step[data-state="done"] .wl-step__name { color: var(--wl-ink); font-weight: 600; }
+
+.wl-meter { height: 8px; border-radius: 4px; background: var(--wl-surface-sunken); overflow: hidden; }
+.wl-meter__fill { height: 100%; width: 0; background: var(--wl-cobalt); transition: width 600ms ease; }
+
+/* ==========================================================================
+   Waterline figure
+   ========================================================================== */
+
+.wl-figure { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.wl-figure svg { width: 100%; max-width: 250px; height: auto; }
+.wl-figure__caption { text-align: center; font-size: 14px; color: var(--wl-ink-body); }
+.wl-figure__caption small { display: block; font-size: 12px; color: var(--wl-ink-label); margin-top: 3px; }
+
+/* ==========================================================================
+   Motion — the water rises once on load, then the load line settles over it
+   ========================================================================== */
+
+@keyframes wl-rise { from { transform: translateY(46px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes wl-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes wl-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+
+.wl-water-anim { animation: wl-rise 1500ms cubic-bezier(.16,.84,.26,1) 260ms both; }
+.wl-mark-anim  { animation: wl-fade 700ms ease-out 1500ms both; }
+.wl-refused    { animation: wl-shake 420ms ease-in-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .wl-water-anim, .wl-mark-anim, .wl-refused { animation: none; }
+  .wl-meter__fill { transition: none; }
+}
+
+/* ==========================================================================
+   States gallery (documentation page only)
+   ========================================================================== */
+
+.wl-states { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 32px; }
+.wl-state-frame {
+  border: 1px solid var(--wl-line-quiet);
+  border-radius: var(--wl-radius-frame);
+  background: var(--wl-surface);
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+  min-height: 560px;
+}
+.wl-state-frame--warn { border-color: var(--wl-caution); border-top-width: 4px; }
+.wl-skeleton { background: var(--wl-surface-sunken); border-radius: 4px; }
