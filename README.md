@@ -78,7 +78,7 @@ The 60% case is directly on point: a **다가구주택 in 관악구 (Gwanak-gu),
 
 That is court-established, effectively uninsurable exposure to a single factual claim. A per-certificate proof that discharges a broker's 설명의무 (seolmyeong umu — duty to explain) has an obvious buyer.
 
-*(The demo below deliberately uses a 관악구 다가구 building to mirror that case profile.)*
+*(The demo mirrors that case **profile** — a 다가구 (multi-household house) whose senior deposits exceed its appraisal limit — but deliberately names no district. Attaching a real location to a fabricated building on a public page would be wrong, and the fact that the court case happened in 관악구 is not something the demo should borrow. The live entry is labelled only by its commitment.)*
 
 ---
 

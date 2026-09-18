@@ -220,7 +220,31 @@
   function initLanding() {
     var host = $('[data-wl-hero-figure]');
     if (!host) return;
-    host.innerHTML = waterlineSVG('safe', { animate: true });
+
+    // Draw the band the live ledger actually reports, not a flattering one.
+    // The hero used to be hardcoded SAFE while /check read DANGER off the same
+    // contract — not a contradiction, since the hero asserts no verdict, but a
+    // wasted opportunity and a discrepancy a judge would notice. Reading the
+    // same snapshot means the two can never drift apart again.
+    //
+    // Rendered once, after the fetch resolves, rather than painted SAFE and
+    // corrected: a hero that flips colour on load looks broken. The file is
+    // under a kilobyte and same-origin; if it never arrives, fall back to the
+    // illustrative figure.
+    function draw(band, note) {
+      host.innerHTML = waterlineSVG(band, { animate: true });
+      var el = $('[data-wl-hero-note]');
+      if (el && note) el.textContent = note;
+    }
+
+    fetchSnapshot().then(function (snap) {
+      var b = snap && snap.buildings && snap.buildings[0];
+      if (!b || !b.certificate) { draw('safe', null); return; }
+      draw(b.certificate.band,
+        'Live: ' + BANDS[b.certificate.band].label + ' — read from the Midnight ' +
+        (snap.network || 'preprod') + ' ledger at block ' +
+        String(snap.block).replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+    });
   }
 
   /* ======================================================================

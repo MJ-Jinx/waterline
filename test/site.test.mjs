@@ -88,6 +88,18 @@ test('chips are centred regardless of the element they are built from', () => {
   assert.match(rule[0], /justify-content:\s*center/, 'horizontally centred');
 });
 
+test('the landing hero reads the ledger rather than a flattering constant', () => {
+  // It was hardcoded SAFE while /check read DANGER off the same contract. Not a
+  // contradiction — the hero asserts no verdict — but the two could drift, and
+  // the fix is to read the same snapshot rather than to rewrite chain state so
+  // the illustration matches.
+  const landing = appjs.slice(appjs.indexOf('function initLanding'),
+                              appjs.indexOf('function initCheck'));
+  assert.match(landing, /fetchSnapshot\(\)/, 'the hero consults the snapshot');
+  assert.doesNotMatch(landing, /waterlineSVG\(\s*'(safe|caution|danger)'\s*,/,
+    'no band is passed as a literal at the call site');
+});
+
 test('the water surface is never drawn as a line', () => {
   // The product's core honesty constraint: the page does not know the real
   // total, so a precise surface would be a lie or a disclosure.
