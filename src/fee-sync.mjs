@@ -23,9 +23,55 @@ if (!restored) {
 }
 console.log('restored a snapshot; syncing the tail\n');
 
+// Report POSITION, not just elapsed time. The sync drops its WebSocket every
+// minute or so and resubscribes, and from the outside a reconnect that resumes
+// and one that starts over look identical — both just print a bigger number of
+// seconds. Watching appliedIndex climb is the only way to tell the difference
+// between slow and never, so print where each wallet actually is.
+//
+// The two counters are different keyspaces: the unshielded wallet counts
+// transaction ids, the other two count ledger events.
+let latest = null;
+const sub = facade.state().subscribe({ next: (s) => { latest = s; }, error: () => {} });
+
+const at = (p, applied, highest) => {
+  if (!p) return 'n/a';
+  const a = p[applied] ?? 0n;
+  const h = p[highest] ?? 0n;
+  const pct = h > 0n ? ` ${((Number(a) / Number(h)) * 100).toFixed(1)}%` : '';
+  return `${a}/${h}${pct}${p.isConnected ? '' : ' (disconnected)'}`;
+};
+
+// CHECKPOINT AS WE GO. The dust stream is the long pole — measured at a steady
+// ~107 events/sec against ~1.5M events, so hours rather than minutes. Saving
+// only on completion means a dropped connection, a reboot or a stray Ctrl-C at
+// hour three throws away all of it, and the next run starts at zero again.
+//
+// Restoring a half-synced wallet is exactly what the snapshot format is for:
+// the serialized state carries the tree built so far plus the position it
+// reached, so a resume continues rather than restarts.
+const CHECKPOINT_EVERY = 4; // ticks, so once a minute
+let ticks = 0;
+let saved = 0;
+
 const started = Date.now();
 const tick = setInterval(() => {
-  process.stdout.write(`  syncing… ${Math.round((Date.now() - started) / 1000)}s\n`);
+  const s = Math.round((Date.now() - started) / 1000);
+  if (!latest) { process.stdout.write(`  ${s}s — no state yet\n`); return; }
+  ticks += 1;
+  let note = '';
+  if (ticks % CHECKPOINT_EVERY === 0) {
+    try {
+      if (saveFeeState(latest)) { saved += 1; note = `  [checkpoint ${saved}]`; }
+    } catch (e) {
+      note = `  [checkpoint failed: ${String(e.message || e).slice(0, 60)}]`;
+    }
+  }
+  process.stdout.write(
+    `  ${s}s  unshielded ${at(latest.unshielded?.progress, 'appliedId', 'highestTransactionId')}`
+    + `  shielded ${at(latest.shielded?.progress, 'appliedIndex', 'highestIndex')}`
+    + `  dust ${at(latest.dust?.progress, 'appliedIndex', 'highestIndex')}${note}\n`,
+  );
 }, 15000);
 
 let state;
@@ -36,6 +82,7 @@ try {
   state = await facade.waitForSyncedState();
 } finally {
   clearInterval(tick);
+  sub.unsubscribe();
 }
 console.log(`synced in ${Math.round((Date.now() - started) / 1000)}s`);
 

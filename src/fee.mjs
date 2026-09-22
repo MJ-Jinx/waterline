@@ -120,7 +120,10 @@ export async function openFeeWallet() {
  * an empty wallet. `waitForSyncedState()` is the one that resolves to a real
  * FacadeState, so callers pass that in.
  */
-export async function saveFeeState(state) {
+// Synchronous on purpose: the periodic checkpoint in fee-sync.mjs tests the
+// return value and catches failures inline, and an async function would hand
+// it a Promise — always truthy, never throwing where the caller looks.
+export function saveFeeState(state) {
   const out = {};
   for (const part of ['shielded', 'unshielded', 'dust']) {
     const w = state?.[part];
@@ -130,6 +133,13 @@ export async function saveFeeState(state) {
   }
   if (!Object.keys(out).length) return false;
   out.savedAt = new Date().toISOString();
-  fs.writeFileSync(FEE_STATE_FILE, JSON.stringify(out));
+  // Write-then-rename. This is called periodically during a sync that runs for
+  // hours, so a crash partway through a write is a real possibility, and a
+  // truncated snapshot is worse than no snapshot: fee-sync would restore it,
+  // believe it, and start from a position that never existed. rename is atomic
+  // on both NTFS and POSIX, so a reader sees the old file or the new one.
+  const tmp = `${FEE_STATE_FILE}.tmp`;
+  fs.writeFileSync(tmp, JSON.stringify(out));
+  fs.renameSync(tmp, FEE_STATE_FILE);
   return true;
 }
