@@ -15,6 +15,7 @@ No wallet, no extension, no signup, no testnet tokens. Open the link.
 
 | Page | What it shows |
 |---|---|
+| **[How it works](https://mj-jinx.github.io/waterline/guide.html)** | **start here** — a plain-language walkthrough for non-technical readers: what to click, what each screen means, what you can and cannot do, and an honest table of what is live versus illustrated |
 | [Check a building](https://mj-jinx.github.io/waterline/check.html) | the tenant view — a verdict band read off the live ledger, with a downloadable QR certificate |
 | [Why a landlord can’t lie](https://mj-jinx.github.io/waterline/why-lying-fails.html) | claim any total you like, and watch the certificate refuse to exist. **A scripted illustration** — to watch the real circuit refuse, run `npm run verify:refusal` |
 | [Registry console](https://mj-jinx.github.io/waterline/registry.html) | the proving pipeline, framed as a simulation |

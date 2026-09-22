@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waterline — How it works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  /* Scoped to this page only. Everything else comes from the shared sheet,
+     so the guide cannot drift away from the rest of the site's type or colour. */
+  .g-steps { list-style: none; counter-reset: g; margin: 0; padding: 0; }
+  .g-step  { counter-increment: g; position: relative; padding-left: 56px; margin-bottom: 30px; }
+  .g-step::before {
+    content: counter(g);
+    position: absolute; left: 0; top: 0;
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--wl-font-mono); font-size: 15px; font-weight: 500;
+    color: #fff; background: var(--wl-navy);
+  }
+  .g-step h3 { margin: 6px 0 10px; font-size: 19px; font-weight: 600; letter-spacing: -0.014em; }
+  .g-step p  { margin: 0 0 10px; }
+  .g-do  { font-weight: 600; color: var(--wl-navy); }
+
+  /* Two plain lists. Deliberately not coloured green and red: verdict colours
+     are reserved for verdicts, and "what you can do" is not a verdict. */
+  .g-lists { display: flex; flex-wrap: wrap; gap: 20px; }
+  .g-lists > * { flex: 1 1 320px; }
+  .g-list { margin: 10px 0 0; padding-left: 20px; }
+  .g-list li { margin: 9px 0; font-size: 15px; line-height: 1.7; color: var(--wl-ink-body); }
+
+  .g-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+  .g-table th, .g-table td {
+    text-align: left; padding: 11px 12px 11px 0;
+    border-bottom: 1px solid var(--wl-line); vertical-align: top;
+    font-size: 15px; line-height: 1.6;
+  }
+  .g-table th { font-weight: 600; color: var(--wl-navy); width: 46%; }
+  .g-table td { color: var(--wl-ink-body); }
+  .g-tag {
+    display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; padding: 2px 8px; border-radius: 4px; margin-right: 8px;
+    white-space: nowrap;
+  }
+  .g-tag--real { background: rgba(31,122,92,0.12); color: #1F7A5C; }
+  .g-tag--demo { background: rgba(15,42,74,0.09); color: var(--wl-navy); }
+
+  .g-pre {
+    font-family: var(--wl-font-mono); font-size: 13px; line-height: 2;
+    background: var(--wl-surface-sunken); border: 1px solid var(--wl-line);
+    border-radius: var(--wl-radius-control); padding: 16px 18px; overflow-x: auto;
+    color: var(--wl-ink); margin: 14px 0 0;
+  }
+  .g-section { padding-block: 40px 0; }
+  .g-section > h2 { margin: 0 0 6px; }
+  @media (max-width: 560px) {
+    .g-step { padding-left: 46px; }
+    .g-step::before { width: 32px; height: 32px; font-size: 13px; }
+    .g-table th { width: 40%; }
+  }
+</style>
+</head>
+<body>
+<div class="wl-page">
+
+  <header class="wl-header">
+    <div class="wl-container wl-header__inner">
+      <a class="wl-wordmark" href="index.html">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="7.5" stroke="#0F2A4A" stroke-width="1.8"></circle>
+          <line x1="2" y1="12" x2="22" y2="12" stroke="#C0352B" stroke-width="1.8"></line>
+        </svg>
+        Waterline
+      </a>
+      <div class="wl-spacer"></div>
+      <nav class="wl-nav" aria-label="Main">
+        <a href="guide.html" aria-current="page">How it works</a>
+        <a href="check.html">Check a building</a>
+        <a href="registry.html">Registry console</a>
+        <a href="why-lying-fails.html">Why lying fails</a>
+      </nav>
+      <span class="wl-badge wl-badge--ok">plain-language guide</span>
+    </div>
+  </header>
+
+  <main class="wl-main">
+
+    <!-- Hero ---------------------------------------------------------------
+         No jargon above the fold. Someone who has never heard of any of the
+         technology should be able to read this and know what the site is for. -->
+    <section class="wl-container" style="padding-block: 40px 0;">
+      <h1 class="wl-display" style="margin: 0 0 14px;">How this works</h1>
+      <p class="wl-lede" style="max-width: 62ch; margin: 0;">
+        Waterline answers one question about a Korean rental building: is it carrying more tenant
+        deposits than it could safely repay? It answers <strong>safe</strong>, <strong>caution</strong>
+        or <strong>danger</strong> — and it does that without telling you, or anyone else, how much
+        money any tenant handed over.
+      </p>
+      <p class="wl-body" style="max-width: 62ch; margin: 14px 0 0;">
+        This page walks through what you can do here, what is genuinely running and what is only a
+        demonstration, and what you get to keep at the end. No technical background needed.
+      </p>
+    </section>
+
+    <!-- The problem --------------------------------------------------------- -->
+    <section class="wl-container g-section">
+      <h2 class="wl-title">The problem, in plain words</h2>
+      <div style="max-width: 62ch;">
+        <p class="wl-body">
+          Under <strong>jeonse</strong>, Korea's most common way of renting a home, you do not pay
+          monthly rent. You hand the landlord one very large lump sum — often most of what the home is
+          worth — and you are supposed to get all of it back when you leave.
+        </p>
+        <p class="wl-body">
+          That money is only as safe as the building itself. If the landlord has taken similar
+          deposits from several other households in the same building, and those add up to more than
+          the building is worth, there is simply not enough to repay everyone. Whoever signed first is
+          repaid first. Whoever signed last can be left with nothing.
+        </p>
+        <p class="wl-body">
+          Here is the trap. In one common type of Korean building, every household sits under a single
+          ownership record. Someone about to sign cannot see how many other tenants are already ahead
+          of them, or how much those tenants put in. You are asked to hand over your savings without
+          being allowed to see the one figure that would tell you whether it is safe.
+        </p>
+        <p class="wl-body" style="font-weight: 600; color: var(--wl-navy);">
+          Waterline gives you that answer as a single word, without revealing anybody's money.
+        </p>
+      </div>
+    </section>
+
+    <!-- The idea ------------------------------------------------------------ -->
+    <section class="wl-container g-section">
+      <h2 class="wl-title">The idea, without any maths</h2>
+      <div class="wl-card wl-card--note" style="max-width: 68ch; margin-top: 14px;">
+        <p class="wl-body" style="margin: 0 0 12px;">
+          Picture a <strong>tally stick</strong>. For centuries a debt was recorded by carving notches
+          into a stick, then splitting the stick down its length so each side kept one half. Neither
+          side could quietly alter their half afterwards, because it still had to line up with the
+          other one.
+        </p>
+        <p class="wl-body" style="margin: 0 0 12px;">
+          Waterline works the same way. The running total of deposits is sealed into a public record
+          that everyone can see but nobody can read. Each time a new tenant is added, the registry has
+          to match the existing half before it is allowed to cut a new one.
+        </p>
+        <p class="wl-body" style="margin: 0;">
+          So a registry that wanted to understate the total would have had to understate it every
+          single time, going back to the very first tenant — and each of those tenants already holds a
+          matching half. The total stays secret, and it still cannot be faked.
+        </p>
+      </div>
+      <p class="wl-body-sm" style="max-width: 62ch; margin: 14px 0 0;">
+        All you are ever told is which side of a line the hidden total falls on.
+      </p>
+    </section>
+
+    <!-- Walkthrough ---------------------------------------------------------- -->
+    <section class="wl-container g-section">
+      <h2 class="wl-title">Five things you can do right now</h2>
+      <p class="wl-body-sm" style="margin: 4px 0 26px;">Roughly two minutes, start to finish.</p>
+
+      <ol class="g-steps" style="max-width: 68ch;">
+
+        <li class="g-step">
+          <h3>Open “Check a building”</h3>
+          <p class="wl-body"><span class="g-do">Do this:</span> click <a href="check.html">Check a building</a> in the menu at the top.</p>
+          <p class="wl-body">
+            <span class="g-do">What you are looking at:</span> one large word — the verdict for that
+            building. Underneath it sits what the building was valued at, and the limit it is being
+            measured against.
+          </p>
+          <p class="wl-body">
+            Next to <em>Senior total</em> you will see the words <strong>not disclosed</strong>. That
+            is not a placeholder or a loading state. That figure is genuinely unavailable — to the
+            page, to you, and to anyone reading the public record.
+          </p>
+        </li>
+
+        <li class="g-step">
+          <h3>Watch the page check itself</h3>
+          <p class="wl-body">
+            <span class="g-do">Do this:</span> look for the line that reads
+            <em>“confirmed against the live ledger at block …”</em>.
+          </p>
+          <p class="wl-body">
+            <span class="g-do">What you are looking at:</span> the most important thing on the site.
+            We could have simply shown you a picture of a verdict and hoped you took our word for it.
+            Instead, every time the page loads it goes and asks the public record directly, pulls back
+            the raw entry for that building, and checks that what it is showing you is the same thing
+            the record actually holds.
+          </p>
+          <p class="wl-body">
+            If the two ever disagree, the line turns amber and says so, rather than quietly showing
+            you something stale.
+          </p>
+          <p class="wl-body">
+            <span class="g-do">Why it matters:</span> you are not being asked to trust us. You are
+            trusting a public record we do not control, and the page is showing its working in front
+            of you. The <em>block</em> number is like a page number in that record — it tells you how
+            recent the reading is.
+          </p>
+        </li>
+
+        <li class="g-step">
+          <h3>Read the privacy receipt</h3>
+          <p class="wl-body">
+            <span class="g-do">Do this:</span> find the two-column panel headed
+            <em>Privacy receipt</em>.
+          </p>
+          <p class="wl-body">
+            <span class="g-do">What you are looking at:</span> on one side, everything the check told
+            you. On the other, everything it deliberately did not — the individual deposits, the
+            total, how many other households there are, and the secret used to seal the record.
+          </p>
+          <p class="wl-body">
+            That second column is the whole point. Most safety checks work by gathering everybody's
+            private details into one big pile and then answering questions about the pile. This one
+            answers the question without anyone ever building the pile.
+          </p>
+        </li>
+
+        <li class="g-step">
+          <h3>Save your verification</h3>
+          <p class="wl-body"><span class="g-do">Do this:</span> press <em>Save this verification</em>.</p>
+          <p class="wl-body">
+            <span class="g-do">What you get:</span> one file that opens in any browser, works with no
+            internet connection, and prints on a single sheet. It records the verdict, the building
+            reference, the valuation, the limit, the sealed record's fingerprint, the block number,
+            the time you took the reading, and which network it came from. Where a deposit total would
+            normally sit, it says <strong>not disclosed</strong>.
+          </p>
+          <p class="wl-body">
+            It also carries a QR code, and this is the part worth understanding. <strong>The document
+            itself proves nothing.</strong> Anyone could open that file and type a different word into
+            it. Scanning the code takes you back to the live page, which goes and checks the public
+            record again, there and then. The sheet is a pointer to the truth rather than the truth
+            itself — and the small print on the document says exactly that.
+          </p>
+        </li>
+
+        <li class="g-step">
+          <h3>See why a landlord cannot lie</h3>
+          <p class="wl-body">
+            <span class="g-do">Do this:</span> open <a href="why-lying-fails.html">Why lying fails</a>,
+            drag the slider to any figure you like, and press <em>Generate certificate</em>.
+          </p>
+          <p class="wl-body">
+            <span class="g-do">What you are looking at:</span> a demonstration, and we would rather say
+            so plainly than let you assume otherwise. That page runs on a timer, is not connected to
+            anything, and the building on it is invented. It is labelled as a simulation at the top and
+            at the bottom.
+          </p>
+          <p class="wl-body">
+            <span class="g-do">Why it is not live:</span> the real calculation needs about 11 MB of
+            cryptographic keys and several seconds of work. Putting that inside a web page would mean a
+            slow download and a long wait on a phone, at the exact moment somebody is deciding whether
+            to sign. We chose to keep the page instant and to be straightforward about where the
+            demonstration ends.
+          </p>
+          <p class="wl-body">
+            The refusal it shows you is real behaviour, and anyone can run it for themselves. That is
+            the last section on this page.
+          </p>
+        </li>
+
+      </ol>
+    </section>
+
+    <!-- Can / cannot --------------------------------------------------------- -->
+    <section class="wl-container g-section">
+      <h2 class="wl-title">What you can and cannot do here</h2>
+      <div class="g-lists" style="margin-top: 16px;">
+
+        <div class="wl-card">
+          <span class="wl-label">You can</span>
+          <ul class="g-list">
+            <li>Look up a building and see its verdict.</li>
+            <li>Watch the page confirm that verdict against the live public record.</li>
+            <li>See exactly what was revealed to you and what was not.</li>
+            <li>Download and print a verification document.</li>
+            <li>Scan its code later to re-check whether anything has changed.</li>
+            <li>Open the real contract in an independent public explorer run by other people, not by us.</li>
+          </ul>
+        </div>
+
+        <div class="wl-card">
+          <span class="wl-label">You cannot</span>
+          <ul class="g-list">
+            <li>Add a building, register a tenant, or issue a verdict. There is no way to write
+                anything to the record from this website at all.</li>
+            <li>See any individual deposit, the total, or how many households there are. This is not
+                hidden behind a login — it is simply not available to anyone.</li>
+            <li>Change a verdict that has already been published.</li>
+            <li>Be asked to install anything, sign up, or pay. You never connect a wallet, there is
+                no seed phrase to lose, and nothing here costs money.</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Real vs demonstration -------------------------------------------------
+         The honesty table. A judge who finds a simulation we did not declare
+         stops trusting everything else on the site, so declare all of them. -->
+    <section class="wl-container g-section">
+      <h2 class="wl-title">What is real, and what is a demonstration</h2>
+      <p class="wl-body" style="max-width: 62ch; margin: 6px 0 0;">
+        This is a hackathon project, so some parts are built and some are illustrated. Here is the
+        honest split.
+      </p>
+
+      <div style="overflow-x: auto;">
+        <table class="g-table">
+          <thead>
+            <tr><th scope="col">Part of the project</th><th scope="col">Status</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">The contract on the Midnight test network</th>
+              <td><span class="g-tag g-tag--real">Real</span>Deployed, live, and viewable in a public explorer.</td>
+            </tr>
+            <tr>
+              <th scope="row">The verdict shown on “Check a building”</th>
+              <td><span class="g-tag g-tag--real">Real</span>Worked out privately, written to the public record, and read back.</td>
+            </tr>
+            <tr>
+              <th scope="row">The page checking itself against the record</th>
+              <td><span class="g-tag g-tag--real">Real</span>Runs in your own browser every time the page loads.</td>
+            </tr>
+            <tr>
+              <th scope="row">The verification document and its QR code</th>
+              <td><span class="g-tag g-tag--real">Real</span>Built from that reading, on your device.</td>
+            </tr>
+            <tr>
+              <th scope="row">The “Why lying fails” page</th>
+              <td><span class="g-tag g-tag--demo">Demo</span>A timed illustration using an invented building. The behaviour it shows is real and can be run.</td>
+            </tr>
+            <tr>
+              <th scope="row">The “Registry console” page</th>
+              <td><span class="g-tag g-tag--demo">Demo</span>A mock-up of the office side, labelled with a striped banner.</td>
+            </tr>
+            <tr>
+              <th scope="row">The registry office itself</th>
+              <td><span class="g-tag g-tag--demo">Not built</span>In a real deployment this would be run by the local government office that already holds these records.</td>
+            </tr>
+            <tr>
+              <th scope="row">The example buildings and figures</th>
+              <td><span class="g-tag g-tag--demo">Invented</span>Marked as fictional wherever they appear. No real address is ever used.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="wl-card wl-card--quiet" style="margin-top: 20px; max-width: 68ch;">
+        <p class="wl-body-sm" style="margin: 0;">
+          <strong>What “preprod” means.</strong> It is a public practice network, running the same
+          software as the real one, used so people can build and test without real money being
+          involved. Everything you see here is genuinely on it, and anybody can go and look.
+        </p>
+      </div>
+    </section>
+
+    <!-- Verify it yourself ---------------------------------------------------- -->
+    <section class="wl-container g-section" style="padding-bottom: 48px;">
+      <h2 class="wl-title">If you want to check the maths yourself</h2>
+      <p class="wl-body" style="max-width: 62ch; margin: 6px 0 0;">
+        You do not need any of this to use the site. It is here for anyone who wants to confirm that
+        the refusal on the demonstration page is genuine behaviour rather than a story we drew.
+      </p>
+      <p class="wl-body" style="max-width: 62ch;">
+        Three commands, on a Mac, a Linux machine, or Windows with WSL:
+      </p>
+
+      <div class="g-pre" style="max-width: 68ch;">npm install
+compact compile +0.31.1 contracts/waterline.compact build/waterline
+npm run verify:refusal</div>
+
+      <p class="wl-body" style="max-width: 62ch; margin-top: 16px;">
+        The last command builds a building with two households whose deposits come to ₩5.5억, confirms
+        that against a ₩6.0억 valuation the honest answer is <strong>danger</strong>, and then attempts
+        the exact lie that would turn it into <strong>safe</strong>. The calculation refuses to run,
+        and the refusal it gives is the same wording the demonstration page shows you.
+      </p>
+      <p class="wl-body-sm" style="max-width: 62ch;">
+        Note where that refusal happens: on the landlord's own machine, before anything is sent
+        anywhere. Nothing is submitted and nothing is rejected, because no valid proof can be built in
+        the first place.
+      </p>
+    </section>
+
+  </main>
+
+  <footer class="wl-footer">
+    <div class="wl-container wl-footer__inner">
+      <span class="k" style="font-family: var(--wl-font);">A plain-language guide — no technical background needed</span>
+      <span class="k" style="font-family: var(--wl-font);">Start here: <a href="check.html">Check a building</a></span>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
