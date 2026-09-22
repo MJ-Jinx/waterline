@@ -191,6 +191,13 @@ registry books (private):  total 5.5 eok across 2 leases
 building commitment:       f65833a05bf6d6c47b18884d7e20674c90b7ddde...  (opaque)
 ```
 
+> These rows are left as they ran. At the time the fee was sponsored by a third
+> party, which is what `dust-sponsored` records; the write path has since moved
+> to local proving and a self-funded DUST fee, for the reasons under
+> [Architecture](#architecture-two-sides-and-only-one-of-them-is-published).
+> Rewriting the log to match the current code would be claiming a run that never
+> happened.
+
 ### The three verdicts
 
 | Appraised | 안전 ≤ 70% | 주의 ≤ 80% | Total claimed | Band | Verdict |
@@ -210,35 +217,53 @@ The three honest rows show the other half: identical private books, three differ
 
 ---
 
-## Architecture: no wallet, no fees, no server
+## Architecture: two sides, and only one of them is published
 
-The demo runs from GitHub Pages. A visitor installs nothing, signs nothing and pays nothing.
+The asymmetry is the design. The side that **reads** is a static page with no wallet,
+no keys and no proving. The side that **writes** holds the books, and needs both.
 
 ```mermaid
 flowchart LR
-    B["Static page<br/>GitHub Pages"]
-    K["Burner keypair<br/>made in-browser"]
-    P["ProofStation<br/>prove + sponsor fee"]
-    N["Midnight node<br/>sendMnTransaction"]
+    subgraph T["Tenant side — published to GitHub Pages"]
+      B["Static page<br/>no wallet, no keys"]
+    end
+
+    subgraph R["Registry side — runs where the books are"]
+      W["Private books<br/>witnesses + salts"]
+      PS["Proof server<br/>localhost:6300"]
+      F["Fee wallet<br/>balances the DUST"]
+    end
+
+    N["Midnight node"]
     I["Public indexer<br/>GraphQL"]
 
-    B --> K
-    K -->|"unproven tx"| P
-    P -->|"proof + dust"| N
+    W -->|"unproven tx"| PS
+    PS -->|"proven tx"| F
+    F -->|"+ DustSpend"| N
     N --> I
-    I -.->|"contract state"| B
+    I -.->|"contract state, band only"| B
 
     classDef n fill:#1e293b,stroke:#94a3b8,stroke-width:2px,color:#fff
-    class B,K,P,N,I n
+    class B,W,PS,F,N,I n
 ```
 
-- **Identity** — a throwaway keypair from `generateRandomSeed()`. No extension, no seed phrase shown, no user action.
-- **Proving** — ProofStation proves the circuit. The **prover key travels with the request** via `createProvingPayload`, which is why a third-party prover can prove a contract it has never seen before.
-- **Fees** — the same service adds a `DustSpend`, so the user pays nothing.
-- **Reads** — the official public indexer, unauthenticated, CORS `*`.
-- **ZK keys** — 11 MB for three circuits, needed only by the side that *proves*. **The tenant-facing page needs none of it:** `issueCertificate` publishes the band to the ledger, so `/check` is a plain GraphQL query with no WASM and no key downloads. That is why it can load instantly.
+- **Reads** — the official public indexer, unauthenticated, CORS `*`. A visitor installs nothing, signs nothing and pays nothing, because reading a verdict is a GraphQL query.
+- **ZK keys** — 11 MB for three circuits, needed only by the side that *proves*. **The tenant-facing page needs none of it:** `issueCertificate` publishes the band to the ledger, so `/check` has no WASM and no key downloads. That is why it can load instantly.
+- **Proving** — a local proof server. The **prover key travels with the request** via `createProvingPayload`, so a prover can prove a contract it has never seen; that is what makes a *remote* prover technically possible, and also exactly why this one is not remote. See the trust boundary below.
+- **Fees** — the registry pays its own way: hold NIGHT, register it for DUST generation, balance locally, submit. Balancing happens **after** proving, appending a `DustSpend` to an already-proven transaction rather than being part of what gets proved.
 
-> ProofStation is third-party infrastructure, not official Midnight infra, and it rate-limits to one pending balance request at a time. Keep a "connect wallet" fallback for production. In-process WASM proving is a viable independent alternative.
+> **The trust boundary, stated precisely.** A proving request carries the proof
+> preimage. For this contract the witnesses include the registry secret key, the
+> deposit total, the lease count and the salt — every value the project exists to
+> protect. Sending that to a third-party prover would leak precisely the thing
+> being protected. That is tolerable for a testnet demo over invented buildings
+> and intolerable for anything real, so the default is local. `PROVER` overrides it.
+>
+> An earlier version proved and sponsored fees through [1AM ProofStation](https://api.1am.xyz/docs),
+> which is elegant — one call, no wallet, no DUST — but it put a third party on the
+> critical path of every write. On 2026-09-22 its preprod balancer returned `503`
+> for hours while preview and mainnet were healthy, and nothing could be written
+> for as long as it was down.
 
 ---
 
@@ -389,7 +414,7 @@ GitHub-hosted runner, and the full suite runs in well under a second after that.
 ## Credits
 
 - Built on [Midnight](https://midnight.network), Compact compiler 0.31.1
-- Sponsored proving by [1AM ProofStation](https://api.1am.xyz/docs)
+- [1AM ProofStation](https://api.1am.xyz/docs) proved and sponsored every write on this project until 2026-09-22, which is what let it get to a working demo with no wallet and no funds at all. It is no longer on the write path — see the trust boundary under [Architecture](#architecture-two-sides-and-only-one-of-them-is-published) — but it is the reason there was something to move off.
 - Extrinsic encoding via [@polkadot/api](https://github.com/polkadot-js/api)
 - Thanks to [ODATANO](https://github.com/ODATANO) — the Apache-2.0 [NIGHTGATE](https://github.com/ODATANO/NIGHTGATE) examples documented that a Midnight ledger transaction must be wrapped in `midnight.sendMnTransaction`, which unblocked submission here. Its [`self-funded.mjs`](https://github.com/ODATANO/NIGHTGATE/blob/main/packages/nightgate-tx/example/self-funded.mjs) then documented the whole sponsor-free path — prove locally, pay the DUST fee from your own wallet, submit to the node yourself — which is what [`src/fee-wallet.mjs`](src/fee-wallet.mjs) is built on. Twice unblocked by the same repository.
 

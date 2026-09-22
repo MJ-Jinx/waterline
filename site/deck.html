@@ -256,7 +256,7 @@
   <!-- 8 ------------------------------------------------------------------ -->
   <section class="slide">
     <div class="slide__num">07 · ARCHITECTURE</div>
-    <h2>No wallet, no fees, no server</h2>
+    <h2>The tenant needs nothing. The secrets never move.</h2>
     <div class="two">
       <div>
         <h3>The tenant side reads</h3>
@@ -267,8 +267,10 @@
         </p>
         <h3 style="margin-top: 18px;">The registry side proves</h3>
         <p style="font-size: 15px;">
-          Witness assembly and proving happen where the books already are. Fees are sponsored, so
-          nothing costs the operator anything.
+          Witness assembly and proving happen where the books already are, on the registry's own
+          machine. That is deliberate: a proving request carries the values being proved &mdash; the
+          deposit total, the lease count, the secret that seals them. Sending that to someone else's
+          prover would leak the very thing this protects.
         </p>
       </div>
       <div>

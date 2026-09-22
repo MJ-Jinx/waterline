@@ -19,7 +19,7 @@ import { createUnprovenCallTx } from '@midnight-ntwrk/midnight-js-contracts';
 import { ledger } from '../build/waterline/contract/index.js';
 import {
   S, save, compiledContract, zkConfigProvider, publicDataProvider, walletProvider,
-  sponsorAndSubmit, waitForAdvance, freshSalt, lastSalt,
+  proveAndSubmit, waitForAdvance, freshSalt, lastSalt,
   connect, disconnect, ub, hx, won,
 } from './common.mjs';
 
@@ -98,7 +98,7 @@ async function write(circuitId, args, label, commitLocally, rotateSalt = true) {
     return null;
   }
   const result = built.private.result;
-  if (!await sponsorAndSubmit(built.private.unprovenTx, label)) return null;
+  if (!await proveAndSubmit(built.private.unprovenTx, label)) return null;
   S.sh = await waitForAdvance(S.addr, S.sh);
   commitLocally();
   save();
@@ -167,22 +167,31 @@ for (const p of PLAN) {
   cfg.buildings.push({ id: bid, chip: p.chip, label: p.label });
   added += 1;
 }
-if (added) {
-  fs.writeFileSync(CFG, JSON.stringify(cfg, null, 2) + '\n');
-  console.log(`\nadded ${added} building(s) to ${CFG}`);
-}
-
-// ---- show what anyone can see on chain: commitments only, no amounts
+// ---- read back what anyone can see on chain: commitments only, no amounts
 const st = await publicDataProvider.queryContractState(S.addr);
 const l = ledger(st.data);
+
+// Name each chip after the verdict the chain actually returned, not the one we
+// intended. "Live 2" tells a visitor nothing, and the whole reason for three
+// buildings is that they answer differently — so the chips should say so at a
+// glance. Taking the word from the ledger rather than from PLAN also means the
+// label cannot drift from the thing it describes: if a band ever came back
+// other than planned, the warning above fires and the chip still tells the
+// truth.
+const CHIP = { 0: 'Live · danger', 1: 'Live · caution', 2: 'Live · safe' };
 console.log('\non chain, visible to anyone:');
 for (const b of cfg.buildings) {
   const id = ub(b.id);
   const commit = l.buildingState.member(id) ? hx(l.buildingState.lookup(id)) : null;
   const cert = l.certificates.member(id) ? l.certificates.lookup(id) : null;
-  console.log(`  ${b.chip.padEnd(8)} ${commit ? commit.slice(0, 24) + '…' : 'not registered'}  ${
+  if (cert && CHIP[Number(cert.band)]) b.chip = CHIP[Number(cert.band)];
+  console.log(`  ${b.chip.padEnd(15)} ${commit ? commit.slice(0, 24) + '…' : 'not registered'}  ${
     cert ? `${BANDS[Number(cert.band)]} at ${won(BigInt(cert.appraisedValue))}` : 'no certificate'}`);
 }
+
+fs.writeFileSync(CFG, JSON.stringify(cfg, null, 2) + '\n');
+console.log(`\n${CFG}: ${added} building(s) added, chips named from the ledger`);
+
 console.log('\nnow run:  npm run snapshot');
 
 await disconnect();
