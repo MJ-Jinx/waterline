@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Waterline — Is your deposit above the line?</title>
-<meta name="description" content="Check whether a building's senior deposits sit below its appraisal limit — without the registry disclosing the total.">
+<meta name="description" content="Check whether the deposits already loaded onto a Korean rental building add up to more than it can cover — without anyone revealing a single amount.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
@@ -26,8 +26,8 @@
       <nav class="wl-nav" aria-label="Main">
         <a href="guide.html">How it works</a>
         <a href="check.html">Check a building</a>
-        <a href="registry.html">Registry console</a>
         <a href="why-lying-fails.html">Why lying fails</a>
+        <a href="registry.html">Registry console</a>
       </nav>
       <span class="wl-badge wl-badge--ok">Midnight preprod</span>
     </div>
@@ -40,14 +40,17 @@
         <div class="wl-col" style="flex: 1 1 520px;">
           <h1 class="wl-display-xl">Is your deposit above the line?</h1>
           <p class="wl-lede" style="margin: 28px 0 0; max-width: 560px;">
-            Find out whether a building's senior deposits sit below its appraisal limit —
-            <b style="color: var(--wl-ink);">without the registry disclosing the total</b>,
-            the count, or a single amount.
+            Find out whether the deposits already held against a building — the ones repaid
+            before yours — add up to more than it can cover,
+            <b style="color: var(--wl-ink);">without anyone revealing a single amount</b>.
           </p>
+          <!-- A first-time visitor may not know what jeonse is, and the word carries the
+               whole stake of the product. Gloss it here rather than assuming it. -->
           <p class="wl-body" style="margin: 14px 0 0; max-width: 560px; color: var(--wl-ink-muted);">
-            Jeonse tenants hand over years of savings against a building whose other debts they
-            cannot see. Waterline lets them see one thing — whether the building is loaded past
-            its line — and nothing more.
+            Under <b>jeonse</b>, Korea's usual way of renting, a tenant hands over a lump sum worth
+            most of the home instead of paying monthly rent, and is repaid at the end. That money is
+            only as safe as the building — and the other deposits loaded onto it are invisible.
+            Waterline shows one thing: whether the building is loaded past its line.
           </p>
           <div class="wl-row" style="margin-top: 40px; gap: 14px;">
             <a class="wl-btn wl-btn--primary" href="check.html">Check a building</a>
@@ -64,8 +67,8 @@
         <div class="wl-col wl-figure" style="flex: 0 1 380px; min-width: 280px;">
           <div data-wl-hero-figure style="width: 100%; max-width: 330px;"></div>
           <p class="wl-body-sm" style="text-align: center;">
-            The water surface is drawn as a band, never a level.<br>
-            The page does not know the real total.
+            The waterline is drawn as a band, never a single level —<br>
+            because the page genuinely does not know the real total.
           </p>
           <p class="wl-body-sm" data-wl-hero-note style="text-align: center; margin-top: 6px; font-family: var(--wl-font-mono); font-size: 11px; color: var(--wl-ink-label);"></p>
         </div>
@@ -76,17 +79,18 @@
       <div class="wl-grid-3">
         <article class="wl-card" style="padding: 28px 30px;">
           <div class="wl-step__dot" style="border-color: var(--wl-cobalt); color: var(--wl-cobalt); width: 32px; height: 32px;">1</div>
-          <h2 class="wl-title" style="margin: 18px 0 0;">The registry commits the total</h2>
-          <p class="wl-body" style="margin: 12px 0 0;">A hash over the total, the lease count and a salt goes on chain. The amounts themselves never do.</p>
+          <h2 class="wl-title" style="margin: 18px 0 0;">The total is sealed, not published</h2>
+          <p class="wl-body" style="margin: 12px 0 0;">The registry seals the running total into a short code on the public record. The code gives nothing away, and the amounts themselves never go on it.</p>
         </article>
         <article class="wl-card" style="padding: 28px 30px;">
           <div class="wl-step__dot" style="border-color: var(--wl-cobalt); color: var(--wl-cobalt); width: 32px; height: 32px;">2</div>
-          <h2 class="wl-title" style="margin: 18px 0 0;">The circuit compares load to limit</h2>
-          <p class="wl-body" style="margin: 12px 0 0;">The comparison happens inside the proof. Only someone who can open the commitment can produce one.</p>
+          <h2 class="wl-title" style="margin: 18px 0 0;">The answer is worked out behind the seal</h2>
+          <p class="wl-body" style="margin: 12px 0 0;">The total is compared against what the building is worth, inside a proof. Only someone who can unseal the real figure can produce one, so the answer cannot be invented.</p>
         </article>
         <article class="wl-card" style="padding: 28px 30px;">
           <div class="wl-step__dot" style="border-color: var(--wl-cobalt); color: var(--wl-cobalt); width: 32px; height: 32px;">3</div>
-          <h2 class="wl-title" style="margin: 18px 0 0;">The tenant sees one band</h2>
+          <h2 class="wl-title" style="margin: 18px 0 0;">You see one word, and nothing else</h2>
+          <p class="wl-body" style="margin: 12px 0 0;">The answer is published for anyone to read. The figures behind it stay with the registry.</p>
           <div class="wl-chips" style="margin-top: 16px;">
             <span class="wl-chip" style="cursor: default; background: rgba(31,122,92,0.10); border-color: rgba(31,122,92,0.45); color: var(--wl-safe); font-weight: 700; border-radius: 4px; min-height: 34px; letter-spacing: 0.06em;">SAFE</span>
             <span class="wl-chip" style="cursor: default; background: rgba(168,112,26,0.10); border-color: rgba(168,112,26,0.45); color: var(--wl-caution); font-weight: 700; border-radius: 4px; min-height: 34px; letter-spacing: 0.06em;">CAUTION</span>

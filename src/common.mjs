@@ -153,16 +153,24 @@ export async function sponsorAndSubmit(unprovenTx, label) {
 
   const bin = Buffer.from(proven.serialize());
   let balanced = null;
-  // ProofStation allows one pending balance request at a time; 429 means wait.
+  // Two different transient conditions, both of which mean "ask again later":
+  //   429 — ProofStation allows one pending balance request at a time.
+  //   503 — its own wallet is unavailable, typically DUST_SYNC_STALE while the
+  //         sponsor wallet catches up. It returns retryAfterMs when it knows.
+  // Treating 503 as fatal aborts a multi-write run partway through for a
+  // condition that clears on its own within seconds.
   for (let attempt = 1; attempt <= 20; attempt += 1) {
     const r = await post('/balance', bin);
     const j = await r.json().catch(() => ({}));
     if (j.txBytes || j.tx) { balanced = j.txBytes ?? j.tx; break; }
-    if (r.status !== 429) {
+    if (r.status !== 429 && r.status !== 503) {
       console.log(`      balance failed ${r.status}: ${JSON.stringify(j).slice(0, 160)}`);
       return null;
     }
-    await wait(15000);
+    const hinted = Number(j.retryAfterMs);
+    const delay = Math.min(Math.max(Number.isFinite(hinted) ? hinted : 15000, 5000), 30000);
+    console.log(`      sponsor busy (${r.status}${j.cause ? ` ${j.cause}` : ''}); retry ${attempt}/20 in ${delay / 1000}s`);
+    await wait(delay);
   }
   if (!balanced) { console.log('      sponsor never became free'); return null; }
 

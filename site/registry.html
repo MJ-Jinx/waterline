@@ -37,8 +37,8 @@
       <nav class="wl-nav" aria-label="Main">
         <a href="guide.html">How it works</a>
         <a href="check.html">Check a building</a>
-        <a href="registry.html" aria-current="page">Registry console</a>
         <a href="why-lying-fails.html">Why lying fails</a>
+        <a href="registry.html" aria-current="page">Registry console</a>
       </nav>
       <span class="wl-badge">prover keys loaded · 5.1 MB</span>
     </div>
@@ -65,8 +65,8 @@
           <button type="button" class="wl-btn wl-btn--primary wl-btn--block" data-wl-run>Register lease</button>
 
           <p class="wl-body" style="margin: 18px 0;">
-            Registering publishes a commitment over the total, the lease count and a salt.
-            The amounts themselves never go on chain.
+            Registering seals the new total, the number of tenants and a secret into one short
+            code, and publishes only that code. The amounts themselves never leave this room.
           </p>
 
           <div class="wl-private">

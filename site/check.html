@@ -25,8 +25,8 @@
       <nav class="wl-nav" aria-label="Main">
         <a href="guide.html">How it works</a>
         <a href="check.html" aria-current="page">Check a building</a>
-        <a href="registry.html">Registry console</a>
         <a href="why-lying-fails.html">Why lying fails</a>
+        <a href="registry.html">Registry console</a>
       </nav>
       <span class="wl-badge wl-badge--ok">preprod · read only</span>
     </div>
@@ -38,11 +38,13 @@
     <section class="wl-container wl-container--wide" style="padding-block: 34px 0;">
       <div class="wl-row" style="align-items: flex-end; gap: 16px;">
         <div class="wl-field" style="flex: 0 1 360px; min-width: 260px;">
-          <label for="building-id">Building ID</label>
+          <label for="building-id">Building ID <span style="font-weight: 400; color: var(--wl-ink-muted);">— or pick one below</span></label>
           <input class="wl-input" id="building-id" type="text" data-wl-id value="SEO-2019-0412"
                  autocomplete="off" spellcheck="false" inputmode="text">
         </div>
-        <div class="wl-chips" data-wl-chips aria-label="Demo buildings"></div>
+        <!-- Live entries now lead this row, so the label can no longer say "demo".
+             The note to the right states per-building which kind you are looking at. -->
+        <div class="wl-chips" data-wl-chips aria-label="Buildings"></div>
         <div class="wl-spacer"></div>
         <p class="wl-body-sm" data-wl-origin style="padding-bottom: 14px;">Demo buildings are fictional</p>
       </div>
@@ -67,7 +69,7 @@
               <div class="wl-mono" style="font-size: 14px; margin-top: 6px;" data-wl-limit></div>
             </div>
             <div class="wl-card wl-card--quiet" style="padding: 14px 16px;">
-              <div class="wl-label" style="font-size: 11px; letter-spacing: 0.06em;">Senior total</div>
+              <div class="wl-label" style="font-size: 11px; letter-spacing: 0.06em;">Deposits ahead of yours</div>
               <div class="wl-mono" style="font-size: 14px; margin-top: 6px; color: var(--wl-ink-dim);">not disclosed</div>
             </div>
           </div>
@@ -79,7 +81,7 @@
           <div data-wl-figure style="width: 100%; max-width: 250px;"></div>
           <p class="wl-figure__caption" style="margin: 0;">
             <span data-wl-caption></span>
-            <small>exact depth not disclosed</small>
+            <small>how deep the water sits is not disclosed</small>
           </p>
         </div>
 
@@ -99,11 +101,11 @@
                   <span class="wl-label" style="color: var(--wl-safe); font-size: 10px; letter-spacing: 0.07em;">Disclosed to you</span>
                 </div>
                 <ul>
-                  <li>Verdict band</li>
-                  <li>Appraised value</li>
-                  <li>Threshold percentage</li>
-                  <li>Commitment hash &amp; block</li>
-                  <li>Timestamp</li>
+                  <li>The verdict word</li>
+                  <li>What the building is valued at</li>
+                  <li>The percentage used as the limit</li>
+                  <li>The sealed code for this building</li>
+                  <li>When the reading was taken</li>
                 </ul>
               </div>
               <div class="wl-receipt__col wl-receipt__col--never">
@@ -114,10 +116,10 @@
                   <span class="wl-label" style="font-size: 10px; letter-spacing: 0.07em;">Never disclosed</span>
                 </div>
                 <ul>
-                  <li>Individual deposits</li>
-                  <li>Total senior deposits</li>
-                  <li>Number of prior leases</li>
-                  <li>The salt</li>
+                  <li>What any one tenant paid</li>
+                  <li>The total of all deposits ahead of yours</li>
+                  <li>How many tenants are already there</li>
+                  <li>The secret used to seal the total</li>
                 </ul>
               </div>
             </div>
@@ -125,9 +127,10 @@
 
           <div class="wl-card wl-card--note" style="margin-top: 14px;">
             <p class="wl-body" style="margin: 0;">
-              This page proves nothing. It reads a verdict already written to the ledger — no prover
-              keys, no wallet, no WASM. That is why it loads in under a second on a phone at the
-              signing table.
+              This page works nothing out for itself. The verdict was calculated by the registry and
+              published to the public record, and this page only reads it back. Nothing has to be
+              installed, downloaded or unlocked — which is why it opens in a second on a phone, at
+              the table where somebody is about to sign.
             </p>
           </div>
 
