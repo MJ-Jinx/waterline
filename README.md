@@ -296,7 +296,7 @@ surface would be either a lie or a disclosure.
 ### Testing
 
 ```bash
-npm test              # everything (32 tests)
+npm test              # everything (34 tests)
 npm run test:site     # front end + QR only; needs no toolchain, runs in ~0.1s
 npm run test:contract # circuits; needs a compiled contract
 ```
@@ -309,7 +309,8 @@ The suite can fail — mutating `load <= safeCap` to `<` in the contract and rec
 
 The front-end suite is one test per defect that actually shipped: a pipeline that could never finish, chips that ignored `min-height` because they were inline, and result views that rendered stacked because an inline `display` outranks the UA `[hidden]` rule. It also guards that no prover keys appear under `site/`, that every DOM hook exists, and that the water surface is never a line.
 
-[CI](.github/workflows/ci.yml) runs both on every push. A clean clone compiles in **6.3s**.
+[CI](.github/workflows/ci.yml) runs both on every push. A clean clone compiles in **about 19s** on a
+GitHub-hosted runner, and the full suite runs in well under a second after that.
 
 ### Gotchas worth knowing
 
