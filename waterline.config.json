@@ -10,8 +10,13 @@
     },
     {
       "id": "bb9300569874fec0657a64bad3b469b9dbde9c918249d0c3853bec4b63c42ae2",
-      "chip": "Live 3",
+      "chip": "Live · caution",
       "label": "Live registry entry 3 · Midnight preprod"
+    },
+    {
+      "id": "db40b6dcb6ade55c28c8dabc1574eb20811887655d54e4c39ff34949a9297ec7",
+      "chip": "Live · safe",
+      "label": "Live registry entry 2 · Midnight preprod"
     }
   ]
 }

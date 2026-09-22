@@ -2,14 +2,14 @@
   "network": "preprod",
   "contract": "e99711c00fbcb7ee9a12f81a75e151367bf7899cbda96a1c54c75393494f3ac2",
   "explorer": "https://explorer.preprod.midnight.network/contracts/e99711c00fbcb7ee9a12f81a75e151367bf7899cbda96a1c54c75393494f3ac2",
-  "takenAt": "2026-09-18T08:47:09.330Z",
-  "stateHash": "e11b69299e6cacff194455a30ddb8681227c4b4b0695b7aaf61fc0c54d467244",
-  "block": 2598396,
-  "blockTimestamp": 1789703034000,
+  "takenAt": "2026-09-22T14:10:59.337Z",
+  "stateHash": "18e3e20702563a8836f655787d74a60541593ff5cd618eeec3a0a40447d5eec2",
+  "block": 2661364,
+  "blockTimestamp": 1790085858000,
   "buildings": [
     {
       "id": "189285d39e578cbe1e357d330fe58326c644d93500d9ad7a424212fc9de44c47",
-      "chip": "Live",
+      "chip": "Live · danger",
       "label": "Live registry entry · Midnight preprod",
       "registered": true,
       "commitment": "f65833a05bf6d6c47b18884d7e20674c90b7ddde3ed14b0a0da87d19a37f788a",
@@ -21,6 +21,40 @@
         "cautionPct": 80,
         "limit": "420000000",
         "boundTo": "f65833a05bf6d6c47b18884d7e20674c90b7ddde3ed14b0a0da87d19a37f788a",
+        "fresh": true
+      }
+    },
+    {
+      "id": "bb9300569874fec0657a64bad3b469b9dbde9c918249d0c3853bec4b63c42ae2",
+      "chip": "Live · caution",
+      "label": "Live registry entry 3 · Midnight preprod",
+      "registered": true,
+      "commitment": "19cd5b940ab6ad769b69d9616a7f1259a21eae200d575177a40222a87bbb3ed1",
+      "certificate": {
+        "band": "caution",
+        "bandIndex": 1,
+        "appraisedValue": "700000000",
+        "safePct": 70,
+        "cautionPct": 80,
+        "limit": "490000000",
+        "boundTo": "19cd5b940ab6ad769b69d9616a7f1259a21eae200d575177a40222a87bbb3ed1",
+        "fresh": true
+      }
+    },
+    {
+      "id": "db40b6dcb6ade55c28c8dabc1574eb20811887655d54e4c39ff34949a9297ec7",
+      "chip": "Live · safe",
+      "label": "Live registry entry 2 · Midnight preprod",
+      "registered": true,
+      "commitment": "7113061f936e4a5c44251ea560c0d4e882ab02ae4743c44249dfd5246d170243",
+      "certificate": {
+        "band": "safe",
+        "bandIndex": 2,
+        "appraisedValue": "800000000",
+        "safePct": 70,
+        "cautionPct": 80,
+        "limit": "560000000",
+        "boundTo": "7113061f936e4a5c44251ea560c0d4e882ab02ae4743c44249dfd5246d170243",
         "fresh": true
       }
     }

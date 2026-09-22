@@ -168,6 +168,26 @@ for (const p of PLAN) {
   }
 
   // ---- certificate. Reads the commitment, writes only a band: no new salt.
+  //
+  // Skip it if the chain already holds a certificate bound to the CURRENT
+  // commitment. state.json cannot answer this: it records leases, not
+  // verdicts, so a re-run would happily pay to issue the same verdict again.
+  // Checking boundTo rather than mere presence keeps it honest — a
+  // certificate left over from before the last lease is stale and must be
+  // reissued.
+  const liveCommit = await buildingCommitment(S.addr, bid);
+  const existing = (await (async () => {
+    const st = await publicDataProvider.queryContractState(S.addr).catch(() => null);
+    if (!st) return null;
+    const l = ledger(st.data);
+    const id = ub(bid);
+    return l.certificates.member(id) ? l.certificates.lookup(id) : null;
+  })());
+  if (existing && hx(existing.boundTo) === liveCommit) {
+    console.log(`   issueCertificate — already current (${BANDS[Number(existing.band)]})`);
+    continue;
+  }
+
   const band = await write(
     'issueCertificate',
     [ub(bid), p.appraised, SAFE_PCT, CAUTION_PCT],
