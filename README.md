@@ -322,6 +322,7 @@ GitHub-hosted runner, and the full suite runs in well under a second after that.
 | `1010: Custom error: 182` | Intent TTL expired. Prove and submit in the same process, no gap. |
 | `type error: argument 3` | A `Uint<8>` circuit arg needs a BigInt (`70n`, not `70`). |
 | `reading 'Symbol()'` inside compact-js | `CompiledContract` combinators called curried. Use the data-first form. |
+| `npm ci` fails with `Missing: smoldot … from lock file` | npm 11 prunes optional peer deps that npm 10 records. CI pins npm 10.8.2 and the lockfile matches it, so on npm 11 use `npm install`, which reports removing two packages and leaves the lockfile modified. Do not commit that. |
 
 ---
 
