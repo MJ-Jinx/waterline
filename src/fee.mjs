@@ -63,6 +63,23 @@ export const configuration = {
   indexerClientConnection: { indexerHttpUrl: IDX, indexerWsUrl: IDXWS },
   txHistoryStorage: new InMemoryTransactionHistoryStorage(WalletEntrySchema, mergeWalletEntries),
   costParameters: { additionalFeeOverhead: 1n, feeBlocksMargin: 5 },
+
+  // THIS IS WHAT MADE THE SYNC FINISH. The defaults are size 10, timeout 1ms,
+  // spacing 4ms — and `spacing` is a deliberate Schedule.spaced() pause between
+  // batches. On preprod's ~1.5M zswap events that is 150,000 batches at 4ms
+  // each: ten minutes of sleeping before any other cost. The 10 GB run died at
+  // ~600s, which is that number.
+  //
+  // The memory failure follows from the same knob. The indexer pushes events
+  // down the WebSocket as fast as it can read them while the consumer is
+  // rate-limited to 10 per 4ms, so the unapplied remainder buffers in the JS
+  // heap — which is why it was a JS heap OOM and not a WASM one, and why
+  // raising --max-old-space-size only moved the failure later.
+  //
+  // Bigger batches, no artificial spacing: drain the socket at the speed it
+  // fills. The timeout still bounds latency once we are at the tip and batches
+  // no longer fill.
+  batchUpdates: { size: 2000, timeout: 200, spacing: 0 },
 };
 
 /**

@@ -1,10 +1,9 @@
-// Sync the fee wallet, cache the sync, and report whether it can pay a fee.
+// Sync the fee wallet, cache the position, and report whether it can pay a fee.
 //
-//   node --max-old-space-size=10240 src/fee-sync.mjs
+//   node src/fee-sync.mjs
 //
-// The heap flag is not optional on a first run: syncing preprod from genesis
-// dies at ~3.3 GB under Node's default. Later runs restore from state.fee.json
-// and are quick, but the flag costs nothing to keep.
+// Run src/fee-seed.mjs first. Without a snapshot this starts at genesis and
+// exhausts the heap — 10 GB was not enough. With one it syncs only the tail.
 //
 // Reports two facts separately, because only one of them is the usual blocker:
 // whether NIGHT has arrived, and whether any of it is registered for DUST
@@ -16,7 +15,13 @@ import { NETWORK } from './common.mjs';
 const { facade, keys, restored } = await openFeeWallet();
 console.log(`fee wallet ${keys.address}`);
 console.log(`network    ${NETWORK}`);
-console.log(restored ? 'restored a cached sync position\n' : 'no cache — syncing from genesis, this is the slow one\n');
+if (!restored) {
+  console.log('\nNo snapshot — this would sync from genesis and run out of memory.');
+  console.log('Run:  node src/fee-seed.mjs');
+  await facade.stop?.();
+  process.exit(1);
+}
+console.log('restored a snapshot; syncing the tail\n');
 
 const started = Date.now();
 const tick = setInterval(() => {
@@ -38,34 +43,38 @@ console.log(await saveFeeState(state)
   ? 'cached the sync position; the next run resumes from here\n'
   : 'could not cache the sync position; the next run re-syncs\n');
 
-const big = (v) => { try { return BigInt(v ?? 0); } catch { return 0n; } };
-const night = big(state?.unshielded?.balance ?? state?.unshielded?.totalBalance);
-const dust = big(state?.dust?.balance ?? state?.dust?.availableDust);
+// A NIGHT UTxO arrives as UtxoWithMeta: the ledger Utxo under `utxo`, and the
+// indexer's view of it under `meta`. The registration flag lives on `meta`, not
+// on the Utxo — reading it off the top level yields undefined, which makes an
+// already-registered wallet look unregistered forever.
+const coins = state.unshielded.availableCoins ?? [];
+const night = coins.reduce((sum, c) => sum + BigInt(c.utxo.value), 0n);
+const registered = coins.filter((c) => c.meta?.registeredForDustGeneration);
+
+// dust.balance is a METHOD taking the time to value generation at — DUST
+// accrues continuously, so "the balance" is only meaningful at an instant.
+const now = new Date();
+const dust = state.dust.balance(now);
 
 console.log('balances');
-console.log(`  NIGHT (unshielded)   ${night.toLocaleString()}`);
-console.log(`  DUST (spendable)     ${dust.toLocaleString()}`);
-
-const utxos = state?.unshielded?.utxos ?? state?.unshielded?.availableUtxos ?? [];
-const list = Array.isArray(utxos) ? utxos : [];
-const registered = list.filter((u) => u?.registeredForDustGeneration);
-console.log(`  NIGHT UTxOs          ${list.length} total, ${registered.length} registered for DUST`);
+console.log(`  NIGHT                ${night.toLocaleString()}`);
+console.log(`  DUST (Specks, now)   ${dust.toLocaleString()}`);
+console.log(`  NIGHT UTxOs          ${coins.length} total, ${registered.length} registered for DUST`);
+for (const c of coins) {
+  console.log(`    ${String(c.utxo.value).padStart(14)}  registered=${Boolean(c.meta?.registeredForDustGeneration)}`);
+}
 
 console.log('\ncan this wallet pay a fee?');
 if (dust > 0n) {
   console.log('  YES — self-funded writes are possible now.');
 } else if (night > 0n && registered.length === 0) {
   console.log('  NOT YET — NIGHT is here but none of it is registered for DUST generation.');
-  console.log('  Next:  node --max-old-space-size=10240 src/fee-register.mjs');
+  console.log('  Next:  node src/fee-register.mjs');
 } else if (registered.length > 0) {
-  console.log('  NOT YET — NIGHT is registered, but no DUST has accrued against it yet. Wait and re-run.');
+  console.log('  NOT YET — NIGHT is registered, but no DUST has accrued yet. Wait and re-run.');
 } else {
-  console.log('  NO — no NIGHT at this address. Request some from the faucet first.');
-}
-
-if (process.env.DUMP_STATE) {
-  console.log('\nraw state:');
-  console.log(JSON.stringify(state, (_, v) => (typeof v === 'bigint' ? `${v}n` : v), 2).slice(0, 6000));
+  console.log('  NO — no NIGHT at this address. Check the snapshot offset in src/fee-seed.mjs;');
+  console.log('  a snapshot that starts AFTER the funding arrived looks exactly like this.');
 }
 
 await facade.stop?.();
