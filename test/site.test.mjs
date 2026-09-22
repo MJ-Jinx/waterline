@@ -190,6 +190,25 @@ test('the tenant pages load no proving machinery', () => {
   }
 });
 
+// Paths the demo build produces. They are gitignored, so they are absent in a
+// fresh checkout and present after `npm run build:demo` — which means "this
+// file is missing" is the normal state in CI's fast job and says nothing about
+// whether the link is right.
+const GENERATED = ['assets/demo/', 'zk/'];
+
+test('generated paths really are generated', () => {
+  // Otherwise the exemption below becomes a way to smuggle a broken link past
+  // the link test: name it assets/demo/anything and it stops being checked.
+  const ignore = fs.readFileSync('.gitignore', 'utf8');
+  for (const p of GENERATED) {
+    assert.ok(ignore.includes(p), `${p} is exempt from the link check, so it must be gitignored`);
+  }
+  const staging = fs.readFileSync('src/stage-demo.mjs', 'utf8');
+  assert.ok(staging.includes('site/zk'), 'src/stage-demo.mjs produces site/zk');
+  const cfg = fs.readFileSync('demo-src/vite.config.mjs', 'utf8');
+  assert.ok(cfg.includes('site/assets/demo'), 'the Vite build produces site/assets/demo');
+});
+
 test('every internal link resolves', () => {
   for (const page of pages) {
     const html = fs.readFileSync(path.join(SITE, page), 'utf8');
@@ -200,6 +219,7 @@ test('every internal link resolves', () => {
       // has to exist is check.html.
       const target = raw.split('?')[0];
       if (!target) continue;
+      if (GENERATED.some((g) => target.startsWith(g))) continue;
       assert.ok(fs.existsSync(path.join(SITE, target)),
         `${page} links to ${raw}, and ${target} does not exist`);
     }
