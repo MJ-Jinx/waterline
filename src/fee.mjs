@@ -29,9 +29,9 @@ import { WalletFacade, WalletEntrySchema, mergeWalletEntries } from '@midnight-n
 import { InMemoryTransactionHistoryStorage } from '@midnight-ntwrk/wallet-sdk-abstractions';
 import { ShieldedWallet } from '@midnight-ntwrk/wallet-sdk-shielded';
 import { DustWallet } from '@midnight-ntwrk/wallet-sdk-dust-wallet';
-import { makeWasmProvingService } from '@midnight-ntwrk/wallet-sdk-capabilities/proving';
+import { makeServerProvingService } from '@midnight-ntwrk/wallet-sdk-capabilities/proving';
 import { ZswapSecretKeys, DustSecretKey, LedgerParameters } from '@midnight-ntwrk/ledger-v8';
-import { S, NETWORK, IDX, IDXWS, NODE } from './common.mjs';
+import { S, NETWORK, IDX, IDXWS, NODE, PS } from './common.mjs';
 
 // Matches the .gitignore `state*.json` rule, so the sync cache and the keys it
 // belongs to are ignored by the same line. Verified with `git check-ignore`.
@@ -58,8 +58,9 @@ export function feeKeys() {
 export const configuration = {
   networkId: NETWORK,
   relayURL: new URL(NODE),
-  // Unused — proving runs in WASM, in-process. The facade still requires it.
-  provingServerUrl: new URL('http://127.0.0.1:6300'),
+  // The proof server that proves the DustSpend — the same one the contract
+  // circuits use. Was a dead field back when proving ran in WASM in-process.
+  provingServerUrl: new URL(PS),
   indexerClientConnection: { indexerHttpUrl: IDX, indexerWsUrl: IDXWS },
   txHistoryStorage: new InMemoryTransactionHistoryStorage(WalletEntrySchema, mergeWalletEntries),
   costParameters: { additionalFeeOverhead: 1n, feeBlocksMargin: 5 },
@@ -95,7 +96,23 @@ export async function openFeeWallet() {
 
   const facade = await WalletFacade.init({
     configuration,
-    provingService: () => makeWasmProvingService({}),
+    // The DustSpend needs a proof too, and this is where it gets made.
+    //
+    // makeWasmProvingService proves in-process, which sounds like the local
+    // option and is not: it fetches the dust proving keys from an AWS dev
+    // bucket at proof time, per transaction. Here that timed out —
+    //
+    //   Failed to fetch .../dust/9/spend.prover
+    //   ConnectTimeoutError (attempted 3.5.71.102:443, timeout: 10000ms)
+    //
+    // — and the failure surfaced as "An unknown error occurred", which is how
+    // it burned a certificate write before the cause was visible. It also
+    // quietly made "proving happens locally" false for half the transaction:
+    // the contract circuits were local while the dust proof reached out to a
+    // third-party bucket on every single write.
+    //
+    // The proof server we already run proves both, from one place we control.
+    provingService: () => makeServerProvingService({ provingServerUrl: new URL(PS) }),
     shielded: () => (cache?.shielded
       ? ShieldedWallet(configuration).restore(cache.shielded)
       : ShieldedWallet(configuration).startWithSecretKeys(k.zswapKeys)),
