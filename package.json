@@ -13,6 +13,7 @@
     "test": "node --test test/contract.test.mjs test/site.test.mjs test/qr.test.mjs",
     "test:site": "node --test test/site.test.mjs test/qr.test.mjs",
     "test:contract": "node --test test/contract.test.mjs",
+    "verify:refusal": "node --test --test-name-pattern=\"understates the total\" test/contract.test.mjs",
     "registry": "node src/registry.mjs",
     "certify": "node src/certify.mjs",
     "read": "node src/read.mjs",

@@ -16,7 +16,7 @@ No wallet, no extension, no signup, no testnet tokens. Open the link.
 | Page | What it shows |
 |---|---|
 | [Check a building](https://mj-jinx.github.io/waterline/check.html) | the tenant view — a verdict band read off the live ledger, with a downloadable QR certificate |
-| [Why a landlord can’t lie](https://mj-jinx.github.io/waterline/why-lying-fails.html) | claim any total you like, and watch the certificate refuse to exist |
+| [Why a landlord can’t lie](https://mj-jinx.github.io/waterline/why-lying-fails.html) | claim any total you like, and watch the certificate refuse to exist. **A scripted illustration** — to watch the real circuit refuse, run `npm run verify:refusal` |
 | [Registry console](https://mj-jinx.github.io/waterline/registry.html) | the proving pipeline, framed as a simulation |
 | [Slide deck](https://mj-jinx.github.io/waterline/deck.html) | twelve slides: problem, mechanism, privacy, business model, evidence. Press <kbd>P</kbd> to print to PDF |
 | [Design system](https://mj-jinx.github.io/waterline/foundations.html) | palette, type scale, components, the figure in all three bands |
@@ -299,7 +299,40 @@ surface would be either a lie or a disclosure.
 npm test              # everything (34 tests)
 npm run test:site     # front end + QR only; needs no toolchain, runs in ~0.1s
 npm run test:contract # circuits; needs a compiled contract
+npm run verify:refusal # just the attack: watch the real circuit refuse to lie
 ```
+
+### Watch the refusal happen, rather than watching an animation
+
+The [Why a landlord can’t lie](https://mj-jinx.github.io/waterline/why-lying-fails.html) page is a
+scripted illustration. It runs on a timer, touches no network, and uses a fabricated building — it
+is labelled as a simulated landlord device top and bottom, because the public site hosts no prover
+keys and therefore cannot prove anything in a browser.
+
+The mechanism it depicts is real, and one command executes it:
+
+```bash
+npm install
+compact compile +0.31.1 contracts/waterline.compact build/waterline
+npm run verify:refusal
+```
+
+That runs a single test against the compiled circuit, in-process through `compact-runtime`. It
+builds a building with two leases totalling ₩5.5억, confirms the honest verdict against a ₩6.0억
+appraisal is **위험 DANGER**, then forges an opening claiming ₩3.0억 — the lie that would flip it to
+안전 SAFE — and asserts the circuit throws. The assertion matches on `/Stale opening/`, the exact
+string the web page displays, so the words on the animation and the words from the circuit are the
+same words.
+
+A passing test is a weak signal on its own, so check that it can fail. In that test, change the
+forged opening `{ total: 3n * EOK, count: 1n }` to the true books, `{ total: 55n * EOK / 10n,
+count: 2n }`. It now fails with `Missing expected exception`, because a correct opening does not
+throw.
+
+Changing only the total to the true ₩5.5억 and leaving `count: 1n` still throws. The commitment is
+taken over the total **and** the lease count **and** the salt, so getting one of the three right is
+not enough. That is the chain doing its job: a landlord who knows the total but not the salt, or who
+miscounts the leases, cannot open it either.
 
 No test framework and no dependencies — `node:test` against a local simulator. The contract suite runs circuits in-process through `compact-runtime`, so a failed assert surfaces exactly as it does on a prover's machine.
 
