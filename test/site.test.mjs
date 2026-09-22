@@ -7,6 +7,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 
 const SITE = 'site';
 const css = fs.readFileSync(path.join(SITE, 'assets/styles.css'), 'utf8');
@@ -161,13 +162,32 @@ test('the page can verify itself against the chain', () => {
   assert.match(check, /data-wl-verify/, 'the result has somewhere to land');
 });
 
-test('the site hosts no ZK prover keys', () => {
-  // The tenant page is a ledger read. If keys ever appear under site/, the
-  // "no key material is published" claim in the README stops being true.
-  const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
-    e.isDirectory() ? walk(path.join(dir, e.name)) : [path.join(dir, e.name)]);
-  const offenders = walk(SITE).filter((f) => /\.(prover|verifier|bzkir)$/.test(f));
-  assert.deepEqual(offenders, [], 'no prover/verifier/zkir artifacts under site/');
+test('no ZK key material is committed', () => {
+  // The demo page proves in the browser, so 11 MB of prover keys DO get served
+  // — staged into site/zk/ by `npm run build:demo`. What must never happen is
+  // committing them: "we clone your GitHub repository" is step one of the
+  // judging, and nobody should wait on 11 MB of build output to do it.
+  //
+  // So the check moved from "does this file exist on disk" (which now depends
+  // on whether you have run the build) to "is it tracked by git" (which is the
+  // claim we actually make).
+  const tracked = execFileSync('git', ['ls-files', SITE], { encoding: 'utf8' })
+    .split('\n').filter(Boolean);
+  const offenders = tracked.filter((f) => /\.(prover|verifier|bzkir)$/.test(f));
+  assert.deepEqual(offenders, [], 'no prover/verifier/zkir artifacts committed under site/');
+});
+
+test('the tenant pages load no proving machinery', () => {
+  // The claim that survived: checking a building is a ledger read. /check must
+  // stay free of the demo bundle and its key material, or "it loads in under a
+  // second on a phone at the signing table" stops being true.
+  for (const page of ['check.html', 'index.html', 'guide.html']) {
+    const html = fs.readFileSync(path.join(SITE, page), 'utf8');
+    for (const m of html.matchAll(/(?:src|href)="([^"]+)"/g)) {
+      assert.ok(!/assets\/demo\/|\/zk\/|\.prover|\.bzkir|params\/bls_/.test(m[1]),
+        `${page} references ${m[1]}, which belongs to the demo page only`);
+    }
+  }
 });
 
 test('every internal link resolves', () => {

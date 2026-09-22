@@ -17,7 +17,8 @@
     "registry": "node src/registry.mjs",
     "certify": "node src/certify.mjs",
     "read": "node src/read.mjs",
-    "snapshot": "node src/snapshot.mjs"
+    "snapshot": "node src/snapshot.mjs",
+    "build:demo": "cd demo-src && vite build && cd .. && node src/stage-demo.mjs"
   },
   "dependencies": {
     "@midnight-ntwrk/compact-runtime": "0.16.0",
@@ -34,5 +35,11 @@
     "@midnight-ntwrk/wallet-sdk-shielded": "^3.0.1",
     "@midnight-ntwrk/wallet-sdk-unshielded-wallet": "^3.1.0",
     "@polkadot/api": "^16.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "vite": "^5.4.21",
+    "vite-plugin-top-level-await": "^1.6.0",
+    "vite-plugin-wasm": "^3.6.0"
   }
 }

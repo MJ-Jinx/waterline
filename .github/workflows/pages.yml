@@ -56,6 +56,35 @@ jobs:
           npm run compile
           npm run snapshot
 
+      # The Full Demo proves in the browser, so it needs the Vite bundle and
+      # ~11 MB of prover keys. Both are build output and neither is committed —
+      # "we clone your GitHub repository" is step one of the judging, and
+      # nobody should wait on build artifacts to do it.
+      #
+      # Non-fatal on purpose, like the snapshot above: if this breaks, every
+      # other page still deploys and demo.html reports that it could not start,
+      # which is better than losing the whole site over one page.
+      - name: Build the Full Demo bundle
+        id: demo
+        continue-on-error: true
+        run: |
+          npm ci
+          curl --proto '=https' --tlsv1.2 -LsSf \
+            https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
+          export PATH="$HOME/.compact/bin:$PATH"
+          compact update 0.31.1
+          npm run compile
+          npm run build:demo
+
+      - name: Report demo build outcome
+        run: |
+          if [ "${{ steps.demo.outcome }}" = "success" ]; then
+            echo "Demo bundle built; site/zk and site/assets/demo staged."
+            du -sh site/zk site/assets/demo site/params || true
+          else
+            echo "::warning::Demo build failed; demo.html will report it cannot start."
+          fi
+
       - name: Report snapshot outcome
         run: |
           if [ "${{ steps.snapshot.outcome }}" = "success" ]; then

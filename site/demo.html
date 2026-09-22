@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waterline — Run the full demo</title>
+<meta name="description" content="Watch the whole process end to end, with a real zero-knowledge proof computed in your own browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  /* Scoped to this page. The rest of the site has no build step and no
+     component framework, and this does not change that. */
+  .d-hero { padding-block: 44px 8px; }
+  .d-run {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 56px; padding: 0 28px;
+    border: 0; border-radius: var(--wl-radius-pill);
+    background: var(--wl-ink); color: #fff;
+    font-family: var(--wl-font); font-size: 17px; font-weight: 600;
+    cursor: pointer;
+  }
+  .d-run:disabled { opacity: .55; cursor: default; }
+  .d-progress { height: 6px; border-radius: 3px; background: var(--wl-surface-muted); overflow: hidden; margin-top: 22px; }
+  .d-progress__bar { height: 100%; width: 0; background: var(--wl-safe); transition: width .4s ease; }
+  .d-status { font-family: var(--wl-font-mono); font-size: 13px; color: var(--wl-ink-muted); margin: 12px 0 0; }
+  .d-next {
+    margin: 10px 0 0; padding: 12px 16px;
+    border-left: 3px solid var(--wl-caution);
+    background: var(--wl-surface-muted);
+    font-size: 15px; color: var(--wl-ink-body);
+  }
+  .d-log { list-style: none; margin: 28px 0 0; padding: 0; }
+  .d-entry {
+    border-left: 2px solid var(--wl-line-strong);
+    padding: 0 0 22px 20px; margin: 0; position: relative;
+  }
+  .d-entry::before {
+    content: ''; position: absolute; left: -7px; top: 6px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--wl-surface); border: 2px solid var(--wl-line-strong);
+  }
+  .d-entry h3 { font-size: 17px; margin: 0 0 6px; }
+  .d-entry p { font-size: 15px; line-height: 1.65; color: var(--wl-ink-body); margin: 0 0 8px; max-width: 62ch; }
+  .d-note { font-size: 14px; color: var(--wl-ink-muted); }
+  .d-note--working { font-family: var(--wl-font-mono); color: var(--wl-caution); }
+  .d-note--ok { font-family: var(--wl-font-mono); color: var(--wl-safe); }
+  .d-note--bad { font-family: var(--wl-font-mono); color: var(--wl-danger); }
+  .d-hash { font-family: var(--wl-font-mono); font-size: 12px; word-break: break-all; }
+  .d-verdict { font-weight: 700; font-size: 16px; }
+  .d-verdict--safe { color: var(--wl-safe); }
+  .d-verdict--caution { color: var(--wl-caution); }
+  .d-verdict--danger { color: var(--wl-danger); }
+  .d-big { font-size: 40px; font-weight: 700; margin: 6px 0 0; }
+  .d-big--safe { color: var(--wl-safe); }
+  .d-big--caution { color: var(--wl-caution); }
+  .d-big--danger { color: var(--wl-danger); }
+  .d-cost { display: flex; flex-wrap: wrap; gap: 10px 26px; margin: 14px 0 0; }
+  .d-cost div { font-size: 14px; color: var(--wl-ink-muted); }
+  .d-cost b { display: block; font-family: var(--wl-font-mono); font-size: 15px; color: var(--wl-ink); font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="wl-page" data-demo>
+
+  <header class="wl-header">
+    <div class="wl-container wl-header__inner">
+      <a class="wl-wordmark" href="index.html">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="7.5" stroke="#0F2A4A" stroke-width="1.8"></circle>
+          <line x1="2" y1="12" x2="22" y2="12" stroke="#C0352B" stroke-width="1.8"></line>
+        </svg>
+        Waterline
+      </a>
+      <div class="wl-spacer"></div>
+      <nav class="wl-nav" aria-label="Main">
+        <a href="guide.html">How it works</a>
+        <a href="check.html">Check a building</a>
+        <a href="demo.html" aria-current="page">Run the demo</a>
+        <a href="why-lying-fails.html">Why lying fails</a>
+        <a href="registry.html">Registry console</a>
+      </nav>
+      <span class="wl-badge">proves in your browser</span>
+    </div>
+  </header>
+
+  <main class="wl-main">
+
+    <section class="wl-container d-hero">
+      <h1 class="wl-display" style="max-width: 20ch;">Watch the whole thing, start to finish</h1>
+      <p class="wl-body" style="max-width: 64ch; margin-top: 14px;">
+        Press the button and this page walks through every step a registry takes: opening a
+        building, adding each tenant's deposit to a sealed total, and working out whether the
+        building is safe — all without the total ever being written down in the open. After each
+        step it tells you what is coming next.
+      </p>
+      <p class="wl-body" style="max-width: 64ch;">
+        <strong>The proofs are real and they are computed here, in this tab.</strong> Nothing is
+        pre-recorded and nothing is animated. That is also why it takes a minute or two: a
+        zero-knowledge proof is genuine work, and you are watching it happen rather than watching a
+        picture of it.
+      </p>
+
+      <div style="margin-top: 26px;">
+        <button class="d-run" type="button" data-demo-run>Run Full Demo</button>
+      </div>
+
+      <div class="d-cost">
+        <div>Downloads on first run<b>~15 MB</b></div>
+        <div>Proofs computed<b>4</b></div>
+        <div>Wallet needed<b>none</b></div>
+        <div>Cost to you<b>nothing</b></div>
+      </div>
+    </section>
+
+    <section class="wl-container" data-demo-stage hidden style="padding-bottom: 20px;">
+      <div class="d-progress"><div class="d-progress__bar" data-demo-bar></div></div>
+      <p class="d-status" data-demo-status>Ready.</p>
+      <p class="d-next" data-demo-next style="display: none;"></p>
+
+      <ol class="d-log" data-demo-log></ol>
+
+      <div class="wl-card" data-demo-result hidden style="margin-top: 10px;">
+        <p class="wl-body-sm" style="margin: 0;">The verdict, and the only thing published</p>
+        <p class="d-big" data-demo-verdict>&nbsp;</p>
+        <p class="wl-body-sm" style="max-width: 60ch; margin-top: 12px;">
+          Everything else — the deposits, the total, how many households there are, the secret that
+          seals them — stayed in this tab and was never written anywhere. Compare it with the three
+          real buildings on <a href="check.html">Check a building</a>, which went through exactly
+          this process on the live test network.
+        </p>
+      </div>
+    </section>
+
+    <!-- The lie ------------------------------------------------------------- -->
+    <section class="wl-container" style="padding-block: 30px 56px;">
+      <h2 class="wl-title">Now try to cheat</h2>
+      <p class="wl-body" style="max-width: 64ch; margin-top: 6px;">
+        Put in a deposit total the registry might <em>wish</em> were true — something small enough to
+        make a crowded building look safe — and press the button. The calculation runs in this tab
+        with the false figure in place.
+      </p>
+      <div class="wl-row" style="align-items: flex-end; gap: 14px; margin-top: 16px;">
+        <div class="wl-field" style="flex: 0 1 260px;">
+          <label for="claim">Claimed total, in 억</label>
+          <input class="wl-input" id="claim" type="number" min="0" max="10" step="0.1" value="3.0"
+                 data-demo-claim autocomplete="off">
+        </div>
+        <button class="wl-btn" type="button" data-demo-forge style="min-height: 48px;">Try the lie</button>
+      </div>
+      <p class="wl-body-sm" style="max-width: 64ch; margin-top: 14px;">
+        The real books say ₩5.0억 across two households. Any other figure you enter is a lie about
+        what is already sealed, and you can watch what happens to it.
+      </p>
+    </section>
+
+    <!-- Honesty ------------------------------------------------------------- -->
+    <section class="wl-container" style="padding-bottom: 60px;">
+      <div class="wl-card wl-card--quiet" style="max-width: 74ch;">
+        <h2 class="wl-title" style="font-size: 20px; margin-top: 0;">What is real here, precisely</h2>
+        <p class="wl-body-sm">
+          <strong>Real:</strong> the contract, the calculation, the sealing, and the zero-knowledge
+          proofs — computed in this tab by the same code the registry runs, using the same proving
+          keys. The refusal when you enter a false total is the contract's own, not a message we
+          wrote.
+        </p>
+        <p class="wl-body-sm">
+          <strong>Invented:</strong> the building and its deposits. This tab makes them up, because
+          in this demo your browser is playing the <em>registry</em> — the only party allowed to
+          hold those figures. A tenant's browser could never do this, and that is the point rather
+          than a limitation: if it could, the tenant would be holding the landlord's private books.
+        </p>
+        <p class="wl-body-sm">
+          <strong>Not done here:</strong> sending the result to the network. That needs a funded
+          wallet, and putting one in a public web page would mean publishing its key. The three
+          buildings on <a href="check.html">Check a building</a> were submitted the proper way, from
+          the registry's own machine, and you can read them off the chain.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="wl-footer">
+    <div class="wl-container wl-footer__inner">
+      <span class="k" style="font-family: var(--wl-font);">Every proof on this page was computed on your device</span>
+      <span class="k" style="font-family: var(--wl-font);">New here? <a href="guide.html">Start with the plain-language guide</a></span>
+    </div>
+  </footer>
+
+</div>
+<script type="module" src="assets/demo/demo.js"></script>
+</body>
+</html>

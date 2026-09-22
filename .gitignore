@@ -21,3 +21,11 @@ state*.json.*
 *.bin
 *.hex
 .DS_Store
+
+# Demo proving keys: 11 MB, reproducible from `npm run compile`. Staged into
+# the Pages artifact by `npm run build:demo`, never committed — "we clone your
+# repository" is step one of the judging.
+site/zk/
+
+# Demo bundle: Vite output, rebuilt by `npm run build:demo`.
+site/assets/demo/
