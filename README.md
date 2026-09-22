@@ -297,7 +297,7 @@ surface would be either a lie or a disclosure.
 ### Testing
 
 ```bash
-npm test              # everything (34 tests)
+npm test              # everything (35 tests)
 npm run test:site     # front end + QR only; needs no toolchain, runs in ~0.1s
 npm run test:contract # circuits; needs a compiled contract
 npm run verify:refusal # just the attack: watch the real circuit refuse to lie

@@ -224,3 +224,32 @@ test('"not registered" is never presented as safe', () => {
   assert.doesNotMatch(notRegisteredBlock, /\bSAFE\b/,
     'the not-registered state must not use the SAFE verdict word');
 });
+
+test('the guide quotes labels that actually exist on the pages it describes', () => {
+  // The guide walks a visitor through the UI by naming controls: "next to
+  // Deposits ahead of yours", "press Save this verification". Renaming a label
+  // on /check silently turns those instructions into a hunt for something that
+  // is no longer there — which is worse than no guide, because the reader
+  // assumes they are the one who is lost. This shipped once: the receipt label
+  // "Senior total" was reworded and the guide kept quoting the old name.
+  const guide = fs.readFileSync(path.join(SITE, 'guide.html'), 'utf8');
+  const check = fs.readFileSync(path.join(SITE, 'check.html'), 'utf8');
+
+  const quoted = [...guide.matchAll(/<em>([^<]{3,60})<\/em>/g)].map((m) => m[1].trim());
+  assert.ok(quoted.length >= 3, 'the guide names some controls');
+
+  // Only the ones that are UI labels rather than prose emphasis: a label is
+  // something that appears verbatim somewhere in the site's markup.
+  const everything = pages.map((p) => fs.readFileSync(path.join(SITE, p), 'utf8')).join('\n');
+  const known = ['Deposits ahead of yours', 'Privacy receipt', 'Save this verification',
+                 'Generate certificate'];
+  for (const label of known) {
+    assert.ok(guide.includes(label), `the guide should still walk the reader past "${label}"`);
+    assert.ok(everything.includes(label), `the guide quotes "${label}", which no page defines`);
+  }
+  // And the specific one that drifted.
+  assert.ok(check.includes('Deposits ahead of yours'),
+    '/check must still carry the label the guide sends people to');
+  assert.ok(!guide.includes('Senior total'),
+    'the guide must not quote the retired "Senior total" label');
+});
