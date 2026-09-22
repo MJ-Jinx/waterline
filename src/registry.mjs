@@ -12,7 +12,7 @@ import { createUnprovenDeployTx, createUnprovenCallTx } from '@midnight-ntwrk/mi
 import { ledger } from '../build/waterline/contract/index.js';
 import {
   S, save, BID, building, compiledContract, zkConfigProvider, publicDataProvider,
-  walletProvider, sponsorAndSubmit, stateHash, waitForAdvance, freshSalt, lastSalt,
+  walletProvider, proveAndSubmit, stateHash, waitForAdvance, freshSalt, lastSalt,
   connect, disconnect, wait, ub, hx, won,
 } from './common.mjs';
 
@@ -34,7 +34,7 @@ if (!S.addr) {
   save();
   console.log(`      contract ${S.addr}`);
   // The unproven transaction is on .private, not .public.
-  if (!await sponsorAndSubmit(dep.private.unprovenTx, 'deploy')) process.exit(1);
+  if (!await proveAndSubmit(dep.private.unprovenTx, 'deploy')) process.exit(1);
 
   let h = null;
   for (let i = 0; i < 50 && !h; i += 1) { await wait(6000); h = await stateHash(S.addr); }
@@ -63,7 +63,7 @@ async function write(circuitId, args, label, commitLocally) {
     console.log(`      circuit refused: ${String(e.message || e).slice(0, 200)}`);
     return false;
   }
-  if (!await sponsorAndSubmit(built.private.unprovenTx, label)) return false;
+  if (!await proveAndSubmit(built.private.unprovenTx, label)) return false;
   S.sh = await waitForAdvance(S.addr, S.sh);
   commitLocally();
   save();

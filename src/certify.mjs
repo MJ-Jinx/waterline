@@ -13,7 +13,7 @@ import * as led from '@midnight-ntwrk/ledger-v8';
 import { createUnprovenCallTx } from '@midnight-ntwrk/midnight-js-contracts';
 import {
   S, save, BID, building, compiledContract, zkConfigProvider, publicDataProvider,
-  walletProvider, sponsorAndSubmit, stateHash, waitForAdvance, setLie,
+  walletProvider, proveAndSubmit, stateHash, waitForAdvance, setLie,
   connect, disconnect, ub, won,
 } from './common.mjs';
 
@@ -65,7 +65,7 @@ try {
   const band = Number(built.private.result);
   console.log(`\n   circuit OK -> band ${band}: ${BANDS[band]}`);
 
-  const sent = await sponsorAndSubmit(built.private.unprovenTx, 'issueCertificate');
+  const sent = await proveAndSubmit(built.private.unprovenTx, 'issueCertificate');
   if (sent) {
     S.sh = await waitForAdvance(S.addr, S.sh);
     save();

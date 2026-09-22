@@ -1,7 +1,10 @@
-// Shared plumbing for Waterline: burner identity, ProofStation as a
-// ProvingProvider, the registry's private state, and transaction submission.
+// Shared plumbing for Waterline: the registry's identity and private state,
+// local proving, and paying for and submitting its own transactions.
 //
-// Nothing here needs a browser extension, a local proof server, or any funds.
+// This is the REGISTRY side — the side that holds the books. It needs a proof
+// server and a funded wallet. The tenant-facing site needs neither: reading a
+// verdict is a plain GraphQL query, because issueCertificate already wrote the
+// band to the ledger.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -80,7 +83,7 @@ export const walletProvider = {
   // The SDK accepts hex or Bech32m here; a raw Uint8Array throws in bech32 decode.
   getCoinPublicKey: () => hx(led.encodeCoinPublicKey(zswap.coinPublicKey)),
   getEncryptionPublicKey: () => zswap.encryptionPublicKey,
-  balanceTx: async (tx) => tx, // balancing is done by ProofStation, below
+  balanceTx: async (tx) => tx, // balancing happens after proving, in proveAndSubmit
 };
 
 // ---------------------------------------------------------------- witnesses
@@ -119,9 +122,11 @@ _cc = CompiledContract.withCompiledFileAssets(_cc, BUILD);
 export const compiledContract = _cc;
 
 // ---------------------------------------------------------------- proving
-// ProofStation as a ProvingProvider. The key insight: the prover key travels
-// WITH the request, so a third-party prover can prove a contract it has never
-// seen. Note /check and /prove take DIFFERENT payload formats.
+// A ProvingProvider over the standard proof-server API. The prover key travels
+// WITH the request, so the server can prove a contract it has never seen —
+// which is what made a third-party prover possible at all, and is also exactly
+// why we no longer use one: that request carries the witness. Note that /check
+// and /prove take DIFFERENT payload formats.
 const keyMaterial = (circuit) => ({
   proverKey: fs.readFileSync(path.join(BUILD, 'keys', `${circuit}.prover`)),
   verifierKey: fs.readFileSync(path.join(BUILD, 'keys', `${circuit}.verifier`)),
@@ -146,63 +151,92 @@ export const provingProvider = {
   },
 };
 
+// ---------------------------------------------------------------- fee wallet
+// Imported lazily. fee.mjs reads S, NETWORK and the endpoints from this module,
+// so a top-level import here would be a cycle — which ESM tolerates but which
+// leaves one of the two modules half-initialised depending on entry point.
+//
+// Opened once and shared: every write in a run pays from the same wallet, and
+// syncing it more than once would waste the thing the snapshot exists to avoid.
+let _fee = null;
+async function feeWallet() {
+  if (_fee) return _fee;
+  const { openFeeWallet } = await import('./fee.mjs');
+  const { facade, keys, restored } = await openFeeWallet();
+  if (!restored) {
+    await facade.stop?.();
+    throw new Error('no fee wallet snapshot — run: node src/fee-seed.mjs && node src/fee-sync.mjs');
+  }
+  process.stdout.write('      syncing the fee wallet… ');
+  await facade.waitForSyncedState();
+  console.log('done');
+  _fee = { facade, keys };
+  return _fee;
+}
+
 // ---------------------------------------------------------------- chain
 let api = null;
 export const connect = async () => {
   api ??= await ApiPromise.create({ provider: new WsProvider(NODE), noInitWarn: true });
   return api;
 };
-export const disconnect = async () => { if (api) { await api.disconnect(); api = null; } };
+export const disconnect = async () => {
+  if (api) { await api.disconnect(); api = null; }
+  if (_fee) { await _fee.facade.stop?.(); _fee = null; }
+};
 
 /**
- * Prove the transaction, have ProofStation sponsor the dust fee, and submit.
- * Submission happens in the same process with no gap: the intent TTL is short,
- * and a proven transaction left sitting fails with `1010: Custom error: 182`.
+ * Prove the transaction, pay its DUST fee from our own wallet, and submit.
+ *
+ * This used to hand the proven transaction to 1AM ProofStation, which attached
+ * a DustSpend and gave it back balanced. That was one HTTP call and cost
+ * nothing, but it put a third party on the critical path of every write — and
+ * on 2026-09-22 its preprod balancer returned 503 for hours while preview and
+ * mainnet were fine, so nothing could be written at all.
+ *
+ * The order matters and is not the obvious one: PROVE first, then balance.
+ * Balancing appends a DustSpend to an already-proven transaction rather than
+ * being part of what gets proved, which is why a third party could do it at all.
+ *
+ * Submission follows immediately and in the same process. The intent TTL is
+ * short, and a proven transaction left sitting is rejected with
+ * `1010: Custom error: 182`.
  */
-export async function sponsorAndSubmit(unprovenTx, label) {
+export async function proveAndSubmit(unprovenTx, label) {
   let proven;
   try {
     proven = await unprovenTx.prove(provingProvider, led.CostModel.initialCostModel());
   } catch (e) {
     console.log(`      prove failed: ${String(e.message || e).slice(0, 200)}`);
+    console.log(`      is a proof server running at ${PS}?`);
     return null;
   }
 
-  const bin = Buffer.from(proven.serialize());
-  let balanced = null;
-  // Two different transient conditions, both of which mean "ask again later":
-  //   429 — ProofStation allows one pending balance request at a time.
-  //   503 — its own wallet is unavailable, typically DUST_SYNC_STALE while the
-  //         sponsor wallet catches up. It returns retryAfterMs when it knows.
-  // Treating 503 as fatal aborts a multi-write run partway through for a
-  // condition that clears on its own within seconds.
-  for (let attempt = 1; attempt <= 20; attempt += 1) {
-    const r = await post('/balance', bin);
-    const j = await r.json().catch(() => ({}));
-    if (j.txBytes || j.tx) { balanced = j.txBytes ?? j.tx; break; }
-    if (r.status !== 429 && r.status !== 503) {
-      console.log(`      balance failed ${r.status}: ${JSON.stringify(j).slice(0, 160)}`);
-      return null;
-    }
-    const hinted = Number(j.retryAfterMs);
-    const delay = Math.min(Math.max(Number.isFinite(hinted) ? hinted : 15000, 5000), 30000);
-    console.log(`      sponsor busy (${r.status}${j.cause ? ` ${j.cause}` : ''}); retry ${attempt}/20 in ${delay / 1000}s`);
-    await wait(delay);
+  let facade;
+  let keys;
+  try {
+    ({ facade, keys } = await feeWallet());
+  } catch (e) {
+    console.log(`      ${String(e.message || e).slice(0, 300)}`);
+    return null;
   }
-  if (!balanced) { console.log('      sponsor never became free'); return null; }
-
-  const final = led.Transaction.deserialize('signature', 'proof', 'binding', Buffer.from(balanced, 'hex'));
-  const sponsored = /DustSpend/i.test(String(final));
 
   try {
-    // A raw ledger transaction is NOT a valid Substrate extrinsic; it must be
-    // wrapped. Submitting raw bytes via author_submitExtrinsic traps the runtime.
-    const chain = await connect();
-    const hash = await chain.tx.midnight.sendMnTransaction(`0x${balanced}`).send();
-    console.log(`      proven + sponsored (dust:${sponsored}) submitted ${hash.toHex().slice(0, 18)}…  ${bin.length}→${balanced.length / 2} B`);
-    return { txBytes: balanced, hash: hash.toHex() };
+    // The wallet needs a deadline for the balancing intent. Long enough that a
+    // slow in-process proof of the DustSpend does not expire it, short enough
+    // that a failed run does not leave DUST locked for long.
+    const ttl = new Date(Date.now() + 10 * 60 * 1000);
+    const recipe = await facade.balanceFinalizedTransaction(
+      proven,
+      { shieldedSecretKeys: keys.zswapKeys, dustSecretKey: keys.dustKey },
+      { ttl },
+    );
+    const finalized = await facade.finalizeRecipe(recipe);
+    const id = await facade.submitTransaction(finalized);
+    console.log(`      proven locally + self-funded, submitted ${String(id).slice(0, 18)}…`);
+    return { hash: String(id) };
   } catch (e) {
-    console.log(`      submit rejected: ${String(e.message || e).slice(0, 160)}`);
+    console.log(`      ${label} failed: ${String(e.message || e).slice(0, 300)}`);
     return null;
   }
 }
