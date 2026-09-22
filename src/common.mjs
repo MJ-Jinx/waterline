@@ -7,6 +7,7 @@
 // band to the ledger.
 
 import fs from 'node:fs';
+import { inspect } from 'node:util';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import * as led from '@midnight-ntwrk/ledger-v8';
@@ -151,6 +152,39 @@ export const provingProvider = {
   },
 };
 
+// ---------------------------------------------------------------- errors
+/**
+ * Say everything a failure knows.
+ *
+ * Both SDK layers here bury the real reason. The wallet wraps causes as
+ * `Encountered unexpected error: An unknown error occurred`, and Effect hangs
+ * the cause of a FiberFailure off a SYMBOL rather than `.cause`, so walking
+ * the chain the ordinary way prints one line that says nothing. Two separate
+ * hours went into errors that turned out to be a closed socket and a
+ * transaction that was never bound — both of which the cause knew and neither
+ * of which the message said.
+ */
+export function explain(e, depthLimit = 6) {
+  const seen = new Set();
+  const lines = [];
+  for (let cur = e, d = 0; cur && d < depthLimit; d += 1) {
+    if (seen.has(cur)) break;
+    seen.add(cur);
+    lines.push(`${'  '.repeat(d)}${cur.name ?? typeof cur}${cur._tag ? ` [${cur._tag}]` : ''}: ${cur.message ?? String(cur)}`);
+    cur = cur.cause ?? cur.error ?? cur.originalError;
+  }
+  if (lines.length <= 1) {
+    for (const s of Object.getOwnPropertySymbols(e ?? {})) {
+      const v = e[s];
+      if (v && typeof v === 'object') lines.push(inspect(v, { depth: depthLimit, colors: false }));
+    }
+  }
+  return lines.join('\n');
+}
+
+/** Transient server/network hiccups, as opposed to a transaction the chain refused. */
+const TRANSIENT = /unknown error|ServerError|ECONNRESET|socket hang up|disconnected|timeout|502|503|504/i;
+
 // ---------------------------------------------------------------- fee wallet
 // Imported lazily. fee.mjs reads S, NETWORK and the endpoints from this module,
 // so a top-level import here would be a cycle — which ESM tolerates but which
@@ -250,6 +284,14 @@ export async function proveAndSubmit(unprovenTx, label) {
     return null;
   }
 
+  // Retry the balance/submit half on transient failures. The indexer and the
+  // wallet's own pending-transaction service both return bare "An unknown
+  // error occurred" under load, and losing an already-proven transaction to
+  // one of those means re-proving it — minutes of work thrown away for a
+  // hiccup that clears in seconds. Only the transient shapes are retried; a
+  // transaction the chain actually refused fails on the first attempt.
+  const ATTEMPTS = 4;
+  for (let attempt = 1; attempt <= ATTEMPTS; attempt += 1) {
   try {
     // The wallet needs a deadline for the balancing intent. Long enough that a
     // slow in-process proof of the DustSpend does not expire it, short enough
@@ -288,9 +330,20 @@ export async function proveAndSubmit(unprovenTx, label) {
     console.log(`      proven locally + self-funded, submitted ${hash.slice(0, 18)}…  ${bytes} B`);
     return { hash };
   } catch (e) {
-    console.log(`      ${label} failed: ${String(e.message || e).slice(0, 300)}`);
+    const msg = String(e?.message ?? e);
+    const transient = TRANSIENT.test(msg) || TRANSIENT.test(explain(e));
+    if (transient && attempt < ATTEMPTS) {
+      const delay = 5000 * attempt;
+      console.log(`      ${label}: ${msg.slice(0, 120)} — retrying ${attempt}/${ATTEMPTS - 1} in ${delay / 1000}s`);
+      await wait(delay);
+      continue;
+    }
+    const detail = explain(e).split('\n').map((l) => `        ${l}`).join('\n');
+    console.log(`      ${label} failed:\n${detail}`);
     return null;
   }
+  }
+  return null;
 }
 
 export const stateHash = async (addr) => {
