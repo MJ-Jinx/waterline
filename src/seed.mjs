@@ -19,7 +19,7 @@ import { createUnprovenCallTx } from '@midnight-ntwrk/midnight-js-contracts';
 import { ledger } from '../build/waterline/contract/index.js';
 import {
   S, save, compiledContract, zkConfigProvider, publicDataProvider, walletProvider,
-  proveAndSubmit, waitForAdvance, freshSalt, lastSalt,
+  proveAndSubmit, waitForAdvance, waitForCommitment, buildingCommitment, freshSalt, lastSalt,
   connect, disconnect, ub, hx, won,
 } from './common.mjs';
 
@@ -39,7 +39,12 @@ const eok = (n) => BigInt(Math.round(n * 10)) * 10000000n;   // 5.5 -> 550000000
  */
 const PLAN = [
   {
-    key: 'waterline:live:building:2',
+    // Was `...:2`, whose opening was lost: the salt lived only in memory
+    // between choosing it and the write landing, and a run interrupted in that
+    // gap left a commitment on chain that nothing can open. The old entry is
+    // still there, inert and unusable. The `pending` write in write() above is
+    // why this cannot happen to its replacement.
+    key: 'waterline:live:building:2a',
     chip: 'Live 2',
     label: 'Live registry entry 2 · Midnight preprod',
     leases: [eok(2.5), eok(2.5)],           // total 5.0억
@@ -84,9 +89,24 @@ await connect();
  * The salt is chosen before the call so we always know how to open the
  * commitment we are about to create.
  */
-async function write(circuitId, args, label, commitLocally, rotateSalt = true) {
+async function write(circuitId, args, label, commitLocally, rotateSalt = true, bid = null) {
   console.log(`   ${label}`);
-  if (rotateSalt) freshSalt();
+
+  // RECORD THE SALT BEFORE IT CAN BE LOST. The salt is chosen here and only
+  // written to state.json after the write lands, so a crash in between leaves
+  // the chain holding a commitment whose opening exists nowhere — and a
+  // commitment you cannot open is a building you can never write to again.
+  // That is not hypothetical: it is how the first `waterline:live:building:2`
+  // was bricked.
+  //
+  // Parking it under `pending` first costs one file write and makes the gap
+  // recoverable: whatever happens next, the salt survives.
+  if (rotateSalt) {
+    const salt = hx(freshSalt());
+    if (bid) { S.pending = { ...(S.pending ?? {}), [bid]: salt }; save(); }
+  }
+
+  const before = bid ? await buildingCommitment(S.addr, bid) : null;
   let built;
   try {
     built = await createUnprovenCallTx(
@@ -99,8 +119,15 @@ async function write(circuitId, args, label, commitLocally, rotateSalt = true) {
   }
   const result = built.private.result;
   if (!await proveAndSubmit(built.private.unprovenTx, label)) return null;
-  S.sh = await waitForAdvance(S.addr, S.sh);
+
+  // Wait for THIS building specifically, not for the contract state to change
+  // in any way at all. The loose version returned on somebody else's write and
+  // the next circuit then read a building that had not landed yet.
+  if (bid) await waitForCommitment(S.addr, bid, before);
+  else S.sh = await waitForAdvance(S.addr, S.sh);
+
   commitLocally();
+  if (bid && S.pending) { delete S.pending[bid]; }
   save();
   return result === undefined ? true : result;
 }
@@ -114,7 +141,7 @@ for (const p of PLAN) {
   if (!S.buildings[bid]) {
     const ok = await write('openBuilding', [ub(bid)], 'openBuilding', () => {
       S.buildings[bid] = { total: '0', count: '0', salt: hx(lastSalt()), liens: '0' };
-    });
+    }, true, bid);
     if (!ok) { console.log('   stopped'); break; }
   } else {
     console.log('   openBuilding — already done');
@@ -131,7 +158,7 @@ for (const p of PLAN) {
         count: String(BigInt(cur.count) + 1n),
         salt: hx(lastSalt()),
       };
-    });
+    }, true, bid);
     if (!ok) { console.log('   stopped'); break; }
   }
 
@@ -147,6 +174,7 @@ for (const p of PLAN) {
     `issueCertificate — appraised ${won(p.appraised)}`,
     () => {},
     false,
+    null, // no salt rotation, so the commitment does not change: nothing to wait for
   );
   if (band === null) { console.log('   stopped'); break; }
 

@@ -255,12 +255,35 @@ export async function proveAndSubmit(unprovenTx, label) {
     // slow in-process proof of the DustSpend does not expire it, short enough
     // that a failed run does not leave DUST locked for long.
     const ttl = new Date(Date.now() + 10 * 60 * 1000);
-    const recipe = await facade.balanceFinalizedTransaction(
+    // UNBOUND, not finalized. `prove()` preserves the binding type parameter —
+    // Transaction<S, PreProof, PreBinding> proves to Transaction<S, Proof,
+    // PreBinding> — so what comes back is proven and still UNBOUND. That is
+    // exactly the SDK's UnboundTransaction.
+    //
+    // Handing it to balanceFinalizedTransaction is accepted without complaint
+    // and quietly wrong: that path assumes the base transaction is already
+    // bound and never binds it, so the chain rejects the merged result with
+    // `Intent with id NNNNN is not bound`. Only the unbound path calls
+    // .bind() on our transaction.
+    const recipe = await facade.balanceUnboundTransaction(
       proven,
       { shieldedSecretKeys: keys.zswapKeys, dustSecretKey: keys.dustKey },
       { ttl },
     );
-    const finalized = await facade.finalizeRecipe(recipe);
+
+    // SIGN BEFORE FINALIZING, or the chain rejects the whole thing with
+    // `Intent with id NNNNN is not bound`.
+    //
+    // Balancing does not modify our proven transaction; it returns it
+    // untouched alongside a SECOND, unproven transaction carrying the
+    // DustSpend, and finalizeRecipe proves, binds and merges that one. But the
+    // balancing transaction spends our NIGHT, so it needs our signature first
+    // — and an intent that should be signed and is not cannot be bound.
+    //
+    // The error names binding because that is where it is noticed, which sends
+    // you looking at Pedersen commitments rather than at a missing signature.
+    const signed = await facade.signRecipe(recipe, (data) => keys.keystore.signData(data));
+    const finalized = await facade.finalizeRecipe(signed);
     const { hash, bytes } = await submitFinalized(finalized);
     console.log(`      proven locally + self-funded, submitted ${hash.slice(0, 18)}…  ${bytes} B`);
     return { hash };
@@ -275,6 +298,39 @@ export const stateHash = async (addr) => {
   // NOTE: serialize() lives on ContractState itself, not on .data
   return st ? crypto.createHash('sha256').update(Buffer.from(st.serialize())).digest('hex') : null;
 };
+
+/** The commitment currently published for one building, or null if it has none. */
+export async function buildingCommitment(addr, bid) {
+  const st = await publicDataProvider.queryContractState(addr).catch(() => null);
+  if (!st) return null;
+  const { ledger: decode } = await import('../build/waterline/contract/index.js');
+  const l = decode(st.data);
+  const id = ub(bid);
+  return l.buildingState.member(id) ? hx(l.buildingState.lookup(id)) : null;
+}
+
+/**
+ * Wait until THIS building's commitment changes from what it was.
+ *
+ * waitForAdvance below watches the hash of the whole contract state, which is
+ * both too loose and too tight. Too loose: any other write satisfies it, so it
+ * returns for something unrelated and the next circuit reads a building that
+ * is not there yet — `expected a cell, received null`. Too tight: it needs a
+ * correct previous hash to compare against, and an unset one makes the first
+ * poll succeed unconditionally.
+ *
+ * Watching one building's commitment says exactly what the caller means: the
+ * write I just sent has landed.
+ */
+export async function waitForCommitment(addr, bid, previous, tries = 50) {
+  for (let i = 0; i < tries; i += 1) {
+    await wait(6000);
+    const now = await buildingCommitment(addr, bid);
+    if (now !== previous) { console.log(`      landed (${now ? `${now.slice(0, 16)}…` : 'removed'})`); return now; }
+  }
+  console.log('      timed out waiting for the write to land');
+  return previous;
+}
 
 export async function waitForAdvance(addr, previous) {
   for (let i = 0; i < 50; i += 1) {

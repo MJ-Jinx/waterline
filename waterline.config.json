@@ -5,8 +5,13 @@
   "buildings": [
     {
       "id": "189285d39e578cbe1e357d330fe58326c644d93500d9ad7a424212fc9de44c47",
-      "chip": "Live",
+      "chip": "Live · danger",
       "label": "Live registry entry · Midnight preprod"
+    },
+    {
+      "id": "bb9300569874fec0657a64bad3b469b9dbde9c918249d0c3853bec4b63c42ae2",
+      "chip": "Live 3",
+      "label": "Live registry entry 3 · Midnight preprod"
     }
   ]
 }
