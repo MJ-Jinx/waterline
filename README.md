@@ -391,7 +391,7 @@ GitHub-hosted runner, and the full suite runs in well under a second after that.
 - Built on [Midnight](https://midnight.network), Compact compiler 0.31.1
 - Sponsored proving by [1AM ProofStation](https://api.1am.xyz/docs)
 - Extrinsic encoding via [@polkadot/api](https://github.com/polkadot-js/api)
-- Thanks to [ODATANO](https://github.com/ODATANO) — the Apache-2.0 [NIGHTGATE](https://github.com/ODATANO/NIGHTGATE) examples documented that a Midnight ledger transaction must be wrapped in `midnight.sendMnTransaction`, which unblocked submission here.
+- Thanks to [ODATANO](https://github.com/ODATANO) — the Apache-2.0 [NIGHTGATE](https://github.com/ODATANO/NIGHTGATE) examples documented that a Midnight ledger transaction must be wrapped in `midnight.sendMnTransaction`, which unblocked submission here. Its [`self-funded.mjs`](https://github.com/ODATANO/NIGHTGATE/blob/main/packages/nightgate-tx/example/self-funded.mjs) then documented the whole sponsor-free path — prove locally, pay the DUST fee from your own wallet, submit to the node yourself — which is what [`src/fee-wallet.mjs`](src/fee-wallet.mjs) is built on. Twice unblocked by the same repository.
 
 ## License
 
