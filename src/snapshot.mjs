@@ -125,7 +125,7 @@ console.log(`wrote ${OUT}`);
 console.log(`  contract ${cfg.contract.slice(0, 16)}…  block ${tip?.block ?? 'unknown'}`);
 for (const b of buildings) {
   const c = b.certificate;
-  console.log(`  ${b.chip.padEnd(8)} ${
+  console.log(`  ${b.chip.padEnd(15)} ${
     !b.registered ? 'NOT REGISTERED'
       : !c ? 'registered, no certificate'
       : `${c.band.toUpperCase()} · ${c.fresh ? 'current' : 'STALE'} · commitment ${b.commitment.slice(0, 16)}…`}`);
