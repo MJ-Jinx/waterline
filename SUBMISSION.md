@@ -198,7 +198,10 @@ public ledger carrying only the result, and a compiler that will not let the two
 - **Real client-side proving.** `demo.html` runs the same three circuits in a Web Worker via
   `@midnight-ntwrk/zkir-v2`, bridging circuit results to the prover with
   `proofDataIntoSerializedPreimage` and a `KeyMaterialProvider` that serves the prover keys and the
-  Plonk SRS from the site itself. Four real proofs, in the tab, on a static GitHub Pages host.
+  Plonk SRS from the site itself. Four real proofs, in the tab, on a static host with no backend —
+  measured at 18.3s, 23.9s, 16.7s and 11.8s against the deployed site, each producing a 4,501-byte
+  proof. `node test/browser-demo.mjs` drives that in Chromium and asserts it, and pointing it at
+  `BASE=https://mj-jinx.github.io/waterline` checks the *deployed* page rather than a local copy.
 - **A self-funded write path.** Hold NIGHT, register it for DUST generation, prove locally, then
   `balanceUnboundTransaction` → `signRecipe` → `finalizeRecipe` → submit. Fee balancing appends a
   `DustSpend` to an already-proven transaction, so no third party ever sees a witness.
@@ -213,8 +216,9 @@ proving is local by default.
 That also bounds the browser demo, and the page says so. To issue a certificate at all you must open
 the current commitment — which takes the total, the lease count and the salt. So **whoever proves must
 hold the landlord's private books, and a tenant can never prove.** The demo tab therefore plays the
-*registry*, over books it invents on the spot, with a key it generates and discards. It proves the circuits work and the refusal is real. It cannot prove anything
-about a real building, and does not claim to.
+*registry*, over books it invents on the spot, with a key it generates and discards. It proves the
+circuits work and the refusal is real. It cannot prove anything about a real building, and does not
+claim to.
 
 Trust is **reduced, not eliminated.** It reduces to "the registry inserts leases correctly" — the same
 trust already placed in the 주민센터, minus the cross-agency data pool. The registry here is a demo

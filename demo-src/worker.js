@@ -40,12 +40,27 @@ async function bytes(url) {
   if (cache.has(url)) return cache.get(url);
   const r = await fetch(url);
   if (!r.ok) throw new Error(`could not load ${url} (${r.status})`);
-  const total = Number(r.headers.get('content-length') || 0);
-  // Stream so the page can show progress on the big files rather than sitting
-  // silent for several seconds on a phone connection.
+  // Stream, so the page can say something while 11 MB arrives rather than
+  // sitting silent on a phone connection.
+  //
+  // `content-length` cannot be trusted for a percentage, and the deployed site
+  // is where that became obvious. GitHub Pages gzips these responses, so:
+  //
+  //   * on the big prover keys it sends no content-length at all, which made
+  //     the old `if (reader && total)` fall through to arrayBuffer() — the
+  //     files that actually needed a progress readout were the only ones not
+  //     reporting one;
+  //   * on the small ones it sends the COMPRESSED length while the reader hands
+  //     back decompressed bytes, which is where "0 KB of 0 KB (120%)" came from.
+  //
+  // A local server sets an exact length and does not compress, so neither
+  // showed up until this ran against the real host. So: report bytes received,
+  // which is always true, and a total only when one was given and has not
+  // already been exceeded.
+  const claimed = Number(r.headers.get('content-length') || 0);
   const reader = r.body?.getReader?.();
   let out;
-  if (reader && total) {
+  if (reader) {
     const chunks = [];
     let got = 0;
     for (;;) {
@@ -53,7 +68,9 @@ async function bytes(url) {
       if (done) break;
       chunks.push(value);
       got += value.length;
-      post({ type: 'download', url, got, total });
+      // Stay quiet about the verifier keys and the bzkir — a few hundred bytes
+      // each, and nobody is waiting on them.
+      if (got >= 512 * 1024) post({ type: 'download', url, got, total: got <= claimed ? claimed : 0 });
     }
     out = new Uint8Array(got);
     let at = 0;

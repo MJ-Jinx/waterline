@@ -105,8 +105,11 @@ export function initDemo() {
 
   function onMessage(msg) {
     if (msg.type === 'download') {
-      const pct = Math.round((msg.got / msg.total) * 100);
-      setStatus(`Downloading proving keys — ${fmtBytes(msg.got)} of ${fmtBytes(msg.total)} (${pct}%)`);
+      // A total only arrives when the server gave a credible one; see the note
+      // in worker.js on why a percentage cannot be assumed.
+      setStatus(msg.total
+        ? `Downloading proving keys — ${fmtBytes(msg.got)} of ${fmtBytes(msg.total)}`
+        : `Downloading proving keys — ${fmtBytes(msg.got)} so far`);
       return;
     }
 

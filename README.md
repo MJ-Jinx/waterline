@@ -414,13 +414,24 @@ bucket timed out on us mid-build, and a demo that depends on someone else's buck
 that fails in front of a judge.
 
 ```bash
-node test/browser-demo.mjs    # drives the real page in real Chromium
+node test/browser-demo.mjs                 # against ./site, from a local server
+BASE=https://mj-jinx.github.io/waterline node test/browser-demo.mjs
 ```
 
 That is the only test that means anything for this page: every other test here can pass while the demo
 is a frozen tab, because the proving lives in a Web Worker and the worker only exists in a browser. It
-serves `site/`, clicks the button, waits out four proofs, and asserts the band is `safe` and the forged
-total is refused. It is not part of `npm test` — it needs Chromium and spends a minute proving.
+clicks the button, waits out four proofs, and asserts the band is `safe` and the forged total is
+refused. Not part of `npm test` — it needs Chromium and spends a minute proving.
+
+**The `BASE` form is the one that matters before a deadline**, because it asks the question a judge
+will: does the *deployed* site prove? The bundle and the keys are built in CI and never committed, so
+a local pass says nothing about whether the deploy staged them.
+
+It has already earned its keep. The local run was clean while the deployed site showed
+`Downloading proving keys — 0 KB of 0 KB (120%)` and reported nothing at all for the two multi-megabyte
+files. GitHub Pages gzips them: it sends no `content-length` for the big ones, so the streaming branch
+never ran, and a *compressed* length for the small ones, which decompressed bytes then overshot. A local
+server sets an exact length and does not compress, so neither could ever have shown up locally.
 
 ### Testing
 
