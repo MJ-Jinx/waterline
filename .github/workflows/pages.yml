@@ -1,14 +1,30 @@
 # Publish the static site in site/ to GitHub Pages.
 #
-# The site is plain HTML/CSS/JS with no build step, so there is nothing to
-# compile — the artifact is site/ uploaded verbatim. It hosts no ZK prover keys:
-# issueCertificate writes the verdict band to the ledger, so the tenant page is
-# a read, not a proof.
+# Most of site/ is plain HTML/CSS/JS uploaded verbatim. Two things are built
+# here rather than committed:
+#
+#   * the certificate snapshot, refreshed from the live ledger so /check is
+#     current at deploy time rather than whenever someone last ran it by hand;
+#   * the Full Demo bundle and its ~11 MB of prover keys, because demo.html
+#     computes real proofs in the visitor's browser.
+#
+# Both need the compiled contract, hence the Compact toolchain below. None of
+# the toolchain is published — only the JSON and the bundle it produces.
 name: Deploy site to Pages
 
 on:
   push:
     branches: [main]
+
+  # Belt and braces. The snapshot only goes stale when *we* write to the
+  # contract, and /check re-verifies against the live indexer on every load, so
+  # a stale snapshot shows as stale rather than wrong. But "we wrote and forgot
+  # to redeploy" is a plausible way to hand a judge an amber banner, and this
+  # costs nothing. 21:00 UTC is 06:00 KST — the site re-snapshots itself just
+  # before the Korean working day, every day.
+  schedule:
+    - cron: '0 21 * * *'
+
   workflow_dispatch:
 
 # Least privilege that still lets deploy-pages mint its OIDC token.
@@ -36,36 +52,14 @@ jobs:
           node-version: '20'
           cache: npm
 
-      # Refresh the certificate snapshot from the live ledger so /check is
-      # current at deploy time. Decoding ledger state needs the compiled
-      # contract, hence the toolchain here — none of it is published; only the
-      # resulting JSON is.
+      # Shared by both build steps below, which is the only reason it is its
+      # own step — installing the toolchain and compiling twice wasted about
+      # two minutes per deploy, and this workflow now runs daily.
       #
-      # Deliberately non-fatal: if the indexer is unreachable, ship the
-      # committed snapshot rather than fail the deploy. The page prints the
-      # block and timestamp it was taken at, so a stale one is visible as stale
-      # rather than passed off as current.
-      - name: Refresh the ledger snapshot
-        id: snapshot
-        continue-on-error: true
-        run: |
-          npm ci
-          curl --proto '=https' --tlsv1.2 -LsSf             https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
-          export PATH="$HOME/.compact/bin:$PATH"
-          compact update 0.31.1
-          npm run compile
-          npm run snapshot
-
-      # The Full Demo proves in the browser, so it needs the Vite bundle and
-      # ~11 MB of prover keys. Both are build output and neither is committed —
-      # "we clone your GitHub repository" is step one of the judging, and
-      # nobody should wait on build artifacts to do it.
-      #
-      # Non-fatal on purpose, like the snapshot above: if this breaks, every
-      # other page still deploys and demo.html reports that it could not start,
-      # which is better than losing the whole site over one page.
-      - name: Build the Full Demo bundle
-        id: demo
+      # Deliberately non-fatal, like everything downstream of it: a toolchain
+      # outage should cost the snapshot and the demo, not the whole site.
+      - name: Compile the contract
+        id: setup
         continue-on-error: true
         run: |
           npm ci
@@ -74,25 +68,48 @@ jobs:
           export PATH="$HOME/.compact/bin:$PATH"
           compact update 0.31.1
           npm run compile
-          npm run build:demo
 
-      - name: Report demo build outcome
+      # If the indexer is unreachable, ship the committed snapshot rather than
+      # fail the deploy. The page prints the block and timestamp it was taken
+      # at, so a stale one is visible as stale rather than passed off as
+      # current.
+      - name: Refresh the ledger snapshot
+        id: snapshot
+        if: steps.setup.outcome == 'success'
+        continue-on-error: true
+        run: npm run snapshot
+
+      # The Full Demo proves in the browser, so it needs the Vite bundle and
+      # the prover keys. Both are build output and neither is committed — "we
+      # clone your GitHub repository and compile it" is step one of the
+      # judging, and nobody should wait on 11 MB of keys to do it.
+      - name: Build the Full Demo bundle
+        id: demo
+        if: steps.setup.outcome == 'success'
+        continue-on-error: true
+        run: npm run build:demo
+
+      # One place to look when something upstream went quietly wrong. Every
+      # step above can fail without failing the deploy, so without this the
+      # only symptom would be a stale page or a demo that reports it cannot
+      # start.
+      - name: Report what was built
         run: |
+          if [ "${{ steps.setup.outcome }}" != "success" ]; then
+            echo "::warning::Contract did not compile; shipping the committed snapshot and no demo bundle."
+          fi
+          if [ "${{ steps.snapshot.outcome }}" = "success" ]; then
+            echo "Snapshot refreshed from the live ledger."
+          else
+            echo "::warning::Snapshot not refreshed; deploying the committed snapshot."
+          fi
           if [ "${{ steps.demo.outcome }}" = "success" ]; then
             echo "Demo bundle built; site/zk and site/assets/demo staged."
             du -sh site/zk site/assets/demo site/params || true
           else
             echo "::warning::Demo build failed; demo.html will report it cannot start."
           fi
-
-      - name: Report snapshot outcome
-        run: |
-          if [ "${{ steps.snapshot.outcome }}" = "success" ]; then
-            echo "Snapshot refreshed from the live ledger."
-          else
-            echo "::warning::Snapshot refresh failed; deploying the committed snapshot."
-          fi
-          node -e "const s=require('./site/data/certificates.json');console.log('block',s.block,'taken',s.takenAt)"
+          node -e "const s=require('./site/data/certificates.json');console.log('serving snapshot: block',s.block,'taken',s.takenAt)"
 
       - uses: actions/configure-pages@v5
 

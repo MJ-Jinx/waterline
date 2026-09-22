@@ -7,6 +7,8 @@
 A ship loaded past its waterline is unsafe. So is a building carrying more lease deposits than its value can cover. Waterline computes that load against its limit inside a zero-knowledge circuit and discloses **one band — 안전 (anjeon, "safe"), 주의 (juui, "caution") or 위험 (wiheom, "danger") — and nothing else.**
 
 Built on [Midnight](https://midnight.network) for the Midnight Korea Hackathon 2026.
+**Judges: [`SUBMISSION.md`](SUBMISSION.md)** has the submitted answers, the fastest demo path, and the
+one compiler flag that will break the build if it is skipped.
 
 **▶ Live site: [mj-jinx.github.io/waterline](https://mj-jinx.github.io/waterline/)**
 &nbsp;·&nbsp; **▶ Slide deck: [mj-jinx.github.io/waterline/deck.html](https://mj-jinx.github.io/waterline/deck.html)**
@@ -16,8 +18,9 @@ No wallet, no extension, no signup, no testnet tokens. Open the link.
 | Page | What it shows |
 |---|---|
 | **[How it works](https://mj-jinx.github.io/waterline/guide.html)** | **start here** — a plain-language walkthrough for non-technical readers: what to click, what each screen means, what you can and cannot do, and an honest table of what is live versus illustrated |
+| **[Run the full demo](https://mj-jinx.github.io/waterline/demo.html)** | **the whole lifecycle in one click** — a building registered, four real Plonk proofs computed **in your own browser**, the certificate that comes out, and a box where you can try to forge the total. Narrated at every step. First run downloads ~11 MB of prover keys |
 | [Check a building](https://mj-jinx.github.io/waterline/check.html) | the tenant view — a verdict band read off the live ledger, with a downloadable QR certificate |
-| [Why a landlord can’t lie](https://mj-jinx.github.io/waterline/why-lying-fails.html) | claim any total you like, and watch the certificate refuse to exist. **A scripted illustration** — to watch the real circuit refuse, run `npm run verify:refusal` |
+| [Why a landlord can’t lie](https://mj-jinx.github.io/waterline/why-lying-fails.html) | claim any total you like, and watch the certificate refuse to exist. **A scripted animation**, on a timer, touching no network — for the real circuit refusing, use the forge box on [the demo page](https://mj-jinx.github.io/waterline/demo.html) or run `npm run verify:refusal` locally |
 | [Registry console](https://mj-jinx.github.io/waterline/registry.html) | the proving pipeline, framed as a simulation |
 | [Slide deck](https://mj-jinx.github.io/waterline/deck.html) | twelve slides: problem, mechanism, privacy, business model, evidence. Press <kbd>P</kbd> to print to PDF |
 | [Design system](https://mj-jinx.github.io/waterline/foundations.html) | palette, type scale, components, the figure in all three bands |
@@ -198,6 +201,43 @@ building commitment:       f65833a05bf6d6c47b18884d7e20674c90b7ddde...  (opaque)
 > Rewriting the log to match the current code would be claiming a run that never
 > happened.
 
+### The self-funded run — 2026-09-22
+
+The rows above were sponsored by a third party. These were not. Proved on our own
+proof server at `127.0.0.1:6300`, balanced against our own NIGHT registered for
+DUST generation, signed and submitted straight to the node. Nothing on the path
+but us and the chain.
+
+```text
+                                              submitted tx         size    landed commitment
+openBuilding    proven locally + self-funded  0x3c18b4fc810c3207…  8336 B  c17a51bf96dc5032…
+registerLease   proven locally + self-funded  0xdb6caa48e926a129…  8418 B  ea9cc5b4973c4a18…
+registerLease   proven locally + self-funded  0x71c34a600aff2b46…  8418 B  7113061f936e4a5c…
+```
+
+Those three rows are **one** of the buildings, and the chain is visible in the
+right-hand column: each write lands a new commitment, and the next write has to
+open it. The last one, `7113061f…`, is the commitment the SAFE certificate below
+is bound to.
+
+Repeating that for two more buildings gave **three separate entries, each with its
+own private books and its own band**, all on the same contract and all readable by
+anyone:
+
+| Live entry | Commitment (opaque) | Appraised | Band on chain |
+|---|---|---|---|
+| 1 | `f65833a05bf6d6c4…` | ₩6.0억 | 0 · ⚠️ **위험 wiheom DANGER** |
+| 2 | `7113061f936e4a5c…` | ₩8.0억 | 2 · ✅ **안전 anjeon SAFE** |
+| 3 | `19cd5b940ab6ad76…` | ₩7.0억 | 1 · △ **주의 juui CAUTION** |
+
+Snapshotted at **block 2,661,364**, all three `fresh: true` — meaning each
+certificate still names the commitment that is live on chain right now. The
+figures behind them are three genuinely different sets of books; the ledger holds
+a band and a commitment for each, and not one won of any deposit. Re-read them
+yourself with `npm run read`, or look at
+[`site/data/certificates.json`](site/data/certificates.json) for the snapshot the
+site serves.
+
 ### The three verdicts
 
 | Appraised | 안전 ≤ 70% | 주의 ≤ 80% | Total claimed | Band | Verdict |
@@ -259,6 +299,14 @@ flowchart LR
 > being protected. That is tolerable for a testnet demo over invented buildings
 > and intolerable for anything real, so the default is local. `PROVER` overrides it.
 >
+> **Where the demo page sits in this.** It does not break the boundary, it
+> relocates it. The tab plays the **registry**, not the tenant: it generates a
+> throwaway secret key, invents its own books, and proves against those. Nothing
+> private leaves the tab, because nothing in the tab belongs to anyone. That is
+> also its honest limit — it proves the circuits work and the refusal is real, and
+> it cannot prove anything *about a real building*, because it holds no real
+> registry's books.
+>
 > An earlier version proved and sponsored fees through [1AM ProofStation](https://api.1am.xyz/docs),
 > which is elegant — one call, no wallet, no DUST — but it put a third party on the
 > critical path of every write. On 2026-09-22 its preprod balancer returned `503`
@@ -293,6 +341,10 @@ node src/certify.mjs 6 --attack # -> REFUSED: Stale opening
 # 5. Tenant side — the read path the web UI uses. No wallet, no proving,
 #    no prover keys, no transaction. Two ledger lookups.
 node src/read.mjs
+
+# 6. Build the in-browser demo, then open site/demo.html and press the button.
+#    Proves all four circuits client-side. Needs step 1 to have run.
+npm run build:demo
 ```
 
 State persists to `state.json`: the registry secret key, the contract address and the per-building salts. **Do not lose it.** `registryPk` is sealed at construction, so without the secret key a deployed contract is permanently unwritable.
@@ -300,7 +352,8 @@ State persists to `state.json`: the registry secret key, the contract address an
 ### The site
 
 `site/` is the deployed front end — plain HTML, CSS and JS with no build step, no framework and no
-dependencies beyond a Google Fonts link. It is published to GitHub Pages by
+dependencies beyond a Google Fonts link. One page breaks that rule on purpose: `demo.html` loads a
+bundle, because it proves. It is published to GitHub Pages by
 [`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every push to `main`, uploaded
 verbatim.
 
@@ -308,9 +361,14 @@ verbatim.
 cd site && python3 -m http.server 8080   # or just open site/index.html
 ```
 
-**No ZK prover keys are hosted.** `issueCertificate` writes the verdict band to the ledger, so the
-tenant page is a read rather than a proof — which is why the public site needs no WASM, no keys and
-no wallet. The ~11 MB of prover keys stay on the registry side, which runs locally.
+**The tenant pages host no ZK prover keys and load no proving machinery.** `issueCertificate` writes
+the verdict band to the ledger, so `/check` is a read rather than a proof — no WASM, no keys, no
+wallet, which is why it loads instantly. A test asserts it stays that way.
+
+`demo.html` is the deliberate exception, and it is opt-in: nothing downloads until you press the
+button. It ships the ~11 MB of prover keys and two WASM modules because it really proves, in the tab.
+Both are build output, neither is committed, and a test asserts that too — see
+[Run the full demo](#run-the-full-demo-in-the-visitors-own-browser).
 
 `site/deck.html` is the slide deck — the same tokens and typeface as the rest of the site, twelve slides, arrow keys to move and <kbd>P</kbd> to print to PDF. `site/assets/qr.js` is a dependency-free QR encoder: a page that tells you whether a building is safe should not also tell a CDN which building you asked about.
 
@@ -319,10 +377,55 @@ tokens, and the original canvas artboards. The one rule worth repeating here —
 drawn as a hatched band, never a level.** The page genuinely does not know the total, so a precise
 surface would be either a lie or a disclosure.
 
+### Run the full demo, in the visitor's own browser
+
+[**demo.html**](https://mj-jinx.github.io/waterline/demo.html) is the one page that computes real
+proofs client-side. Press *Run Full Demo* and it invents a building, opens it, registers two deposits
+and issues the certificate — **four real Plonk proofs, in the tab, about 10–20 s each** — narrating
+what just happened and what comes next at every step. Then a box lets you type a total the registry
+might wish were true, and watch the contract refuse it.
+
+Nothing is downloaded until you press the button, and nothing is submitted to the chain. See
+[the trust boundary](#architecture-two-sides-and-only-one-of-them-is-published) for why:
+
+- **Proving in the browser is real.** The tab plays the *registry*, over books it invents on the spot,
+  with a key it generates and throws away. That is the only honest framing: to issue a certificate you
+  must **open the current commitment**, which takes the deposit total, the lease count and the salt —
+  the private books. **A tenant can never prove**, and the demo does not pretend otherwise.
+- **Submitting from the browser is not.** Paying the DUST fee needs the fee wallet's private key, and
+  publishing that key in a public repo is not something we will do. So the demo stops at a valid proof
+  and a certificate document, and links to the three buildings that *are* on chain.
+
+Building it needs the compiled contract, because the worker runs the same circuits the registry does:
+
+```bash
+npm run compile
+npm run build:demo     # Vite bundle -> site/assets/demo/, keys -> site/zk/
+```
+
+`build:demo` bundles [`demo-src/`](demo-src/) with Vite — needed only because the runtime and zkir
+packages use WebAssembly ESM integration, which esbuild cannot load — then stages the prover keys and
+zkir into `site/zk/`. **Neither is committed.** Prover keys are 11 MB of build output, and judging
+starts with cloning the repository; nobody should wait on that. GitHub Actions rebuilds both at deploy
+time, non-fatally, so a bundle failure costs one page rather than the whole site.
+
+The Plonk SRS in [`site/params/`](site/params/) **is** committed, deliberately — its upstream S3
+bucket timed out on us mid-build, and a demo that depends on someone else's bucket being up is a demo
+that fails in front of a judge.
+
+```bash
+node test/browser-demo.mjs    # drives the real page in real Chromium
+```
+
+That is the only test that means anything for this page: every other test here can pass while the demo
+is a frozen tab, because the proving lives in a Web Worker and the worker only exists in a browser. It
+serves `site/`, clicks the button, waits out four proofs, and asserts the band is `safe` and the forged
+total is refused. It is not part of `npm test` — it needs Chromium and spends a minute proving.
+
 ### Testing
 
 ```bash
-npm test              # everything (35 tests)
+npm test              # everything (52 tests)
 npm run test:site     # front end + QR only; needs no toolchain, runs in ~0.1s
 npm run test:contract # circuits; needs a compiled contract
 npm run verify:refusal # just the attack: watch the real circuit refuse to lie
@@ -331,11 +434,13 @@ npm run verify:refusal # just the attack: watch the real circuit refuse to lie
 ### Watch the refusal happen, rather than watching an animation
 
 The [Why a landlord can’t lie](https://mj-jinx.github.io/waterline/why-lying-fails.html) page is a
-scripted illustration. It runs on a timer, touches no network, and uses a fabricated building — it
-is labelled as a simulated landlord device top and bottom, because the public site hosts no prover
-keys and therefore cannot prove anything in a browser.
+scripted illustration. It runs on a timer, touches no network, and uses a fabricated building — it is
+labelled as a simulated landlord device top and bottom.
 
-The mechanism it depicts is real, and one command executes it:
+To watch the **real** circuit refuse, there are now two ways. In a browser, use the forge box on
+[the demo page](https://mj-jinx.github.io/waterline/demo.html): type a total the registry did not
+commit to, and the contract throws `failed assert: Stale opening` in your own tab, before any proof
+exists. Or locally, in one command:
 
 ```bash
 npm install
@@ -366,7 +471,9 @@ It pins the band boundaries at the cap (`load <= cap` is 안전, one won over is
 
 The suite can fail — mutating `load <= safeCap` to `<` in the contract and recompiling fails exactly one test, the boundary test, and no others.
 
-The front-end suite is one test per defect that actually shipped: a pipeline that could never finish, chips that ignored `min-height` because they were inline, and result views that rendered stacked because an inline `display` outranks the UA `[hidden]` rule. It also guards that no prover keys appear under `site/`, that every DOM hook exists, and that the water surface is never a line.
+The front-end suite is one test per defect that actually shipped: a pipeline that could never finish, chips that ignored `min-height` because they were inline, and result views that rendered stacked because an inline `display` outranks the UA `[hidden]` rule. It also guards that no ZK key material is *committed* (via `git ls-files`, so a local build cannot mask it), that the tenant pages load no proving machinery, that every DOM hook exists, and that the water surface is never a line.
+
+Two of those tests exist because of a mistake made building the demo. The link checker started failing in CI and passing locally — `demo.html` references `assets/demo/demo.js`, which is gitignored build output, present in a working tree and absent in a fresh clone. Exempting generated paths fixes it and quietly opens a hole: any broken link under an exempt prefix would now pass. So a second test asserts each exempt prefix really is gitignored *and* really is produced by the build. Verified by moving the build output aside and running the suite both ways — 52 either way.
 
 [CI](.github/workflows/ci.yml) runs both on every push. A clean clone compiles in **about 19s** on a
 GitHub-hosted runner, and the full suite runs in well under a second after that.
