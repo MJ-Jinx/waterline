@@ -18,7 +18,24 @@ import { Contract } from '../build/waterline/contract/index.js';
 
 export const NETWORK = process.env.NETWORK || 'preprod';
 export const BUILD = './build/waterline';
-export const PS = process.env.PROOF_STATION || `https://api-${NETWORK}.1am.xyz`;
+// Where proofs are generated. Defaults to a proof server on localhost, which
+// is what `midnight-tooling:proof-server` or the devnet compose file gives you.
+//
+// This used to default to 1AM ProofStation, which proved AND sponsored the fee
+// in one call. That was genuinely elegant — no wallet, no DUST, nothing to
+// install — but it put a third party on the critical path of every write, and
+// on 2026-09-22 its preprod balancer returned 503 for hours while preview and
+// mainnet were fine. Nothing could be written for as long as it was down.
+//
+// A local proof server also keeps the witness on this machine. The proving
+// payload carries the proof preimage, and this contract's witnesses include
+// the registry secret key, the deposit total, the lease count and the salt —
+// every value the project exists to protect. Sending that to a third party is
+// acceptable for a testnet demo with invented buildings and unacceptable for
+// anything real. See the README on the production trust boundary.
+//
+// Set PROVER (or the older PROOF_STATION) to override.
+export const PS = process.env.PROVER || process.env.PROOF_STATION || 'http://127.0.0.1:6300';
 export const IDX = `https://indexer.${NETWORK}.midnight.network/api/v4/graphql`;
 export const IDXWS = `wss://indexer.${NETWORK}.midnight.network/api/v4/graphql/ws`;
 export const NODE = `wss://rpc.${NETWORK}.midnight.network`;
