@@ -21,7 +21,9 @@
 // Self-funded path after ODATANO's NIGHTGATE, Apache-2.0:
 // packages/nightgate-tx/example/self-funded.mjs — https://github.com/ODATANO/NIGHTGATE
 
+import { inspect } from 'node:util';
 import { openFeeWallet, saveFeeState } from './fee.mjs';
+import { submitFinalized, disconnect } from './common.mjs';
 
 const SUBMIT = process.argv.includes('--submit');
 
@@ -70,16 +72,25 @@ try {
 }
 
 console.log(`\nregistration fee: ${estimate.fee.toLocaleString()} Specks`);
+
+// UtxoWithFullDustDetails nests differently from UtxoWithMeta, so read the
+// value defensively rather than assuming a depth. Getting this wrong only
+// breaks the printout, but the printout is the thing deciding whether to spend
+// real funds, so it should not throw on the way to showing it.
+const valueOf = (d) => d?.utxo?.utxo?.value ?? d?.utxo?.value ?? d?.value ?? '?';
+
 let generatedNow = 0n;
 for (const d of estimate.dustGenerationEstimations ?? []) {
-  generatedNow += BigInt(d.dust.generatedNow ?? 0n);
-  console.log(`  utxo ${String(d.utxo.utxo.value).padStart(14)}`
-    + `  now=${String(d.dust.generatedNow)}`
-    + `  cap=${String(d.dust.maxCap)}`
-    + `  capAt=${new Date(d.dust.maxCapReachedAt).toISOString()}`);
+  const g = d.dust ?? d;
+  generatedNow += BigInt(g.generatedNow ?? 0n);
+  const capAt = g.maxCapReachedAt ? new Date(g.maxCapReachedAt).toISOString() : 'unknown';
+  console.log(`  utxo ${String(valueOf(d)).padStart(14)}`
+    + `  now=${String(g.generatedNow ?? '?')}`
+    + `  cap=${String(g.maxCap ?? '?')}`
+    + `  capAt=${capAt}`);
 }
-console.log(`  available now: ${generatedNow.toLocaleString()} Specks`
-  + `  (${generatedNow >= estimate.fee ? 'covers the fee' : 'does NOT cover the fee yet'})`);
+console.log(`  generated so far: ${generatedNow.toLocaleString()} Specks`
+  + `  (fee is ${estimate.fee}; ${generatedNow >= estimate.fee ? 'covered' : 'NOT covered yet'})`);
 
 if (!SUBMIT) {
   console.log('\nEstimate only. Re-run with --submit to register.');
@@ -102,19 +113,72 @@ try {
   process.exit(1);
 }
 
+/**
+ * Say everything the failure knows.
+ *
+ * The SDK wraps submission failures as "Transaction submission error" with the
+ * actual reason — a node rejection, a malformed extrinsic, a fee problem —
+ * hidden on `cause`, sometimes nested several deep. Printing only `.message`
+ * tells you a transaction failed and nothing whatsoever about why, which is
+ * the least useful possible thing to learn when one has just been built.
+ */
+function explain(e) {
+  const seen = new Set();
+  const lines = [];
+  for (let cur = e, depth = 0; cur && depth < 6; depth += 1) {
+    if (seen.has(cur)) break;
+    seen.add(cur);
+    const tag = cur._tag ? ` [${cur._tag}]` : '';
+    lines.push(`${'  '.repeat(depth)}${cur.name ?? typeof cur}${tag}: ${cur.message ?? String(cur)}`);
+    for (const k of ['code', 'status', 'reason', 'detail', 'details', 'response', 'data', 'errors']) {
+      if (cur[k] !== undefined) lines.push(`${'  '.repeat(depth)}  ${k}: ${JSON.stringify(cur[k]).slice(0, 400)}`);
+    }
+    cur = cur.cause ?? cur.error ?? cur.originalError;
+  }
+
+  // Effect wraps rejections in a FiberFailure whose Cause hangs off a SYMBOL,
+  // not off .cause, so the loop above walks straight past it and reports one
+  // useless line. Fall back to a deep inspect, which sees symbol keys.
+  if (lines.length <= 1) {
+    for (const s of Object.getOwnPropertySymbols(e ?? {})) {
+      const v = e[s];
+      if (v && typeof v === 'object') {
+        lines.push(`  via ${String(s)}:`);
+        lines.push(inspect(v, { depth: 6, colors: false, breakLength: 100 })
+          .split('\n').map((l) => `    ${l}`).join('\n'));
+      }
+    }
+    if (lines.length <= 1) lines.push(inspect(e, { depth: 6, colors: false }));
+  }
+  return lines.join('\n');
+}
+
+let finalized;
 try {
-  const finalized = await facade.finalizeRecipe(recipe);
-  const id = await facade.submitTransaction(finalized);
-  console.log(`submitted: ${String(id).slice(0, 60)}`);
+  finalized = await facade.finalizeRecipe(recipe);
+  console.log(`finalized (${finalized.serialize().length} B)`);
+} catch (e) {
+  console.log(`finalizeRecipe failed:\n${explain(e)}`);
+  await facade.stop?.();
+  process.exit(1);
+}
+
+try {
+  // Our own submission, not facade.submitTransaction — see submitFinalized in
+  // common.mjs. The facade opens its node socket once at init, and after an
+  // hour of syncing the node has long since closed it.
+  const { hash, bytes } = await submitFinalized(finalized);
+  console.log(`submitted: ${hash}  (${bytes} B)`);
   console.log('\nRegistration is on its way. DUST accrues over time, so re-run');
   console.log('  node src/fee-sync.mjs');
   console.log('until it reports spendable DUST.');
 } catch (e) {
-  console.log(`submit failed: ${String(e.message || e).slice(0, 500)}`);
+  console.log(`submit failed:\n${explain(e)}`);
   await facade.stop?.();
   process.exit(1);
 }
 
 await saveFeeState(await facade.waitForSyncedState());
 await facade.stop?.();
+await disconnect();
 process.exit(0);

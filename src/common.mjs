@@ -186,6 +186,35 @@ export const disconnect = async () => {
 };
 
 /**
+ * Submit a finalized ledger transaction to the node.
+ *
+ * NOT facade.submitTransaction, and the reason is worth recording. The facade
+ * builds its node client once, when the facade is initialised, and never
+ * reconnects it. Syncing this wallet takes the better part of an hour, by
+ * which time the node has long since dropped an idle socket, so every
+ * submission failed with
+ *
+ *   SubmissionError: Transaction submission error
+ *     cause: disconnected from wss://rpc.preprod.midnight.network/: 1000:: Normal Closure
+ *
+ * — a transport failure wearing the costume of a rejected transaction. The
+ * transaction was fine; the pipe was shut.
+ *
+ * Connecting here instead means the socket is opened when there is something
+ * to send. A raw ledger transaction is also not a valid Substrate extrinsic on
+ * its own: it must be wrapped in `midnight.sendMnTransaction`, or submitting
+ * the bytes through author_submitExtrinsic traps the runtime.
+ */
+export async function submitFinalized(finalized) {
+  const hex = Buffer.from(finalized.serialize()).toString('hex');
+  // Reconnect if a previous call left a dead handle behind.
+  if (api && !api.isConnected) { try { await api.disconnect(); } catch { /* already gone */ } api = null; }
+  const chain = await connect();
+  const hash = await chain.tx.midnight.sendMnTransaction(`0x${hex}`).send();
+  return { hash: hash.toHex(), bytes: hex.length / 2 };
+}
+
+/**
  * Prove the transaction, pay its DUST fee from our own wallet, and submit.
  *
  * This used to hand the proven transaction to 1AM ProofStation, which attached
@@ -232,9 +261,9 @@ export async function proveAndSubmit(unprovenTx, label) {
       { ttl },
     );
     const finalized = await facade.finalizeRecipe(recipe);
-    const id = await facade.submitTransaction(finalized);
-    console.log(`      proven locally + self-funded, submitted ${String(id).slice(0, 18)}…`);
-    return { hash: String(id) };
+    const { hash, bytes } = await submitFinalized(finalized);
+    console.log(`      proven locally + self-funded, submitted ${hash.slice(0, 18)}…  ${bytes} B`);
+    return { hash };
   } catch (e) {
     console.log(`      ${label} failed: ${String(e.message || e).slice(0, 300)}`);
     return null;
