@@ -428,10 +428,14 @@ will: does the *deployed* site prove? The bundle and the keys are built in CI an
 a local pass says nothing about whether the deploy staged them.
 
 It has already earned its keep. The local run was clean while the deployed site showed
-`Downloading proving keys — 0 KB of 0 KB (120%)` and reported nothing at all for the two multi-megabyte
-files. GitHub Pages gzips them: it sends no `content-length` for the big ones, so the streaming branch
-never ran, and a *compressed* length for the small ones, which decompressed bytes then overshot. A local
-server sets an exact length and does not compress, so neither could ever have shown up locally.
+`Downloading proving keys — 0 KB of 0 KB (120%)`.
+
+GitHub Pages serves every asset with `Content-Encoding: gzip` and a `Content-Length` that is the
+**compressed** size, while the Streams reader hands back **decompressed** bytes. So the received count
+always overshoots the stated total — by 20% on a 257-byte `.bzkir`, by a fraction of a percent on a
+high-entropy prover key. The percentage was never trustworthy on any file, and the tiny ones made that
+obvious. A local server sets an exact length and does not compress, so locally it read 100% every time
+and the bug could not appear.
 
 ### Testing
 

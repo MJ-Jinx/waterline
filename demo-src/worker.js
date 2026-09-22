@@ -44,19 +44,17 @@ async function bytes(url) {
   // sitting silent on a phone connection.
   //
   // `content-length` cannot be trusted for a percentage, and the deployed site
-  // is where that became obvious. GitHub Pages gzips these responses, so:
+  // is where that became obvious. GitHub Pages serves every asset with
+  // Content-Encoding: gzip and a Content-Length that is the COMPRESSED size,
+  // while the Streams reader hands back DECOMPRESSED bytes. So `got` always
+  // overshoots: by 20% on a 257-byte .bzkir (hence "0 KB of 0 KB (120%)"), by a
+  // fraction of a percent on a high-entropy prover key. A local server sets an
+  // exact length and does not compress, so locally this read 100% every time.
   //
-  //   * on the big prover keys it sends no content-length at all, which made
-  //     the old `if (reader && total)` fall through to arrayBuffer() — the
-  //     files that actually needed a progress readout were the only ones not
-  //     reporting one;
-  //   * on the small ones it sends the COMPRESSED length while the reader hands
-  //     back decompressed bytes, which is where "0 KB of 0 KB (120%)" came from.
-  //
-  // A local server sets an exact length and does not compress, so neither
-  // showed up until this ran against the real host. So: report bytes received,
-  // which is always true, and a total only when one was given and has not
-  // already been exceeded.
+  // So: report bytes received, which is always true, and a total only while one
+  // was given and has not yet been exceeded. On Pages that means the total
+  // quietly drops away in the last fraction of a percent, which is honest and
+  // self-correcting, rather than printing 101%.
   const claimed = Number(r.headers.get('content-length') || 0);
   const reader = r.body?.getReader?.();
   let out;
