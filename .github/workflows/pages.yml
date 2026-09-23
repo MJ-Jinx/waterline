@@ -79,6 +79,16 @@ jobs:
         continue-on-error: true
         run: npm run snapshot
 
+      # The on-chain record, refreshed alongside the snapshot so the two cannot
+      # drift apart on the deployed site: /check would otherwise show a verdict
+      # from a transaction the record below it does not list. Committed too, so
+      # a failure here ships the last good record rather than an empty table.
+      - name: Refresh the on-chain record
+        id: chain
+        if: steps.setup.outcome == 'success'
+        continue-on-error: true
+        run: npm run chain
+
       # The Full Demo proves in the browser, so it needs the Vite bundle and
       # the prover keys. Both are build output and neither is committed — "we
       # clone your GitHub repository and compile it" is step one of the
@@ -102,6 +112,11 @@ jobs:
             echo "Snapshot refreshed from the live ledger."
           else
             echo "::warning::Snapshot not refreshed; deploying the committed snapshot."
+          fi
+          if [ "${{ steps.chain.outcome }}" = "success" ]; then
+            echo "On-chain record refreshed."
+          else
+            echo "::warning::On-chain record not refreshed; deploying the committed one."
           fi
           if [ "${{ steps.demo.outcome }}" = "success" ]; then
             echo "Demo bundle built; site/zk and site/assets/demo staged."

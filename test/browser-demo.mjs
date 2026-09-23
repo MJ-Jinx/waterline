@@ -59,7 +59,8 @@ if (REMOTE) {
 }
 
 const browser = await chromium.launch();
-const page = await browser.newPage();
+const ctx = await browser.newContext({ acceptDownloads: true });
+const page = await ctx.newPage();
 
 // Stream everything as it happens. Waiting ten minutes on a selector that will
 // never appear, with the reason sitting unread in an array, is how the first
@@ -161,15 +162,63 @@ try {
     failed = true;
   }
 
+  // A run that produces nothing to keep demonstrates the cryptography and
+  // hides the point: the certificate IS the product.
+  const saveRun = await page.$('[data-demo-save-run]:not([hidden])');
+  if (!saveRun) {
+    console.log('\nFAIL: a completed run offered no certificate to download');
+    failed = true;
+  } else {
+    const [dl] = await Promise.all([page.waitForEvent('download'), saveRun.click()]);
+    const doc = fs.readFileSync(await dl.path(), 'utf8');
+    console.log(`\ncertificate: ${dl.suggestedFilename()} (${doc.length} B)`);
+    // It must carry a QR and must not pass itself off as a registry record.
+    for (const [needle, why] of [
+      ['<svg', 'no QR code'],
+      ['demo, not a registry record', 'does not disclaim being a registry record'],
+      ['nothing was submitted', 'does not say it never reached a chain'],
+    ]) {
+      if (!doc.includes(needle)) { console.log(`FAIL: the certificate ${why}`); failed = true; }
+    }
+  }
+
   // And the lie must be refused, in the browser, before any proof exists.
   await page.fill('[data-demo-claim]', '3.0');
   await page.click('[data-demo-forge]');
   await page.waitForSelector('.d-note--bad', { timeout: 3 * 60 * 1000 });
   const refusal = (await page.textContent('.d-note--bad') || '').trim();
-  console.log(`\nforgery: ${refusal}`);
+  console.log(`forgery: ${refusal}`);
   if (!/refused|Stale opening|assert/i.test(refusal)) {
     console.log('FAIL: the forged total was not refused');
     failed = true;
+  }
+
+  // The other half, and the one that makes the refusal mean anything: the TRUE
+  // total is accepted. This used to be reported as "the contract accepted a
+  // false opening — this should be impossible", so entering the honest figure
+  // told the visitor the contract was broken. Every assertion still passed.
+  await page.fill('[data-demo-claim]', '5.0');
+  await page.click('[data-demo-forge]');
+  await page.waitForSelector('.d-note--ok', { timeout: 3 * 60 * 1000 });
+  const accepted = (await page.textContent('[data-demo-status]') || '').trim();
+  console.log(`truthful claim: ${accepted}`);
+  if (!/accepted/i.test(accepted) || /false opening/i.test(accepted)) {
+    console.log('FAIL: the true total was not accepted');
+    failed = true;
+  }
+
+  const saveAttempt = await page.$('[data-demo-save-attempt]:not([hidden])');
+  if (!saveAttempt) {
+    console.log('FAIL: no verification record offered after an attempt');
+    failed = true;
+  } else {
+    const [dl2] = await Promise.all([page.waitForEvent('download'), saveAttempt.click()]);
+    const rec = fs.readFileSync(await dl2.path(), 'utf8');
+    console.log(`record: ${dl2.suggestedFilename()} (${rec.length} B)`);
+    if (!rec.includes('ACCEPTED') || rec.includes('UNEXPECTED')) {
+      console.log('FAIL: the record does not report a plain acceptance');
+      failed = true;
+    }
   }
 } catch (e) {
   console.log(`\nFAIL: ${e.message}`);

@@ -130,6 +130,13 @@
           real buildings on <a href="check.html">Check a building</a>, which went through exactly
           this process on the live test network.
         </p>
+        <button class="wl-btn" type="button" data-demo-save-run hidden style="margin-top: 16px;">
+          Download the certificate
+        </button>
+        <p class="wl-body-sm" style="max-width: 60ch; margin-top: 10px; color: var(--wl-ink-muted);">
+          A self-contained page with a QR code, the verdict, the commitment and every proof this
+          run built. It says on its face that the building was invented here, because it was.
+        </p>
       </div>
     </section>
 
@@ -155,6 +162,14 @@
         which is exactly why a registry might be tempted. It is also a lie about what is already
         sealed, and you can watch what happens to it.
       </p>
+      <p class="wl-body-sm" style="max-width: 64ch; margin-top: 10px;">
+        <strong>Then type ₩5.0억 and press it again.</strong> That one is accepted, and it is the
+        half that matters: a check that refused every number would prove nothing. The contract
+        accepts the figure that matches the sealed books and refuses every other one.
+      </p>
+      <button class="wl-btn" type="button" data-demo-save-attempt hidden style="margin-top: 16px;">
+        Download the verification record
+      </button>
     </section>
 
     <!-- Honesty ------------------------------------------------------------- -->
@@ -179,6 +194,15 @@
           buildings on <a href="check.html">Check a building</a> were submitted the proper way, from
           the registry's own machine, and you can read them off the chain.
         </p>
+        <p class="wl-body-sm" style="margin-bottom: 0;">
+          <strong>What is on chain:</strong> the contract these proofs were built against, and every
+          transaction the registry has ever sent it. Open the
+          <a data-demo-contract href="https://explorer.preprod.midnight.network/" target="_blank" rel="noopener">contract
+          in a public explorer</a>, or read the
+          <a href="check.html#onchain">full list of transactions</a> with a link to each one.
+          Nothing you do on this page appears there, and that is the honest part: the proving is
+          real, the submission is not.
+        </p>
       </div>
     </section>
 
@@ -192,6 +216,7 @@
   </footer>
 
 </div>
+<script src="assets/qr.js"></script>
 <script type="module" src="assets/demo/demo.js"></script>
 </body>
 </html>

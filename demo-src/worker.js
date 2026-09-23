@@ -152,6 +152,10 @@ async function runFullDemo({ leases, appraised, safePct, cautionPct }) {
   const id = rand(32);
   post({ type: 'building', id: hex(id) });
 
+  // Kept so the run can be written out as a document afterwards. A verdict the
+  // visitor cannot take away is a verdict they have to take on trust.
+  const proofs = [];
+
   const step = async (name, label, args) => {
     post({ type: 'step', name, phase: 'executing', label });
     let res;
@@ -163,6 +167,7 @@ async function runFullDemo({ leases, appraised, safePct, cautionPct }) {
     }
     post({ type: 'step', name, phase: 'proving', label });
     const p = await reg.proveOf(name, res);
+    proofs.push({ name, ms: p.ms, proofBytes: p.proofBytes, preimageBytes: p.preimageBytes });
     post({
       type: 'step', name, phase: 'proved',
       proofBytes: p.proofBytes, preimageBytes: p.preimageBytes, ms: p.ms,
@@ -194,6 +199,11 @@ async function runFullDemo({ leases, appraised, safePct, cautionPct }) {
     type: 'done',
     band: Number(band),
     commitment: reg.commitment(id),
+    buildingId: hex(id),
+    appraised: String(appraised),
+    safePct: Number(safePct),
+    cautionPct: Number(cautionPct),
+    proofs,
     // Disclosed ONLY because this tab is playing the registry. On the real
     // site these never leave the registry's machine.
     books: { total: String(b.total), count: String(b.count) },
@@ -222,7 +232,12 @@ async function runForgery({ leases, appraised, safePct, cautionPct, claimedTotal
   }
 
   const honest = reg.execute('issueCertificate', id, BigInt(appraised), BigInt(safePct), BigInt(cautionPct));
-  post({ type: 'forge', phase: 'honest', band: Number(honest.result), appraised: String(appraised) });
+  post({
+    type: 'forge', phase: 'honest', band: Number(honest.result),
+    appraised: String(appraised), commitment: reg.commitment(id),
+    buildingId: hex(id), safePct: Number(safePct), cautionPct: Number(cautionPct),
+    realTotal: String(reg.book(id).total), count: String(reg.book(id).count),
+  });
 
   // What the claimed figure WOULD have produced, by the same arithmetic the
   // circuit uses. Reported so the page can name the prize instead of assuming
@@ -231,15 +246,24 @@ async function runForgery({ leases, appraised, safePct, cautionPct, claimedTotal
   const wouldBe = load <= BigInt(appraised) * BigInt(safePct) ? 2
     : load <= BigInt(appraised) * BigInt(cautionPct) ? 1 : 0;
 
+  // Is the "claim" actually the truth? Typing the real total is the one input
+  // the contract SHOULD accept, and the page has to be able to tell that apart
+  // from a genuine forgery getting through. It used to report both as "the
+  // contract accepted a false opening — this should be impossible", so a
+  // visitor who entered the honest figure was told the contract was broken.
+  const truthful = BigInt(claimedTotal) === reg.book(id).total;
+
   reg.setForge({ total: BigInt(claimedTotal), count: reg.book(id).count });
   try {
     const res = reg.execute('issueCertificate', id, BigInt(appraised), BigInt(safePct), BigInt(cautionPct));
-    // Reaching here would mean the contract accepted a false opening.
-    post({ type: 'forge', phase: 'accepted', band: Number(res.result) });
+    post({
+      type: 'forge', phase: 'accepted', band: Number(res.result),
+      claimedTotal: String(claimedTotal), truthful, commitment: reg.commitment(id),
+    });
   } catch (e) {
     post({
       type: 'forge', phase: 'refused', error: String(e?.message ?? e),
-      claimedTotal: String(claimedTotal), wouldBe,
+      claimedTotal: String(claimedTotal), wouldBe, truthful,
     });
   } finally {
     reg.setForge(null);

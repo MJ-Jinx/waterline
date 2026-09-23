@@ -161,8 +161,8 @@
 
     <!-- Walkthrough ---------------------------------------------------------- -->
     <section class="wl-container g-section">
-      <h2 class="wl-title">Six things you can do right now</h2>
-      <p class="wl-body-sm" style="margin: 4px 0 26px;">Roughly two minutes for the first five. The sixth asks for a minute or two of patience, and explains why.</p>
+      <h2 class="wl-title">Seven things you can do right now</h2>
+      <p class="wl-body-sm" style="margin: 4px 0 26px;">Roughly two minutes for the first five. The sixth asks for a minute or two of patience, and explains why. The seventh is the evidence behind all of it.</p>
 
       <ol class="g-steps" style="max-width: 68ch;">
 
@@ -295,6 +295,14 @@
             <span class="g-do">Then try to cheat:</span> underneath, type a deposit total that would
             make the building look safer than it really is. The calculation refuses, in your own
             browser, before any proof exists, and the wording it gives you is the contract's own.
+            Then type the real total, ₩5.0억, and watch it go through. That second half is the one
+            that matters: a check that refused every number would prove nothing.
+          </p>
+          <p class="wl-body">
+            <span class="g-do">Take it with you:</span> both the finished run and the attempt can be
+            downloaded as a page with a QR code, listing the verdict, the sealed code and every proof
+            that was built. Each one says on its face that the building was invented in your browser,
+            because it was.
           </p>
           <p class="wl-body">
             <span class="g-do">What it is not:</span> a real building. Your browser is standing in for
@@ -302,6 +310,26 @@
             hold real ones. And nothing is sent to the record. The three entries marked
             <em>Live</em> on <a href="check.html">Check a building</a> were written the proper way,
             from the registry's own machine.
+          </p>
+        </li>
+
+        <li class="g-step">
+          <h3>Read everything the registry has ever done</h3>
+          <p class="wl-body">
+            <span class="g-do">Do this:</span> open the
+            <a href="check.html#onchain">on-chain record</a> at the bottom of
+            <a href="check.html">Check a building</a>.
+          </p>
+          <p class="wl-body">
+            <span class="g-do">What you are looking at:</span> every transaction this contract has
+            ever been part of, from the day it was deployed. Each line opens in a public explorer run
+            by other people, not by us. Read a building's rows upward and the whole idea is visible:
+            it is opened, each deposit seals a new code, and a verdict binds to the last one.
+          </p>
+          <p class="wl-body">
+            <span class="g-do">What is not there:</span> a single deposit figure, or any total. Those
+            were never sent. What the record holds is a sealed code per building and one word per
+            verdict, which is the entire point of the exercise.
           </p>
         </li>
 
@@ -382,6 +410,14 @@
             <tr>
               <th scope="row">The “Run the demo” page</th>
               <td><span class="g-tag g-tag--real">Real</span>The proofs are computed in your browser, by the same code and the same keys the registry uses. The building it proves about is invented, because only a registry may hold real figures, and nothing is sent to the network.</td>
+            </tr>
+            <tr>
+              <th scope="row">The documents the demo hands you</th>
+              <td><span class="g-tag g-tag--real">Real</span>Both the certificate and the verification record are built on your device from the run that just happened, carry a QR code, and say on their face that the building was invented here. They are not registry records and do not pretend to be.</td>
+            </tr>
+            <tr>
+              <th scope="row">The list of everything done on chain</th>
+              <td><span class="g-tag g-tag--real">Real</span>Every transaction the contract has ever been part of, read from the public indexer, each one openable in an explorer we do not run. Which building each transaction touched is worked out by decoding the ledger state it produced, not asserted.</td>
             </tr>
             <tr>
               <th scope="row">The “Why lying fails” page</th>

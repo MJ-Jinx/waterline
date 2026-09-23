@@ -43,9 +43,13 @@ No wallet, no extension, no signup, no testnet tokens. It is a link.
 >
 > **2.** Open **[/demo.html](https://mj-jinx.github.io/waterline/demo.html)** and press **Run Full Demo**. It registers a building and computes **four real Plonk proofs in your own browser**, roughly 10–20 s each. About 18 MB of keys, SRS and WASM download on the first press. It narrates each step and what comes next, then hands you the certificate.
 >
-> **3.** In the box below it, type a deposit total the registry never committed to and press forge. The contract refuses it with `failed assert: Stale opening`, in your tab, before any proof exists.
+> **3.** In the box below it, type a deposit total the registry never committed to and press forge. The contract refuses it with `failed assert: Stale opening`, in your tab, before any proof exists. Then type the real total, **5.0**, and watch it be accepted: a check that refused every number would prove nothing, and exactly one figure passes.
 >
-> **4.** Open **[/check.html](https://mj-jinx.github.io/waterline/check.html)** and press each of the three buttons marked **Live**. Three real certificates read off Midnight preprod, one per band.
+> **4.** Press **Download the certificate**, or **Download the verification record**. Each is a self-contained page with a QR code, the verdict, the commitment and every proof that was built, stating on its face that the building was invented in your browser.
+>
+> **5.** Open **[/check.html](https://mj-jinx.github.io/waterline/check.html)** and press each of the three buttons marked **Live**. Three real certificates read off Midnight preprod, one per band.
+>
+> **6.** Scroll to **[the on-chain record](https://mj-jinx.github.io/waterline/check.html#onchain)**: every transaction the contract has ever been part of, each one openable in a public explorer we do not run.
 
 ### To clone and compile it yourself
 
@@ -59,7 +63,7 @@ git clone https://github.com/MJ-Jinx/waterline && cd waterline
 npm install
 compact compile +0.31.1 contracts/waterline.compact build/waterline   # ~19s
 
-npm test                 # 53 tests, no network needed
+npm test                 # 58 tests, no network needed
 npm run verify:refusal   # the attack alone: watch the real circuit refuse to lie
 ```
 
@@ -79,7 +83,10 @@ on **Midnight preprod**, holding three buildings with three different private le
 different published bands: DANGER at ₩6.0억, CAUTION at ₩7.0억, SAFE at ₩8.0억. Snapshotted at block
 2,661,364; the site re-verifies every one of them against the live public indexer on each page load,
 and says on screen whether it matched. Proved locally, fees paid from our own DUST, submitted straight
-to the node.
+to the node. Every transaction is listed and linked at
+[/check.html#onchain](https://mj-jinx.github.io/waterline/check.html#onchain) — 18 of them,
+from the deploy onward, with each one attributed to a building by decoding the ledger state it
+produced rather than by assertion.
 
 ---
 

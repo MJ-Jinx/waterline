@@ -5,6 +5,8 @@
 // what is coming NEXT before each wait, so a thirty-second pause reads as
 // progress rather than a hang.
 
+import { runDocument, attemptDocument, download } from './document.js';
+
 const $ = (sel, root) => (root || document).querySelector(sel);
 
 const EOK = 100000000n;
@@ -70,10 +72,36 @@ export function initDemo() {
   const nextEl = $('[data-demo-next]', root);
   const resultEl = $('[data-demo-result]', root);
   const barEl = $('[data-demo-bar]', root);
+  const saveRunBtn = $('[data-demo-save-run]', root);
+  const saveAttemptBtn = $('[data-demo-save-attempt]', root);
 
   let worker = null;
   let leaseSeen = 0;
   const started = Date.now();
+
+  // The live deployment, so a document produced here can point at the contract
+  // that actually exists. Absent (opened over file://) the documents simply
+  // leave that line out rather than inventing one.
+  let chain = null;
+  if (typeof fetch === 'function') {
+    fetch('data/certificates.json', { cache: 'no-cache' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (!j) return;
+        chain = { contract: j.contract, explorer: j.explorer };
+        // Point the explorer link at the contract that actually exists rather
+        // than at the explorer's front page.
+        const link = $('[data-demo-contract]', root);
+        if (link && j.explorer) link.href = j.explorer;
+      })
+      .catch(() => { /* the documents cope without it */ });
+  }
+
+  // What the last run and the last verification attempt produced, kept so they
+  // can be written out as documents after the fact.
+  let lastRun = null;
+  let lastAttempt = null;
+  let honest = null;
 
   const setStatus = (t) => { if (statusEl) statusEl.textContent = t; };
   const setNext = (t) => {
@@ -189,6 +217,8 @@ export function initDemo() {
         const v = $('[data-demo-verdict]', resultEl);
         if (v) { v.textContent = BAND_KO[band]; v.className = `d-big d-big--${band}`; }
       }
+      lastRun = msg;
+      if (saveRunBtn) saveRunBtn.hidden = false;
       finish(`Done in ${Math.round((Date.now() - started) / 1000)}s`);
       return;
     }
@@ -196,11 +226,30 @@ export function initDemo() {
     if (msg.type === 'forge') {
       if (msg.phase === 'honest') {
         honestBand = msg.band;
+        honest = msg;
         entry('First, the truth',
-          `With the real books of ${eok(SCRIPT.leases.reduce((a, l) => a + BigInt(l), 0n))} against a `
+          `With the real books of ${eok(msg.realTotal)} against a `
           + `${eok(msg.appraised)} valuation, the honest answer is ${BAND_KO[BANDS[msg.band]]}.`);
-      } else if (msg.phase === 'refused') {
-        const claimed = eok(msg.claimedTotal);
+        return;
+      }
+
+      const claimed = eok(msg.claimedTotal);
+      lastAttempt = {
+        outcome: msg.phase,
+        truthful: msg.truthful,
+        claimedTotal: msg.claimedTotal,
+        realTotal: honest ? honest.realTotal : '0',
+        count: honest ? honest.count : '0',
+        appraised: honest ? honest.appraised : '0',
+        buildingId: honest ? honest.buildingId : '',
+        commitment: (honest && honest.commitment) || msg.commitment || '',
+        honestBand,
+        wouldBe: msg.phase === 'accepted' ? msg.band : msg.wouldBe,
+        error: msg.error || '',
+      };
+      if (saveAttemptBtn) saveAttemptBtn.hidden = false;
+
+      if (msg.phase === 'refused') {
         const li = entry('Now the lie', msg.wouldBe > honestBand
           ? `The same registry claims ${claimed} instead, which would have read ${BAND_KO[BANDS[msg.wouldBe]]}.`
           : `The same registry claims ${claimed} instead, a figure it never sealed.`);
@@ -209,8 +258,22 @@ export function initDemo() {
         addNote(li,
           'Note where that happened: in your browser, before any proof existed. There was no transaction for anyone to reject, because no valid proof can be built from a false total in the first place.',
           'd-note');
-      } else if (msg.phase === 'accepted') {
-        const li = entry('Now the lie', 'The contract accepted a false opening.');
+      } else if (msg.truthful) {
+        // The control. A check that refuses everything proves nothing, so the
+        // one figure that SHOULD pass has to visibly pass: this used to report
+        // the honest total as "the contract accepted a false opening — this
+        // should be impossible", which told anyone who typed the real number
+        // that the contract was broken.
+        const li = entry('That one was true',
+          `${claimed} is exactly what the registry sealed, so the circuit ran and returned `
+          + `${BAND_KO[BANDS[msg.band]]}.`);
+        addNote(li, 'Accepted', 'd-note d-note--ok');
+        addNote(li,
+          'This is the half that makes the refusal mean something. The contract is not rejecting everything on principle. It accepts the figure that matches the sealed books and refuses every other one, which is only possible for someone holding the books.',
+          'd-note');
+        finish('The true total was accepted');
+      } else {
+        const li = entry('Now the lie', `The contract accepted ${claimed}, which it never sealed.`);
         addNote(li, 'This should be impossible. If you are seeing it, the contract has a bug and we would like to know.', 'd-note d-note--bad');
         finish('A false opening was accepted');
       }
@@ -229,6 +292,11 @@ export function initDemo() {
     if (worker) worker.terminate();
     if (log) log.innerHTML = '';
     if (resultEl) resultEl.hidden = true;
+    if (saveRunBtn) saveRunBtn.hidden = true;
+    if (saveAttemptBtn) saveAttemptBtn.hidden = true;
+    lastRun = null;
+    lastAttempt = null;
+    honest = null;
     proofsDone = 0;
     leaseSeen = 0;
     setBar(0);
@@ -270,6 +338,23 @@ export function initDemo() {
         ...FORGE_SCRIPT,
         claimedTotal: String(BigInt(Math.round(claimEok * 10)) * (EOK / 10n)),
       });
+    });
+  }
+
+  if (saveRunBtn) {
+    saveRunBtn.addEventListener('click', () => {
+      if (!lastRun) return;
+      download(runDocument(lastRun, chain),
+        `waterline-demo-${BANDS[lastRun.band] || 'verdict'}-${lastRun.buildingId.slice(0, 12)}.html`);
+    });
+  }
+
+  if (saveAttemptBtn) {
+    saveAttemptBtn.addEventListener('click', () => {
+      if (!lastAttempt) return;
+      download(attemptDocument(lastAttempt, chain),
+        `waterline-demo-${lastAttempt.outcome === 'accepted' ? 'accepted' : 'refused'}-`
+        + `${String(lastAttempt.buildingId).slice(0, 12)}.html`);
     });
   }
 }

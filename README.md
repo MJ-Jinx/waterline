@@ -208,17 +208,24 @@ proof server at `127.0.0.1:6300`, balanced against our own NIGHT registered for
 DUST generation, signed and submitted straight to the node. Nothing on the path
 but us and the chain.
 
-```text
-                                              submitted tx         size    landed commitment
-openBuilding    proven locally + self-funded  0x3c18b4fc810c3207…  8336 B  c17a51bf96dc5032…
-registerLease   proven locally + self-funded  0xdb6caa48e926a129…  8418 B  ea9cc5b4973c4a18…
-registerLease   proven locally + self-funded  0x71c34a600aff2b46…  8418 B  7113061f936e4a5c…
-```
+| Circuit | Block | Transaction | Size | Landed commitment |
+|---|---|---|---|---|
+| `openBuilding` | 2,660,995 | [`aba4ab00c1bf…5c7109`](https://explorer.preprod.midnight.network/transactions/aba4ab00c1bf50e3a874af18a33de8b12c15e27f1ef760d85d142cd7245c7109) | 8336 B | `c17a51bf96dc5032…` |
+| `registerLease` | 2,661,010 | [`dd1045839368…6f7d05`](https://explorer.preprod.midnight.network/transactions/dd10458393686368a1ce900d65a9426eebc9e822abbe68b4584de9870b6f7d05) | 8418 B | `ea9cc5b4973c4a18…` |
+| `registerLease` | 2,661,072 | [`97745c2b9afa…690b601b`](https://explorer.preprod.midnight.network/transactions/97745c2b9afa1c429b6ca6b8d6dd6306e526d42820ba24460d56299c690b601b) | 8418 B | `7113061f936e4a5c…` |
 
-Those three rows are **one** of the buildings, and the chain is visible in the
-right-hand column: each write lands a new commitment, and the next write has to
-open it. The last one, `7113061f…`, is the commitment the SAFE certificate below
-is bound to.
+Those three rows are **one** of the buildings — `db40b6dc…` — and the chain is
+visible in the right-hand column: each write lands a new commitment, and the
+next write has to open it. The last one, `7113061f…`, is the commitment the SAFE
+certificate below is bound to.
+
+> An earlier version of this table printed a "submitted tx" column taken from
+> `sendMnTransaction(...).send()`. That returns the **Substrate extrinsic hash**,
+> not the Midnight transaction hash the explorer indexes, so the values were
+> real and impossible to look up — which reads exactly like a fabricated hash.
+> The transactions above come from the indexer and open in a public explorer.
+> `npm run chain` regenerates the whole record, and attributes every action to a
+> building by decoding the ledger state it produced.
 
 Repeating that for two more buildings gave **three separate entries, each with its
 own private books and its own band**, all on the same contract and all readable by
@@ -383,8 +390,14 @@ surface would be either a lie or a disclosure.
 [**demo.html**](https://mj-jinx.github.io/waterline/demo.html) is the one page that computes real
 proofs client-side. Press *Run Full Demo* and it invents a building, opens it, registers two deposits
 and issues the certificate. **Four real Plonk proofs, in the tab, about 10–20 s each**, narrating
-what just happened and what comes next at every step. Then a box lets you type a total the registry
-might wish were true, and watch the contract refuse it.
+what just happened and what comes next at every step. The run ends with a **downloadable certificate**:
+a self-contained page carrying a QR code, the verdict, the commitment and every proof that was built,
+stating on its face that the building was invented in that browser.
+
+Then a box lets you type a total the registry might wish were true, and watch the contract refuse it
+— and, just as importantly, type the **real** total and watch it be accepted. A check that refused
+every number would prove nothing; the point is that exactly one figure passes, and only someone
+holding the books knows which. Either outcome is downloadable as a verification record.
 
 Nothing is downloaded until you press the button, and nothing is submitted to the chain. See
 [the trust boundary](#architecture-two-sides-and-only-one-of-them-is-published) for why:
@@ -395,7 +408,9 @@ Nothing is downloaded until you press the button, and nothing is submitted to th
   the private books. **A tenant can never prove**, and the demo does not pretend otherwise.
 - **Submitting from the browser is not.** Paying the DUST fee needs the fee wallet's private key, and
   publishing that key in a public repo is not something we will do. So the demo stops at a valid proof
-  and a certificate document, and links to the three buildings that *are* on chain.
+  and a certificate document, and links to [everything that *is* on
+  chain](https://mj-jinx.github.io/waterline/check.html#onchain) — every transaction the contract has
+  ever been part of, openable in a public explorer.
 
 Building it needs the compiled contract, because the worker runs the same circuits the registry does:
 
@@ -441,7 +456,7 @@ and the bug could not appear.
 ### Testing
 
 ```bash
-npm test              # everything (53 tests)
+npm test              # everything (58 tests)
 npm run test:site     # front end + QR only; needs no toolchain, runs in ~0.1s
 npm run test:contract # circuits; needs a compiled contract
 npm run verify:refusal # just the attack: watch the real circuit refuse to lie

@@ -858,8 +858,119 @@
 
   /* ====================================================================== */
 
+  /* ======================================================================
+     The on-chain record — every action the contract has ever taken.
+     ====================================================================== */
+
+  /**
+   * Render site/data/chain.json as a list of openable transactions.
+   *
+   * Written by `npm run chain`, not by the daily snapshot: reading the full
+   * history needs a graphql-ws subscription (a block offset has to name a
+   * height where an action actually landed, which you cannot know in advance),
+   * and the history only changes when the registry writes. So it is generated
+   * deliberately and committed.
+   *
+   * This exists because the README used to cite transaction hashes that could
+   * not be looked up — they were Substrate extrinsic hashes from
+   * `sendMnTransaction(...).send()`, not the Midnight transaction hashes the
+   * explorer indexes. Real, and unfindable, which reads exactly like invented.
+   */
+  function initChain() {
+    var host = $('[data-wl-chain]');
+    if (!host || typeof fetch !== 'function') return;
+
+    fetch('data/chain.json', { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; })
+      .then(function (data) {
+        if (!data || !data.actions || !data.actions.length) {
+          host.innerHTML = '<p class="wl-body-sm" style="color: var(--wl-ink-muted);">'
+            + 'The on-chain record could not be loaded. The contract is still '
+            + '<a href="' + (data && data.contractExplorer ? data.contractExplorer
+              : 'https://explorer.preprod.midnight.network/') + '" target="_blank" '
+            + 'rel="noopener">viewable in the explorer</a>.</p>';
+          return;
+        }
+
+        // Buildings get a short letter rather than 64 hex characters, so the
+        // chain a reader is meant to SEE — open, add, add, certify — is legible
+        // without reading hashes side by side.
+        var letters = {};
+        var nextLetter = 0;
+        var certified = {};
+        data.actions.forEach(function (a) {
+          if (a.building && !(a.building in letters)) {
+            letters[a.building] = String.fromCharCode(65 + nextLetter);
+            nextLetter += 1;
+          }
+          if (a.building && a.entryPoint === 'issueCertificate') certified[a.building] = true;
+        });
+        var uncertified = Object.keys(letters).filter(function (id) { return !certified[id]; });
+
+        var rows = data.actions.slice().reverse().map(function (a) {
+          var when = new Date(a.at).toUTCString().replace('GMT', 'UTC');
+          var who = a.building
+            ? '<b>' + letters[a.building] + '</b> · ' + a.building.slice(0, 8) + '…'
+            : '<span style="color:var(--wl-ink-muted);">whole contract</span>';
+          var band = (a.band === null || a.band === undefined) ? ''
+            : ' <span style="color:' + BANDS[['danger', 'caution', 'safe'][a.band]].hex
+              + ';font-weight:600;">' + BANDS[['danger', 'caution', 'safe'][a.band]].label + '</span>';
+          return '<tr style="border-bottom:1px solid var(--wl-line);">'
+            + '<td style="padding:8px 14px 8px 0;white-space:nowrap;font-weight:600;">'
+            + (a.entryPoint === 'constructor' ? 'deployed' : a.entryPoint) + band + '</td>'
+            + '<td style="padding:8px 14px 8px 0;white-space:nowrap;font-family:var(--wl-font-mono);'
+            + 'font-size:13px;">' + who + '</td>'
+            + '<td style="padding:8px 14px 8px 0;white-space:nowrap;font-family:var(--wl-font-mono);'
+            + 'font-size:13px;color:var(--wl-ink-muted);">' + commas(a.block) + '</td>'
+            + '<td style="padding:8px 14px 8px 0;white-space:nowrap;font-size:13px;'
+            + 'color:var(--wl-ink-muted);">' + when + '</td>'
+            + '<td style="padding:8px 0;font-family:var(--wl-font-mono);font-size:13px;">'
+            + '<a href="' + a.explorer + '" target="_blank" rel="noopener">'
+            + a.tx.slice(0, 10) + '…' + a.tx.slice(-6) + ' →</a></td>'
+            + '</tr>';
+        }).join('');
+
+        host.innerHTML =
+          '<div style="overflow-x:auto;"><table style="border-collapse:collapse;width:100%;'
+          + 'min-width:680px;font-size:14px;">'
+          + '<thead><tr style="text-align:left;border-bottom:1px solid var(--wl-line-strong);">'
+          + '<th style="padding:0 14px 8px 0;" class="wl-kv__k">ACTION</th>'
+          + '<th style="padding:0 14px 8px 0;" class="wl-kv__k">BUILDING</th>'
+          + '<th style="padding:0 14px 8px 0;" class="wl-kv__k">BLOCK</th>'
+          + '<th style="padding:0 14px 8px 0;" class="wl-kv__k">WHEN</th>'
+          + '<th style="padding:0 0 8px;" class="wl-kv__k">TRANSACTION</th>'
+          + '</tr></thead><tbody>' + rows + '</tbody></table></div>'
+          + '<p class="wl-body-sm" style="margin-top:14px;color:var(--wl-ink-muted);max-width:72ch;">'
+          + data.actions.length + ' transactions on Midnight ' + data.network + ', newest first, across '
+          + nextLetter + ' buildings. Read one upward and the chain is visible: a building is opened, '
+          + 'each deposit lands a new commitment, and a certificate binds to the last one. '
+          + 'Building attribution is derived by decoding the ledger state each transaction produced, '
+          + 'not asserted. Read '
+          + (data.takenAt ? new Date(data.takenAt).toUTCString().replace('GMT', 'UTC') : 'at build time')
+          + '. Contract '
+          + '<a href="' + data.contractExplorer + '" target="_blank" rel="noopener">'
+          + data.contract.slice(0, 12) + '…' + data.contract.slice(-6) + ' →</a>'
+          + '</p>'
+          // The record shows more buildings than the page does, and an
+          // unexplained gap between the two reads as something being hidden.
+          + (uncertified.length
+            ? '<p class="wl-body-sm" style="margin-top:10px;color:var(--wl-ink-muted);max-width:72ch;">'
+              + (uncertified.length === 1 ? 'Building ' : 'Buildings ')
+              + uncertified.map(function (id) { return '<b>' + letters[id] + '</b>'; }).join(', ')
+              + (uncertified.length === 1 ? ' was opened but never certified, so it does not appear above. '
+                : ' were opened but never certified, so they do not appear above. ')
+              + 'That is a half-finished registration left behind by an interrupted run, and it is '
+              + 'shown here because the ledger shows it. A building with no certificate is not a safe '
+              + 'building; it is a building nobody has vouched for.'
+              + '</p>'
+            : '');
+      });
+  }
+
   function boot() {
     initLanding();
+    initChain();
     initCheck();
     initRegistry();
     initAttack();

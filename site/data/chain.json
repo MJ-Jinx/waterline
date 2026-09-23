@@ -1,0 +1,212 @@
+{
+  "network": "preprod",
+  "contract": "e99711c00fbcb7ee9a12f81a75e151367bf7899cbda96a1c54c75393494f3ac2",
+  "contractExplorer": "https://explorer.preprod.midnight.network/contracts/e99711c00fbcb7ee9a12f81a75e151367bf7899cbda96a1c54c75393494f3ac2",
+  "takenAt": "2026-09-23T04:34:10.436Z",
+  "counts": {
+    "constructor": "function Object() { [native code] }1",
+    "openBuilding": 4,
+    "registerLease": 8,
+    "issueCertificate": 5
+  },
+  "actions": [
+    {
+      "kind": "deploy",
+      "entryPoint": "constructor",
+      "building": null,
+      "commitment": null,
+      "band": null,
+      "tx": "689fd887c2de3aefb2561b05beb611b61129137c1383c9b0669cb935e94a60c0",
+      "block": 2598349,
+      "at": "2026-09-18T03:39:12.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/689fd887c2de3aefb2561b05beb611b61129137c1383c9b0669cb935e94a60c0"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "openBuilding",
+      "building": "189285d39e578cbe1e357d330fe58326c644d93500d9ad7a424212fc9de44c47",
+      "commitment": "3ebc64f7d04d2b87e795abea75fcbd18971c88fa43753eb4d9bf6c05768299f3",
+      "band": null,
+      "tx": "b03ebf8df8b55dc7976379d5e81ac591784c87849be28e4e62c54555a309e6ff",
+      "block": 2598354,
+      "at": "2026-09-18T03:39:42.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/b03ebf8df8b55dc7976379d5e81ac591784c87849be28e4e62c54555a309e6ff"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "registerLease",
+      "building": "189285d39e578cbe1e357d330fe58326c644d93500d9ad7a424212fc9de44c47",
+      "commitment": "b742b474c6e265084a3508142209f053bff5d58ea12821e912fc9b0b9cd0e758",
+      "band": null,
+      "tx": "eb5061715e14f339dc148b6ac277ae4701d787d41d8fad9879d6db82f852f42a",
+      "block": 2598359,
+      "at": "2026-09-18T03:40:12.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/eb5061715e14f339dc148b6ac277ae4701d787d41d8fad9879d6db82f852f42a"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "registerLease",
+      "building": "189285d39e578cbe1e357d330fe58326c644d93500d9ad7a424212fc9de44c47",
+      "commitment": "f65833a05bf6d6c47b18884d7e20674c90b7ddde3ed14b0a0da87d19a37f788a",
+      "band": null,
+      "tx": "57a1cdac0fd8c2ceb6e55dff1fa6413a2295afa0cbfb1dcd3887d9125f0b4a9d",
+      "block": 2598364,
+      "at": "2026-09-18T03:40:42.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/57a1cdac0fd8c2ceb6e55dff1fa6413a2295afa0cbfb1dcd3887d9125f0b4a9d"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "issueCertificate",
+      "building": "189285d39e578cbe1e357d330fe58326c644d93500d9ad7a424212fc9de44c47",
+      "commitment": "f65833a05bf6d6c47b18884d7e20674c90b7ddde3ed14b0a0da87d19a37f788a",
+      "band": 2,
+      "tx": "509bf1203b364ebdc2c804f9366ee24bb123e07abb96ae78dcd4ab9ee92f88f2",
+      "block": 2598373,
+      "at": "2026-09-18T03:41:36.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/509bf1203b364ebdc2c804f9366ee24bb123e07abb96ae78dcd4ab9ee92f88f2"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "issueCertificate",
+      "building": "189285d39e578cbe1e357d330fe58326c644d93500d9ad7a424212fc9de44c47",
+      "commitment": "f65833a05bf6d6c47b18884d7e20674c90b7ddde3ed14b0a0da87d19a37f788a",
+      "band": 1,
+      "tx": "9ee28478ddd87cc9e5fe528178a685c6eb465e3b8c81b81885d2444e819a2621",
+      "block": 2598388,
+      "at": "2026-09-18T03:43:06.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/9ee28478ddd87cc9e5fe528178a685c6eb465e3b8c81b81885d2444e819a2621"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "issueCertificate",
+      "building": "189285d39e578cbe1e357d330fe58326c644d93500d9ad7a424212fc9de44c47",
+      "commitment": "f65833a05bf6d6c47b18884d7e20674c90b7ddde3ed14b0a0da87d19a37f788a",
+      "band": 0,
+      "tx": "a57a2ce916ec6e9d1c3d4c5c331085919dbdf708001de71e4ca86cadef361069",
+      "block": 2598396,
+      "at": "2026-09-18T03:43:54.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/a57a2ce916ec6e9d1c3d4c5c331085919dbdf708001de71e4ca86cadef361069"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "openBuilding",
+      "building": "4c4d071d0f67dc184fbf47856fb1f3b157352db6824cf7adec9eb74130565af6",
+      "commitment": "3cd4e8aa368433c76a2b0a6949cf8f0198ed52e59d07e11cb1b6bcad6538e91f",
+      "band": null,
+      "tx": "99124fff4e9c279acebaf2ed601b75fe257e0b6921ecd63089a67ecb66f31e5c",
+      "block": 2660783,
+      "at": "2026-09-22T13:05:54.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/99124fff4e9c279acebaf2ed601b75fe257e0b6921ecd63089a67ecb66f31e5c"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "registerLease",
+      "building": "4c4d071d0f67dc184fbf47856fb1f3b157352db6824cf7adec9eb74130565af6",
+      "commitment": "d5509c85f65703dde38af480241a338d0f964d0aec78fba5c0e6366e8080056e",
+      "band": null,
+      "tx": "ff875bf97efb6ea97e8563e0afeb25333c007fef2ef62654d89740d18eb3106f",
+      "block": 2660791,
+      "at": "2026-09-22T13:06:42.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/ff875bf97efb6ea97e8563e0afeb25333c007fef2ef62654d89740d18eb3106f"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "openBuilding",
+      "building": "bb9300569874fec0657a64bad3b469b9dbde9c918249d0c3853bec4b63c42ae2",
+      "commitment": "aec803754d5808c80be4568e72dc3fb6bea822d9413eddeebe790a7394b73629",
+      "band": null,
+      "tx": "b30004f1a8b4ce686fdaeb8803c87c44ad29d9958f0eee61e79d938aa4751d27",
+      "block": 2660891,
+      "at": "2026-09-22T13:16:42.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/b30004f1a8b4ce686fdaeb8803c87c44ad29d9958f0eee61e79d938aa4751d27"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "openBuilding",
+      "building": "db40b6dcb6ade55c28c8dabc1574eb20811887655d54e4c39ff34949a9297ec7",
+      "commitment": "c17a51bf96dc50327ebe4ada3e279aa1112eecf2a0672fa236e0a7a4b190a572",
+      "band": null,
+      "tx": "aba4ab00c1bf50e3a874af18a33de8b12c15e27f1ef760d85d142cd7245c7109",
+      "block": 2660995,
+      "at": "2026-09-22T13:27:12.001Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/aba4ab00c1bf50e3a874af18a33de8b12c15e27f1ef760d85d142cd7245c7109"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "registerLease",
+      "building": "db40b6dcb6ade55c28c8dabc1574eb20811887655d54e4c39ff34949a9297ec7",
+      "commitment": "ea9cc5b4973c4a186d906d938742d58ff3c00181c6e09bc2e101006a57025853",
+      "band": null,
+      "tx": "dd10458393686368a1ce900d65a9426eebc9e822abbe68b4584de9870b6f7d05",
+      "block": 2661010,
+      "at": "2026-09-22T13:28:48.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/dd10458393686368a1ce900d65a9426eebc9e822abbe68b4584de9870b6f7d05"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "registerLease",
+      "building": "db40b6dcb6ade55c28c8dabc1574eb20811887655d54e4c39ff34949a9297ec7",
+      "commitment": "7113061f936e4a5c44251ea560c0d4e882ab02ae4743c44249dfd5246d170243",
+      "band": null,
+      "tx": "97745c2b9afa1c429b6ca6b8d6dd6306e526d42820ba24460d56299c690b601b",
+      "block": 2661072,
+      "at": "2026-09-22T13:35:06.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/97745c2b9afa1c429b6ca6b8d6dd6306e526d42820ba24460d56299c690b601b"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "issueCertificate",
+      "building": "db40b6dcb6ade55c28c8dabc1574eb20811887655d54e4c39ff34949a9297ec7",
+      "commitment": "7113061f936e4a5c44251ea560c0d4e882ab02ae4743c44249dfd5246d170243",
+      "band": 2,
+      "tx": "859cf18da01fecedcedbe858d37cce5cb4f396889fe0b768bb9d57b8ca3887f1",
+      "block": 2661308,
+      "at": "2026-09-22T13:58:42.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/859cf18da01fecedcedbe858d37cce5cb4f396889fe0b768bb9d57b8ca3887f1"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "registerLease",
+      "building": "bb9300569874fec0657a64bad3b469b9dbde9c918249d0c3853bec4b63c42ae2",
+      "commitment": "b8dd4447cb6d493a50c4e2abc52765bbc06ef0c81ebf195ba176d30e7ec12254",
+      "band": null,
+      "tx": "ac1e664c712a33f794abb670366a85d72bc89ee95feb4c87f229d6dd79cac41b",
+      "block": 2661323,
+      "at": "2026-09-22T14:00:12.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/ac1e664c712a33f794abb670366a85d72bc89ee95feb4c87f229d6dd79cac41b"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "registerLease",
+      "building": "bb9300569874fec0657a64bad3b469b9dbde9c918249d0c3853bec4b63c42ae2",
+      "commitment": "dc675f725cddd4ae26ee065a0b47a479c826c86277e10732ebb7b69c3b1cf1dd",
+      "band": null,
+      "tx": "76f8e95f925ec8f1e3e6aeb4be1d0ad33803e0fa37f7056c9fd80b65c286b7b7",
+      "block": 2661342,
+      "at": "2026-09-22T14:02:06.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/76f8e95f925ec8f1e3e6aeb4be1d0ad33803e0fa37f7056c9fd80b65c286b7b7"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "registerLease",
+      "building": "bb9300569874fec0657a64bad3b469b9dbde9c918249d0c3853bec4b63c42ae2",
+      "commitment": "19cd5b940ab6ad769b69d9616a7f1259a21eae200d575177a40222a87bbb3ed1",
+      "band": null,
+      "tx": "f64cfa444d9590b7f25b04e544427fc5c839f321d7d624ef8a3a1ae09558dbfe",
+      "block": 2661349,
+      "at": "2026-09-22T14:02:48.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/f64cfa444d9590b7f25b04e544427fc5c839f321d7d624ef8a3a1ae09558dbfe"
+    },
+    {
+      "kind": "call",
+      "entryPoint": "issueCertificate",
+      "building": "bb9300569874fec0657a64bad3b469b9dbde9c918249d0c3853bec4b63c42ae2",
+      "commitment": "19cd5b940ab6ad769b69d9616a7f1259a21eae200d575177a40222a87bbb3ed1",
+      "band": 1,
+      "tx": "efab98b90a08b7939a9f5963c408467f39d4857bb1d9220261e1ec5ada638e47",
+      "block": 2661364,
+      "at": "2026-09-22T14:04:18.000Z",
+      "explorer": "https://explorer.preprod.midnight.network/transactions/efab98b90a08b7939a9f5963c408467f39d4857bb1d9220261e1ec5ada638e47"
+    }
+  ]
+}

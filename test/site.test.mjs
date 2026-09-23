@@ -316,3 +316,85 @@ test('the guide quotes labels that actually exist on the pages it describes', ()
   assert.ok(!guide.includes('Senior total'),
     'the guide must not quote the retired "Senior total" label');
 });
+
+test('the on-chain record links to transactions that are real and complete', () => {
+  // The README once cited transaction hashes that could not be looked up: they
+  // were Substrate extrinsic hashes from sendMnTransaction(...).send(), not the
+  // Midnight transaction hashes the explorer indexes. Real, unfindable, and
+  // indistinguishable from invented. Anything published as evidence now has to
+  // be a full 64-hex hash from the indexer.
+  const chain = JSON.parse(fs.readFileSync(path.join(SITE, 'data/chain.json'), 'utf8'));
+  assert.ok(chain.actions.length > 0, 'the chain record has actions');
+
+  for (const a of chain.actions) {
+    assert.match(a.tx, /^[0-9a-f]{64}$/, `transaction ${a.tx} is not a full hash`);
+    assert.ok(a.explorer.endsWith(a.tx), `${a.entryPoint} explorer link does not name its own tx`);
+    assert.match(a.explorer, /^https:\/\/explorer\./, 'explorer links must be absolute and https');
+    assert.ok(Number.isInteger(a.block) && a.block > 0, 'every action names a block');
+  }
+
+  // Exactly one deploy, and it comes first.
+  const deploys = chain.actions.filter((a) => a.kind === 'deploy');
+  assert.equal(deploys.length, 1, 'a contract is deployed once');
+  assert.equal(chain.actions[0].kind, 'deploy', 'the deploy is the oldest action');
+
+  // The contract the record describes is the one the site actually reads.
+  const snap = JSON.parse(fs.readFileSync(path.join(SITE, 'data/certificates.json'), 'utf8'));
+  assert.equal(chain.contract, snap.contract,
+    'the on-chain record and the certificate snapshot must describe the same contract');
+});
+
+test('the chain record agrees with the certificates the site serves', () => {
+  // Building attribution is derived by decoding ledger state, so it can be
+  // checked against the snapshot rather than trusted: the last commitment a
+  // building landed must be the commitment its certificate is bound to.
+  const chain = JSON.parse(fs.readFileSync(path.join(SITE, 'data/chain.json'), 'utf8'));
+  const snap = JSON.parse(fs.readFileSync(path.join(SITE, 'data/certificates.json'), 'utf8'));
+
+  for (const b of snap.buildings) {
+    if (!b.registered || !b.commitment) continue;
+    const mine = chain.actions.filter((a) => a.building === b.id);
+    assert.ok(mine.length > 0, `building ${b.id.slice(0, 12)} has no transactions in the record`);
+    const last = mine[mine.length - 1];
+    assert.equal(last.commitment, b.commitment,
+      `building ${b.id.slice(0, 12)}: the record's last commitment must match the snapshot`);
+    if (b.certificate) {
+      const certs = mine.filter((a) => a.entryPoint === 'issueCertificate');
+      assert.ok(certs.length > 0, `${b.id.slice(0, 12)} has a certificate but no issueCertificate tx`);
+      assert.equal(certs[certs.length - 1].band, b.certificate.bandIndex,
+        `${b.id.slice(0, 12)}: the band on chain must match the band the page shows`);
+    }
+  }
+});
+
+test('the demo hands the visitor something to take away', () => {
+  // The Full Demo used to end at a word on screen: no document, no QR, nothing
+  // to keep. The certificate is the product, so a run that produces no artefact
+  // demonstrates the cryptography and hides the point.
+  const demo = fs.readFileSync(path.join(SITE, 'demo.html'), 'utf8');
+  for (const hook of ['data-demo-save-run', 'data-demo-save-attempt']) {
+    assert.ok(demo.includes(hook), `demo.html is missing ${hook}`);
+  }
+  // Both documents embed a QR, which needs the encoder on the page.
+  assert.ok(/<script src="assets\/qr\.js">/.test(demo),
+    'demo.html must load the QR encoder its documents use');
+  // And it must point at what IS on chain, since nothing it does goes there.
+  assert.ok(demo.includes('check.html#onchain'),
+    'demo.html should link to the on-chain record');
+});
+
+test('the demo tells the truth apart from a lie', () => {
+  // Typing the REAL total used to be reported as "the contract accepted a false
+  // opening — this should be impossible", which told anyone who entered the
+  // honest figure that the contract was broken. The accepted path must branch
+  // on whether the claim matched the sealed books.
+  const worker = fs.readFileSync('demo-src/worker.js', 'utf8');
+  const main = fs.readFileSync('demo-src/main.js', 'utf8');
+  assert.ok(/truthful\s*=\s*BigInt\(claimedTotal\)\s*===\s*reg\.book\(id\)\.total/.test(worker),
+    'the worker must decide truthfulness by comparing against the sealed total');
+  assert.ok(main.includes('msg.truthful'),
+    'the page must branch on whether the claim was true');
+  assert.ok(!/phase === 'accepted'[\s\S]{0,400}?contract accepted a false opening[\s\S]{0,200}?\}/.test(main)
+    || main.includes('That one was true'),
+    'an accepted truthful claim must not be reported as a contract bug');
+});
