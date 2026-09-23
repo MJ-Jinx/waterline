@@ -87,7 +87,7 @@
     <div class="slide__num">WATERLINE · 워터라인</div>
     <h2 style="font-size: clamp(34px, 5.5vw, 62px);">Is your deposit above the line?</h2>
     <p class="lead">
-      Prove a <b>전세 (jeonse)</b> property isn’t over-leveraged — without revealing the total,
+      Prove a <b>전세 (jeonse)</b> property isn’t over-leveraged, without revealing the total,
       the lease count, or anyone’s deposit.
     </p>
     <p style="color: var(--wl-ink-muted);">
@@ -108,7 +108,7 @@
     <div class="two">
       <div>
         <p>
-          In a <b>다가구주택 (dagagu jutaek — a multi-household house under one owner)</b> there is one
+          In a <b>다가구주택 (dagagu jutaek: a multi-household house under one owner)</b> there is one
           owner and one title register for the whole building. Units are not separately registered.
         </p>
         <p>
@@ -135,7 +135,7 @@
     <h2>The duty to disclose already exists. Both ways of satisfying it overshare.</h2>
     <p>
       <b>주택임대차보호법 제3조의7</b> already obliges a landlord, at signing, to present 확정일자 and
-      deposit information, plus tax-clearance certificates under <b>국세징수법 제108조</b> — or to consent
+      deposit information, plus tax-clearance certificates under <b>국세징수법 제108조</b>, or to consent
       to a lookup instead.
     </p>
     <div class="two" style="margin-top: 10px;">
@@ -150,7 +150,7 @@
     </div>
     <p style="margin-top: 20px;" class="lead">
       Waterline is a <b>third route to the same statutory duty</b>, disclosing only a band. Compliance
-      becomes cheap — which turns <b>refusal into a signal</b>.
+      becomes cheap, which turns <b>refusal into a signal</b>.
     </p>
   </section>
 
@@ -171,8 +171,8 @@
           than its value can cover.
         </p>
         <p style="color: var(--wl-ink-muted);">
-          The surface is drawn as a <b>hatched band, never a level</b> — the page genuinely does not
-          know the total, so a precise line would be either a lie or a disclosure.
+          The surface is drawn as a <b>hatched band, never a level</b>. The page does not know the
+          total, so a precise line would be either a lie or a disclosure.
         </p>
       </div>
       <div class="wl-figure" style="flex: 0 1 300px;">
@@ -186,8 +186,8 @@
     <div class="slide__num">04 · THE MECHANISM</div>
     <h2>A chained commitment, not a Merkle tree</h2>
     <p>
-      A Merkle tree proves a lease is <i>included</i>. It cannot prove the set is <i>complete</i> —
-      and a landlord who omits leases is exactly the attack.
+      A Merkle tree proves a lease is <i>included</i>. It cannot prove the set is <i>complete</i>,
+      and a landlord who omits leases is the attack.
     </p>
     <p>
       Waterline keeps <b>one commitment per building</b> over <code>{total, count}</code> and a salt.
@@ -212,7 +212,7 @@
     </p>
     <p class="lead">
       That failure happens on the <b>landlord’s own machine, before any proof exists</b>. Nothing is
-      submitted and nothing is rejected — there is simply no provable lie.
+      submitted and nothing is rejected. There is no provable lie to reject.
     </p>
     <p style="color: var(--wl-ink-muted);">
       Verified on preprod: honest ₩5.5억 against a ₩6.0억 appraisal gives 위험 DANGER; the ₩3.0억 lie
@@ -269,9 +269,9 @@
         <h3 style="margin-top: 18px;">The registry side proves</h3>
         <p style="font-size: 15px;">
           Witness assembly and proving happen where the books already are, on the registry's own
-          machine. That is deliberate: a proving request carries the values being proved &mdash; the
-          deposit total, the lease count, the secret that seals them. Sending that to someone else's
-          prover would leak the very thing this protects.
+          machine, and it has to be. A proving request carries the values being proved: the deposit
+          total, the lease count, the secret that seals them. Sending that to someone else's prover
+          would leak the very thing this protects.
         </p>
       </div>
       <div>
@@ -298,7 +298,7 @@
     </p>
     <p>
       The 60% case is directly on point: a 다가구주택 where the broker <b>misstated the building’s value
-      and the 선순위 임차보증금</b> — the exact fact this system proves. ₩108m awarded on a ₩180m deposit.
+      and the 선순위 임차보증금</b>, the one fact this system proves. ₩108m awarded on a ₩180m deposit.
     </p>
     <div class="two" style="margin-top: 10px;">
       <div class="wl-card" style="padding: 20px 24px;">
@@ -307,7 +307,7 @@
       </div>
       <div class="wl-card" style="padding: 20px 24px;">
         <h3>Why they pay</h3>
-        <p style="font-size: 15px; margin: 0;">Court-established, effectively uninsurable exposure to a single factual claim — one that a certificate answers directly.</p>
+        <p style="font-size: 15px; margin: 0;">Court-established, effectively uninsurable exposure to a single factual claim, one that a certificate answers directly.</p>
       </div>
     </div>
   </section>
@@ -338,7 +338,7 @@
             <li>A clean clone compiles in <b>~18s</b> in CI</li>
             <li>Mutating <code>&lt;=</code> to <code>&lt;</code> fails exactly one test</li>
             <li>The QR encoder matched an independent implementation byte for byte and decoded</li>
-            <li>The tenant page loads <b>no</b> proving machinery — enforced by a test</li>
+            <li>The tenant page loads <b>no</b> proving machinery, enforced by a test</li>
             <li>Four real proofs computed <b>in the browser</b> on the demo page</li>
           </ul>
         </div>
@@ -351,7 +351,7 @@
     <div class="slide__num">10 · LIMITS</div>
     <h2>What this does not claim</h2>
     <ul style="padding-left: 20px; max-width: 74ch;">
-      <li><b>Trust is reduced, not eliminated.</b> It reduces to “the registry inserts leases correctly” — the same trust already placed in the 주민센터.</li>
+      <li><b>Trust is reduced, not eliminated.</b> It reduces to “the registry inserts leases correctly”, the same trust already placed in the 주민센터.</li>
       <li><b>The registry here is simulated.</b> The ZK layer is real and on chain; the issuer is a demo console. Wiring a government registry is not a hackathon deliverable.</li>
       <li><b>The browser demo proves over invented books.</b> Proving needs the registry's own ledger, so the tab plays the registry, not a tenant. It shows the circuits and the refusal are real; it says nothing about any real building.</li>
       <li><b>Thresholds are parameters, not legal advice.</b> 70% is illustrative, not a statutory ratio.</li>
@@ -365,10 +365,10 @@
     <h2>No wallet. No signup. Open the link.</h2>
     <div class="two">
       <div>
-        <p><a href="demo.html"><b>Run the full demo</b></a> — one button, the whole lifecycle, and <b>four real proofs computed in your own browser</b>. Then try to forge the total and watch the contract refuse.</p>
-        <p><a href="check.html"><b>Check a building</b></a> — a verdict read off the ledger, with a downloadable QR certificate.</p>
-        <p><a href="why-lying-fails.html"><b>Why a landlord can’t lie</b></a> — claim any total you like and watch the certificate refuse to exist.</p>
-        <p><a href="registry.html"><b>Registry console</b></a> — the proving pipeline, framed as a simulation.</p>
+        <p><a href="demo.html"><b>Run the full demo</b></a>: one button, the whole lifecycle, and <b>four real proofs computed in your own browser</b>. Then try to forge the total and watch the contract refuse.</p>
+        <p><a href="check.html"><b>Check a building</b></a>: a verdict read off the ledger, with a downloadable QR certificate.</p>
+        <p><a href="why-lying-fails.html"><b>Why a landlord can’t lie</b></a>: claim any total you like and watch the certificate refuse to exist.</p>
+        <p><a href="registry.html"><b>Registry console</b></a>: the proving pipeline, framed as a simulation.</p>
       </div>
       <div>
         <div class="wl-card" style="padding: 22px 26px;">

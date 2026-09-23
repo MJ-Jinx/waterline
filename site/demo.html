@@ -92,7 +92,7 @@
       <p class="wl-body" style="max-width: 64ch; margin-top: 14px;">
         Press the button and this page walks through every step a registry takes: opening a
         building, adding each tenant's deposit to a sealed total, and working out whether the
-        building is safe — all without the total ever being written down in the open. After each
+        building is safe, all without the total ever being written down in the open. After each
         step it tells you what is coming next.
       </p>
       <p class="wl-body" style="max-width: 64ch;">
@@ -125,8 +125,8 @@
         <p class="wl-body-sm" style="margin: 0;">The verdict, and the only thing published</p>
         <p class="d-big" data-demo-verdict>&nbsp;</p>
         <p class="wl-body-sm" style="max-width: 60ch; margin-top: 12px;">
-          Everything else — the deposits, the total, how many households there are, the secret that
-          seals them — stayed in this tab and was never written anywhere. Compare it with the three
+          Everything else stayed in this tab and was never written anywhere: the deposits, the total,
+          how many households there are, the secret that seals them. Compare it with the three
           real buildings on <a href="check.html">Check a building</a>, which went through exactly
           this process on the live test network.
         </p>
@@ -137,8 +137,8 @@
     <section class="wl-container" style="padding-block: 30px 56px;">
       <h2 class="wl-title">Now try to cheat</h2>
       <p class="wl-body" style="max-width: 64ch; margin-top: 6px;">
-        Put in a deposit total the registry might <em>wish</em> were true — something small enough to
-        make a crowded building look safe — and press the button. The calculation runs in this tab
+        Put in a deposit total the registry might <em>wish</em> were true, something small enough to
+        make a crowded building look safe, and press the button. The calculation runs in this tab
         with the false figure in place.
       </p>
       <div class="wl-row" style="align-items: flex-end; gap: 14px; margin-top: 16px;">
@@ -158,18 +158,18 @@
     <!-- Honesty ------------------------------------------------------------- -->
     <section class="wl-container" style="padding-bottom: 60px;">
       <div class="wl-card wl-card--quiet" style="max-width: 74ch;">
-        <h2 class="wl-title" style="font-size: 20px; margin-top: 0;">What is real here, precisely</h2>
+        <h2 class="wl-title" style="font-size: 20px; margin-top: 0;">What is real here</h2>
         <p class="wl-body-sm">
           <strong>Real:</strong> the contract, the calculation, the sealing, and the zero-knowledge
-          proofs — computed in this tab by the same code the registry runs, using the same proving
+          proofs, computed in this tab by the same code the registry runs, using the same proving
           keys. The refusal when you enter a false total is the contract's own, not a message we
           wrote.
         </p>
         <p class="wl-body-sm">
           <strong>Invented:</strong> the building and its deposits. This tab makes them up, because
-          in this demo your browser is playing the <em>registry</em> — the only party allowed to
-          hold those figures. A tenant's browser could never do this, and that is the point rather
-          than a limitation: if it could, the tenant would be holding the landlord's private books.
+          in this demo your browser is playing the <em>registry</em>, the only party allowed to
+          hold those figures. A tenant's browser could never do this, and it should not be able to.
+          If it could, the tenant would be holding the landlord's private books.
         </p>
         <p class="wl-body-sm">
           <strong>Not done here:</strong> sending the result to the network. That needs a funded
