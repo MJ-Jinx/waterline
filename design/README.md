@@ -1,15 +1,18 @@
-# Waterline — design package
+# Waterline: design package
 
 Everything needed to reproduce the Waterline site design.
 
 ## Quick start
 
+The working implementation of this design lives at [`site/`](../site/) in the repo root. This folder
+holds the specification, the tokens and the original artboards.
+
 ```bash
 # just open it
-open standalone/index.html
+open ../site/index.html
 
 # or serve it, if you want clean relative paths
-cd standalone && python3 -m http.server 8080
+cd ../site && python3 -m http.server 8080
 ```
 
 No build step, no dependencies. One Google Fonts link for IBM Plex Sans + Mono.
@@ -32,7 +35,7 @@ A good opening prompt:
 | `CLAUDE.md` | Agent instructions: the rules that must not be "improved" |
 | `tokens/tokens.css` | Design tokens as CSS custom properties |
 | `tokens/tokens.json` | The same, machine-readable, plus figure geometry and animation timings |
-| `standalone/` | Working static site — six pages, responsive, interactive |
+| [`../site/`](../site/) | The working static site this package specifies |
 | `reference/` | The original canvas artboards (`.dc.html`) |
 
 ## The pages
@@ -44,12 +47,15 @@ A good opening prompt:
 | `registry.html` | Simulated registry console with the live proving pipeline |
 | `why-lying-fails.html` | Claim any total you like, then watch the certificate refuse to exist |
 | `states.html` | The four states with no verdict: empty, loading, not registered, stale |
-| `foundations.html` | The design system rendered — palette, type scale, components, the figure in all three bands |
+| `foundations.html` | The design system rendered: palette, type scale, components, the figure in all three bands |
+| `guide.html` | The plain-language walkthrough, including the table of what is real and what is illustrated |
+| `demo.html` | The full lifecycle, with four real proofs computed in the visitor's browser |
+| `deck.html` | Thirteen slides sharing the site's tokens and typeface |
 
 ## The one thing to understand before you change anything
 
 The water surface is drawn as an **indeterminate band**, never a level. The page genuinely does not
-know the building's senior-deposit total — only the registry does. Drawing a precise water level
+know the building's senior-deposit total, only the registry does. Drawing a precise water level
 would be either a lie or a disclosure.
 
 That constraint is the product in one image: an indeterminate surface with a definite verdict.
@@ -58,4 +64,4 @@ That constraint is the product in one image: an indeterminate surface with a def
 
 Those `.dc.html` files come from the design canvas and use a component runtime (`<x-dc>`,
 `<sc-for>`, `{{holes}}`). They will not render on their own. They are included as the source of
-truth for layout and copy — build from `standalone/`, check against `reference/`.
+truth for layout and copy. Build from [`../site/`](../site/), check against `reference/`.

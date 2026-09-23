@@ -2,9 +2,9 @@
 
 **Prove a 전세 (jeonse) property isn't over-leveraged, without revealing anyone's deposit.**
 
-> **전세 (jeonse)** — the dominant Korean lease form. Instead of monthly rent, the tenant hands the landlord a very large refundable lump-sum deposit, often 50–80% of the property's value, returned at the end of the lease. It is effectively an interest-free loan to the landlord, secured only by the property.
+> **전세 (jeonse)** is the dominant Korean lease form. Instead of monthly rent, the tenant hands the landlord a very large refundable lump-sum deposit, often 50–80% of the property's value, returned at the end of the lease. It is effectively an interest-free loan to the landlord, secured only by the property.
 
-A ship loaded past its waterline is unsafe. So is a building carrying more lease deposits than its value can cover. Waterline computes that load against its limit inside a zero-knowledge circuit and discloses **one band — 안전 (anjeon, "safe"), 주의 (juui, "caution") or 위험 (wiheom, "danger") — and nothing else.**
+A ship loaded past its waterline is unsafe. So is a building carrying more lease deposits than its value can cover. Waterline computes that load against its limit inside a zero-knowledge circuit and discloses **one band, 안전 (anjeon, "safe"), 주의 (juui, "caution") or 위험 (wiheom, "danger"), and nothing else.**
 
 Built on [Midnight](https://midnight.network) for the Midnight Korea Hackathon 2026.
 **Judges: [`SUBMISSION.md`](SUBMISSION.md)** has the submitted answers, the fastest demo path, and the
@@ -17,12 +17,12 @@ No wallet, no extension, no signup, no testnet tokens. Open the link.
 
 | Page | What it shows |
 |---|---|
-| **[How it works](https://mj-jinx.github.io/waterline/guide.html)** | **start here** — a plain-language walkthrough for non-technical readers: what to click, what each screen means, what you can and cannot do, and an honest table of what is live versus illustrated |
-| **[Run the full demo](https://mj-jinx.github.io/waterline/demo.html)** | **the whole lifecycle in one click** — a building registered, four real Plonk proofs computed **in your own browser**, the certificate that comes out, and a box where you can try to forge the total. Narrated at every step. First run downloads ~18 MB — keys, SRS and two WASM modules |
-| [Check a building](https://mj-jinx.github.io/waterline/check.html) | the tenant view — a verdict band read off the live ledger, with a downloadable QR certificate |
-| [Why a landlord can’t lie](https://mj-jinx.github.io/waterline/why-lying-fails.html) | claim any total you like, and watch the certificate refuse to exist. **A scripted animation**, on a timer, touching no network — for the real circuit refusing, use the forge box on [the demo page](https://mj-jinx.github.io/waterline/demo.html) or run `npm run verify:refusal` locally |
+| **[How it works](https://mj-jinx.github.io/waterline/guide.html)** | **start here**: a plain-language walkthrough for non-technical readers: what to click, what each screen means, what you can and cannot do, and an honest table of what is live versus illustrated |
+| **[Run the full demo](https://mj-jinx.github.io/waterline/demo.html)** | **the whole lifecycle in one click**: a building registered, four real Plonk proofs computed **in your own browser**, the certificate that comes out, and a box where you can try to forge the total. Narrated at every step. First run downloads ~18 MB — keys, SRS and two WASM modules |
+| [Check a building](https://mj-jinx.github.io/waterline/check.html) | the tenant view: a verdict band read off the live ledger, with a downloadable QR certificate |
+| [Why a landlord can’t lie](https://mj-jinx.github.io/waterline/why-lying-fails.html) | claim any total you like, and watch the certificate refuse to exist. **A scripted animation**, on a timer, touching no network. For the real circuit refusing, use the forge box on [the demo page](https://mj-jinx.github.io/waterline/demo.html) or run `npm run verify:refusal` locally |
 | [Registry console](https://mj-jinx.github.io/waterline/registry.html) | the proving pipeline, framed as a simulation |
-| [Slide deck](https://mj-jinx.github.io/waterline/deck.html) | twelve slides: problem, mechanism, privacy, business model, evidence. Press <kbd>P</kbd> to print to PDF |
+| [Slide deck](https://mj-jinx.github.io/waterline/deck.html) | thirteen slides: problem, mechanism, privacy, business model, revenue, evidence. Press <kbd>P</kbd> to print to PDF |
 | [Design system](https://mj-jinx.github.io/waterline/foundations.html) | palette, type scale, components, the figure in all three bands |
 
 The demo buildings on those pages are fictional and labelled as such. The contract in the footer is
@@ -33,11 +33,11 @@ on Midnight preprod.
 
 ## The problem
 
-In a **다가구주택 (dagagu jutaek — a multi-household house under a single owner)** there is one owner and one **등기부 (deunggibu — the official property title register)** for the entire building. Individual units are *not* separately registered.
+In a **다가구주택 (dagagu jutaek: a multi-household house under a single owner)** there is one owner and one **등기부 (deunggibu: the official property title register)** for the entire building. Individual units are *not* separately registered.
 
-So a prospective tenant **cannot see how many other tenants already hold claims ranking ahead of theirs.** Those other deposits appear only in **확정일자 (hwakjeongilja — the official date-stamp on a lease that fixes a tenant's priority of repayment)** records held at the **주민센터 (jumin senteo — local government service centre)**, not in the property register.
+So a prospective tenant **cannot see how many other tenants already hold claims ranking ahead of theirs.** Those other deposits appear only in **확정일자 (hwakjeongilja: the official date-stamp on a lease that fixes a tenant's priority of repayment)** records held at the **주민센터 (jumin senteo: local government service centre)**, not in the property register.
 
-That information asymmetry is the primary mechanism of **전세사기 (jeonse sagi — jeonse fraud)**.
+That information asymmetry is the primary mechanism of **전세사기 (jeonse sagi: jeonse fraud)**.
 
 | Measure | Figure |
 |---|---|
@@ -45,30 +45,30 @@ That information asymmetry is the primary mechanism of **전세사기 (jeonse sa
 | Debt carried by victims in the special restructuring scheme | **~₩400bn** across **3,898** people [^2] |
 | Share of *those 3,898 restructuring users* in their 20s–30s | **89.2%** (3,478 people) [^2] |
 
-> The 89.2% figure describes the 3,898 people who entered the **특례채무조정 (teungnye chaemu jojeong — special debt-restructuring scheme)**, not all 40,936 recognised victims. Age data for the full victim population is not published on the same basis.
+> The 89.2% figure describes the 3,898 people who entered the **특례채무조정 (teungnye chaemu jojeong: special debt-restructuring scheme)**, not all 40,936 recognised victims. Age data for the full victim population is not published on the same basis.
 
-### The statutory duty already exists — and that is the opening
+### The statutory duty already exists, and that is the opening
 
 This is the part most people miss. Korea **already legally requires** landlords to disclose exactly what Waterline proves.
 
-**주택임대차보호법 (Housing Lease Protection Act) Article 3-7 — 임대인의 정보 제시 의무 (landlord's duty to present information)** [^3] obliges a landlord, at the point of signing, to present:
+**주택임대차보호법 (Housing Lease Protection Act) Article 3-7, 임대인의 정보 제시 의무 (landlord's duty to present information)** [^3] obliges a landlord, at the point of signing, to present:
 
-1. the property's 확정일자 date, rent and deposit information — *or*, alternatively, consent to a lookup under Article 3-6(4); and
-2. tax-clearance certificates under **국세징수법 (National Tax Collection Act) Article 108** — *or*, alternatively, consent to an unpaid-tax inspection under **Article 109(1)** [^4].
+1. the property's 확정일자 date, rent and deposit information, *or*, alternatively, consent to a lookup under Article 3-6(4); and
+2. tax-clearance certificates under **국세징수법 (National Tax Collection Act) Article 108**, *or*, alternatively, consent to an unpaid-tax inspection under **Article 109(1)** [^4].
 
-The law was added precisely because tenants could not see the landlord's tax arrears or the **선순위 보증금 (seonsunwi bojeunggeum — senior deposits ranking ahead of yours)** [^5].
+The law was added precisely because tenants could not see the landlord's tax arrears or the **선순위 보증금 (seonsunwi bojeunggeum: senior deposits ranking ahead of yours)** [^5].
 
-**Both routes to compliance force full disclosure.** Hand over the documents, or consent to the lookup — either way the landlord exposes tax arrears, credit standing, every other tenant's deposit, and total portfolio leverage. That is why landlords resist, and why resistance looks reasonable.
+**Both routes to compliance force full disclosure.** Hand over the documents, or consent to the lookup. Either way the landlord exposes tax arrears, credit standing, every other tenant's deposit, and total portfolio leverage. That is why landlords resist, and why resistance looks reasonable.
 
 **Waterline is a third route to satisfying the same statutory duty, disclosing only a band.** That makes compliance cheap, which in turn makes **refusal a signal** rather than the default.
 
 ### Why the incumbent app doesn't close this
 
-HUG's **안심전세앱 (Ansim Jeonse App — "peace-of-mind jeonse app", the official risk-check app from the Korea Housing & Urban Guarantee Corporation)** reached full rollout in September 2026 with risk grading and 선순위 보증금 comparison [^6]. Waterline is not a replacement for it, and does not pretend the problem is unaddressed. It attacks the one thing that architecture cannot fix:
+HUG's **안심전세앱 (Ansim Jeonse App: "peace-of-mind jeonse app", the official risk-check app from the Korea Housing & Urban Guarantee Corporation)** reached full rollout in September 2026 with risk grading and 선순위 보증금 comparison [^6]. Waterline is not a replacement for it, and does not pretend the problem is unaddressed. It attacks the one thing that architecture cannot fix:
 
 **It avoids building the honeypot.** That approach pools data from **행정안전부 (Ministry of the Interior and Safety)**, **국세청 (National Tax Service)**, **한국부동산원 (Korea Real Estate Board)** and HUG into one place.
 
-Korea's **개인정보 보호법 (PIPA — Personal Information Protection Act)** has restricted processing of the **주민등록번호 (jumin deungnok beonho — Resident Registration Number, Korea's national identifier)** since 2014 under Article 24-2, with fines of up to **3% of total revenue** under Article 64-2 [^7].
+Korea's **개인정보 보호법 (PIPA: Personal Information Protection Act)** has restricted processing of the **주민등록번호 (jumin deungnok beonho: Resident Registration Number, Korea's national identifier)** since 2014 under Article 24-2, with fines of up to **3% of total revenue** under Article 64-2 [^7].
 
 What changed *this month*: the **2026 PIPA amendment**, passed on 12 February 2026 and **in force from 11 September 2026**, raises the ceiling for repeated or serious violations to **10% of total sales**, requires notifying data subjects within **72 hours** of a suspected breach, and makes the CEO the final accountable party. It also extends the data-portability right beyond finance into healthcare, telecoms and retail [^8].
 
@@ -76,13 +76,13 @@ The net effect is that holding a large pooled store of Korean personal data beca
 
 ### There is a court-priced business model
 
-On **4 September 2026** the Seoul Central District Court raised **공인중개사 (gongin junggaesa — licensed real-estate broker)** liability in two jeonse-fraud damages suits to **60%** and **70%** [^9].
+On **4 September 2026** the Seoul Central District Court raised **공인중개사 (gongin junggaesa: licensed real-estate broker)** liability in two jeonse-fraud damages suits to **60%** and **70%** [^9].
 
-The 60% case is directly on point: a **다가구주택 in 관악구 (Gwanak-gu), Seoul**, deposit ₩180m, where the broker **misstated the building's value and the 선순위 임차보증금** — the exact fact this system proves. The appellate bench overturned the first-instance ruling and awarded ₩108m.
+The 60% case is directly on point: a **다가구주택 in 관악구 (Gwanak-gu), Seoul**, deposit ₩180m, where the broker **misstated the building's value and the 선순위 임차보증금**, the one fact this system proves. The appellate bench overturned the first-instance ruling and awarded ₩108m.
 
-That is court-established, effectively uninsurable exposure to a single factual claim. A per-certificate proof that discharges a broker's 설명의무 (seolmyeong umu — duty to explain) has an obvious buyer.
+That is court-established, effectively uninsurable exposure to a single factual claim. A per-certificate proof that discharges a broker's 설명의무 (seolmyeong umu: duty to explain) has an obvious buyer.
 
-*(The demo mirrors that case **profile** — a 다가구 (multi-household house) whose senior deposits exceed its appraisal limit — but deliberately names no district. Attaching a real location to a fabricated building on a public page would be wrong, and the fact that the court case happened in 관악구 is not something the demo should borrow. The live entry is labelled only by its commitment.)*
+*(The demo mirrors that case **profile**, a 다가구 (multi-household house) whose senior deposits exceed its appraisal limit, but names no district. Attaching a real location to a fabricated building on a public page would be wrong, and the fact that the court case happened in 관악구 is not something the demo should borrow. The live entry is labelled only by its commitment.)*
 
 ---
 
@@ -142,7 +142,7 @@ flowchart TB
     class TEN pub
 ```
 
-Every write must **open the previous commitment** before it can replace it — the edge marked `writes`. That single rule is what makes the total unfalsifiable. `1 eok (억) = 100 million won ≈ USD 72k`.
+Every write must **open the previous commitment** before it can replace it: the edge marked `writes`. That single rule is what makes the total unfalsifiable. `1 eok (억) = 100 million won ≈ USD 72k`.
 
 ### What crosses the boundary
 
@@ -153,9 +153,9 @@ Every write must **open the previous commitment** before it can replace it — t
 | Number of prior leases | **no** | registry only |
 | Commitment salt | **no** | registry only |
 | Opaque commitment per building | yes | anyone |
-| Appraised value, both thresholds | yes | anyone — they are public inputs |
+| Appraised value, both thresholds | yes | anyone; they are public inputs |
 | **The band (안전 / 주의 / 위험)** | yes | anyone |
-| Commitment the certificate was bound to | yes | anyone — this is the freshness check |
+| Commitment the certificate was bound to | yes | anyone; this is the freshness check |
 
 **Freshness without disclosure.** Each certificate records the commitment it was computed against. A reader compares it to the live commitment: if they differ, the books moved since issuance and the certificate is **stale**. That signals staleness without revealing the lease count or any amount.
 
@@ -163,7 +163,7 @@ Every write must **open the previous commitment** before it can replace it — t
 
 ## Why understatement is impossible, not merely detectable
 
-A commitment alone would not be enough — the registry could pick any opening it liked. A Merkle membership proof would not be enough either: it proves *inclusion*, not *exhaustiveness*, so a dishonest registry would simply omit leases.
+A commitment alone would not be enough, because the registry could pick any opening it liked. A Merkle membership proof would not be enough either: it proves *inclusion*, not *exhaustiveness*, so a dishonest registry would simply omit leases.
 
 Waterline welds the entries together. `registerLease` can only write a new commitment if the prover can **open the previous one**:
 
@@ -171,7 +171,7 @@ Waterline welds the entries together. `registerLease` can only write a new commi
 assert(disclose(prevCommit == buildingState.lookup(bid)), "Stale opening");
 ```
 
-The clearest analogy is the **medieval tally stick**. A debt was notched into a single stick, which was then split lengthwise — one half to each party. Neither half could be altered afterwards, because it had to still match the other. Waterline's commitment chain is the same trick: to understate the total today, the registry would have had to understate it at every prior step, and each tenant's own registration is already notched into the chain.
+The clearest analogy is the **medieval tally stick**. A debt was notched into a single stick, which was then split lengthwise, one half to each party. Neither half could be altered afterwards, because it had to still match the other. Waterline's commitment chain is the same trick: to understate the total today, the registry would have had to understate it at every prior step, and each tenant's own registration is already notched into the chain.
 
 This is the **proof-of-liabilities** problem, familiar from exchange reserve audits, solved with a chained commitment.
 
@@ -201,7 +201,7 @@ building commitment:       f65833a05bf6d6c47b18884d7e20674c90b7ddde...  (opaque)
 > Rewriting the log to match the current code would be claiming a run that never
 > happened.
 
-### The self-funded run — 2026-09-22
+### The self-funded run, 2026-09-22
 
 The rows above were sponsored by a third party. These were not. Proved on our own
 proof server at `127.0.0.1:6300`, balanced against our own NIGHT registered for
@@ -230,9 +230,9 @@ anyone:
 | 2 | `7113061f936e4a5c…` | ₩8.0억 | 2 · ✅ **안전 anjeon SAFE** |
 | 3 | `19cd5b940ab6ad76…` | ₩7.0억 | 1 · △ **주의 juui CAUTION** |
 
-Snapshotted at **block 2,661,364**, all three `fresh: true` — meaning each
+Snapshotted at **block 2,661,364**, all three `fresh: true`, meaning each
 certificate still names the commitment that is live on chain right now. The
-figures behind them are three genuinely different sets of books; the ledger holds
+figures behind them are three different sets of books; the ledger holds
 a band and a commitment for each, and not one won of any deposit. Re-read them
 yourself with `npm run read`, or look at
 [`site/data/certificates.json`](site/data/certificates.json) for the snapshot the
@@ -242,18 +242,18 @@ site serves.
 
 | Appraised | 안전 ≤ 70% | 주의 ≤ 80% | Total claimed | Band | Verdict |
 |---|---|---|---|---|---|
-| ₩9.0억 | ₩6.3억 | ₩7.2억 | ₩5.5억 *(true)* | 2 | ✅ **안전 anjeon — SAFE** |
-| ₩7.0억 | ₩4.9억 | ₩5.6억 | ₩5.5억 *(true)* | 1 | △ **주의 juui — CAUTION** |
-| ₩6.0억 | ₩4.2억 | ₩4.8억 | ₩5.5억 *(true)* | 0 | ⚠️ **위험 wiheom — DANGER** |
+| ₩9.0억 | ₩6.3억 | ₩7.2억 | ₩5.5억 *(true)* | 2 | ✅ **안전 anjeon SAFE** |
+| ₩7.0억 | ₩4.9억 | ₩5.6억 | ₩5.5억 *(true)* | 1 | △ **주의 juui CAUTION** |
+| ₩6.0억 | ₩4.2억 | ₩4.8억 | ₩5.5억 *(true)* | 0 | ⚠️ **위험 wiheom DANGER** |
 | ₩6.0억 | ₩4.2억 | ₩4.8억 | ₩3.0억 *(**a lie**)* | — | ❌ **REFUSED: `Stale opening`** |
 
 All four rows were executed against live preprod. The three honest bands were each published on chain and read back through the public indexer.
 
-**The last row is the point.** Same building, same ₩6.0억 appraisal as the row above it. Honestly, ₩5.5억 exceeds even the 주의 ceiling of ₩4.8억, so the building is **위험**. The landlord claims ₩3.0억 instead — which would fall under the ₩4.2억 안전 line and flip DANGER into SAFE. The circuit recomputes the commitment from the forged figure, finds it does not match what is already on chain, and refuses.
+**The last row is what matters.** Same building, same ₩6.0억 appraisal as the row above it. Honestly, ₩5.5억 exceeds even the 주의 ceiling of ₩4.8억, so the building is **위험**. The landlord claims ₩3.0억 instead — which would fall under the ₩4.2억 안전 line and flip DANGER into SAFE. The circuit recomputes the commitment from the forged figure, finds it does not match what is already on chain, and refuses.
 
 The three honest rows show the other half: identical private books, three different verdicts, and in every case the ledger records only a band. ₩5.5억 is never disclosed — not when the answer is safe, not when it is dangerous.
 
-> **Where the refusal happens — stated precisely.** Case C fails at **circuit-execution time, on the landlord's own machine** — before a proof exists, before anything is submitted. There is no transaction for the chain to reject, because no satisfying witness exists. This is *stronger* than a chain-level rejection: the landlord cannot even produce a fraudulent certificate to show a tenant, which is the actual threat. But it would be wrong to describe it as "the chain rejected it," so we don't.
+> **Where the refusal happens.** Case C fails at **circuit-execution time, on the landlord's own machine**, before a proof exists, before anything is submitted. There is no transaction for the chain to reject, because no satisfying witness exists. This is *stronger* than a chain-level rejection: the landlord cannot even produce a fraudulent certificate to show a tenant, which is the actual threat. But it would be wrong to describe it as "the chain rejected it," so we don't.
 
 ---
 
@@ -287,15 +287,15 @@ flowchart LR
     class B,W,PS,F,N,I n
 ```
 
-- **Reads** — the official public indexer, unauthenticated, CORS `*`. A visitor installs nothing, signs nothing and pays nothing, because reading a verdict is a GraphQL query.
-- **ZK keys** — 11 MB for three circuits, needed only by the side that *proves*. **The tenant-facing page needs none of it:** `issueCertificate` publishes the band to the ledger, so `/check` has no WASM and no key downloads. That is why it can load instantly.
-- **Proving** — a local proof server. The **prover key travels with the request** via `createProvingPayload`, so a prover can prove a contract it has never seen; that is what makes a *remote* prover technically possible, and also exactly why this one is not remote. See the trust boundary below.
-- **Fees** — the registry pays its own way: hold NIGHT, register it for DUST generation, balance locally, submit. Balancing happens **after** proving, appending a `DustSpend` to an already-proven transaction rather than being part of what gets proved.
+- **Reads**: the official public indexer, unauthenticated, CORS `*`. A visitor installs nothing, signs nothing and pays nothing, because reading a verdict is a GraphQL query.
+- **ZK keys**: 11 MB for three circuits, needed only by the side that *proves*. **The tenant-facing page needs none of it:** `issueCertificate` publishes the band to the ledger, so `/check` has no WASM and no key downloads. That is why it can load instantly.
+- **Proving**: a local proof server. The **prover key travels with the request** via `createProvingPayload`, so a prover can prove a contract it has never seen; that is what makes a *remote* prover technically possible, and also exactly why this one is not remote. See the trust boundary below.
+- **Fees**: the registry pays its own way. Hold NIGHT, register it for DUST generation, balance locally, submit. Balancing happens **after** proving, appending a `DustSpend` to an already-proven transaction rather than being part of what gets proved.
 
-> **The trust boundary, stated precisely.** A proving request carries the proof
+> **Where the trust boundary sits.** A proving request carries the proof
 > preimage. For this contract the witnesses include the registry secret key, the
-> deposit total, the lease count and the salt — every value the project exists to
-> protect. Sending that to a third-party prover would leak precisely the thing
+> deposit total, the lease count and the salt: every value the project exists to
+> protect. Sending that to a third-party prover would leak the very thing
 > being protected. That is tolerable for a testnet demo over invented buildings
 > and intolerable for anything real, so the default is local. `PROVER` overrides it.
 >
@@ -303,12 +303,12 @@ flowchart LR
 > relocates it. The tab plays the **registry**, not the tenant: it generates a
 > throwaway secret key, invents its own books, and proves against those. Nothing
 > private leaves the tab, because nothing in the tab belongs to anyone. That is
-> also its honest limit — it proves the circuits work and the refusal is real, and
+> also its honest limit. It proves the circuits work and the refusal is real, and
 > it cannot prove anything *about a real building*, because it holds no real
 > registry's books.
 >
 > An earlier version proved and sponsored fees through [1AM ProofStation](https://api.1am.xyz/docs),
-> which is elegant — one call, no wallet, no DUST — but it put a third party on the
+> which is elegant (one call, no wallet, no DUST) but put a third party on the
 > critical path of every write. On 2026-09-22 its preprod balancer returned `503`
 > for hours while preview and mainnet were healthy, and nothing could be written
 > for as long as it was down.
@@ -317,7 +317,7 @@ flowchart LR
 
 ## Reproducing
 
-Requires Node ≥ 20 and the Compact CLI. **There is no Windows build of the Compact CLI** — use WSL, macOS or Linux.
+Requires Node ≥ 20 and the Compact CLI. **There is no Windows build of the Compact CLI.** Use WSL, macOS or Linux.
 
 ```bash
 # 1. Compile. Use +0.31.1 — it emits runtime 0.16.0, which is what the
@@ -351,7 +351,7 @@ State persists to `state.json`: the registry secret key, the contract address an
 
 ### The site
 
-`site/` is the deployed front end — plain HTML, CSS and JS with no build step, no framework and no
+`site/` is the deployed front end: plain HTML, CSS and JS with no build step, no framework and no
 dependencies beyond a Google Fonts link. One page breaks that rule on purpose: `demo.html` loads a
 bundle, because it proves. It is published to GitHub Pages by
 [`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every push to `main`, uploaded
@@ -362,27 +362,27 @@ cd site && python3 -m http.server 8080   # or just open site/index.html
 ```
 
 **The tenant pages host no ZK prover keys and load no proving machinery.** `issueCertificate` writes
-the verdict band to the ledger, so `/check` is a read rather than a proof — no WASM, no keys, no
+the verdict band to the ledger, so `/check` is a read rather than a proof. No WASM, no keys, no
 wallet, which is why it loads instantly. A test asserts it stays that way.
 
-`demo.html` is the deliberate exception, and it is opt-in: nothing downloads until you press the
-button. It pulls ~18 MB on a first run — 10.4 MB of prover keys, 4.5 MB of Plonk SRS and 3.1 MB of WASM —
+`demo.html` is the one exception, and it is opt-in: nothing downloads until you press the
+button. It pulls ~18 MB on a first run (10.4 MB of prover keys, 4.5 MB of Plonk SRS and 3.1 MB of WASM)
 because it really proves, in the tab. The keys and the bundle are build output, neither is committed,
-and a test asserts that too — see
+and a test asserts that too. See
 [Run the full demo](#run-the-full-demo-in-the-visitors-own-browser).
 
-`site/deck.html` is the slide deck — the same tokens and typeface as the rest of the site, twelve slides, arrow keys to move and <kbd>P</kbd> to print to PDF. `site/assets/qr.js` is a dependency-free QR encoder: a page that tells you whether a building is safe should not also tell a CDN which building you asked about.
+`site/deck.html` is the slide deck, with the same tokens and typeface as the rest of the site, thirteen slides, arrow keys to move and <kbd>P</kbd> to print to PDF. `site/assets/qr.js` is a dependency-free QR encoder: a page that tells you whether a building is safe should not also tell a CDN which building you asked about.
 
 `design/` holds the specification behind it: [`BUILD-SPEC.md`](design/BUILD-SPEC.md), the design
-tokens, and the original canvas artboards. The one rule worth repeating here — **the water surface is
-drawn as a hatched band, never a level.** The page genuinely does not know the total, so a precise
+tokens, and the original canvas artboards. The one rule worth repeating here: **the water surface is
+drawn as a hatched band, never a level.** The page does not know the total, so a precise
 surface would be either a lie or a disclosure.
 
 ### Run the full demo, in the visitor's own browser
 
 [**demo.html**](https://mj-jinx.github.io/waterline/demo.html) is the one page that computes real
 proofs client-side. Press *Run Full Demo* and it invents a building, opens it, registers two deposits
-and issues the certificate — **four real Plonk proofs, in the tab, about 10–20 s each** — narrating
+and issues the certificate. **Four real Plonk proofs, in the tab, about 10–20 s each**, narrating
 what just happened and what comes next at every step. Then a box lets you type a total the registry
 might wish were true, and watch the contract refuse it.
 
@@ -391,7 +391,7 @@ Nothing is downloaded until you press the button, and nothing is submitted to th
 
 - **Proving in the browser is real.** The tab plays the *registry*, over books it invents on the spot,
   with a key it generates and throws away. That is the only honest framing: to issue a certificate you
-  must **open the current commitment**, which takes the deposit total, the lease count and the salt —
+  must **open the current commitment**, which takes the deposit total, the lease count and the salt:
   the private books. **A tenant can never prove**, and the demo does not pretend otherwise.
 - **Submitting from the browser is not.** Paying the DUST fee needs the fee wallet's private key, and
   publishing that key in a public repo is not something we will do. So the demo stops at a valid proof
@@ -404,13 +404,13 @@ npm run compile
 npm run build:demo     # Vite bundle -> site/assets/demo/, keys -> site/zk/
 ```
 
-`build:demo` bundles [`demo-src/`](demo-src/) with Vite — needed only because the runtime and zkir
-packages use WebAssembly ESM integration, which esbuild cannot load — then stages the prover keys and
+`build:demo` bundles [`demo-src/`](demo-src/) with Vite, needed only because the runtime and zkir
+packages use WebAssembly ESM integration, which esbuild cannot load, then stages the prover keys and
 zkir into `site/zk/`. **Neither is committed.** Prover keys are 11 MB of build output, and judging
 starts with cloning the repository; nobody should wait on that. GitHub Actions rebuilds both at deploy
 time, non-fatally, so a bundle failure costs one page rather than the whole site.
 
-The Plonk SRS in [`site/params/`](site/params/) **is** committed, deliberately — its upstream S3
+The Plonk SRS in [`site/params/`](site/params/) **is** committed on purpose: its upstream S3
 bucket timed out on us mid-build, and a demo that depends on someone else's bucket being up is a demo
 that fails in front of a judge.
 
@@ -422,7 +422,7 @@ BASE=https://mj-jinx.github.io/waterline node test/browser-demo.mjs
 That is the only test that means anything for this page: every other test here can pass while the demo
 is a frozen tab, because the proving lives in a Web Worker and the worker only exists in a browser. It
 clicks the button, waits out four proofs, and asserts the band is `safe` and the forged total is
-refused. Not part of `npm test` — it needs Chromium and spends a minute proving.
+refused. Not part of `npm test`, because it needs Chromium and spends a minute proving.
 
 **The `BASE` form is the one that matters before a deadline**, because it asks the question a judge
 will: does the *deployed* site prove? The bundle and the keys are built in CI and never committed, so
@@ -441,7 +441,7 @@ and the bug could not appear.
 ### Testing
 
 ```bash
-npm test              # everything (52 tests)
+npm test              # everything (53 tests)
 npm run test:site     # front end + QR only; needs no toolchain, runs in ~0.1s
 npm run test:contract # circuits; needs a compiled contract
 npm run verify:refusal # just the attack: watch the real circuit refuse to lie
@@ -519,16 +519,16 @@ GitHub-hosted runner, and the full suite runs in well under a second after that.
 
 ## Sources
 
-[^1]: 국토교통부 전세사기피해지원위원회 — cumulative recognised victims, 40,936 cases as of August 2026. Reported [세계일보, 2026-09-13](https://www.segye.com/newsView/20260913509454).
-[^2]: 한국주택금융공사 (HF) 특례채무조정 — 3,898 users June 2023 to July 2026; ~₩400bn debt; 30s 2,023 (51.9%) + 20s 1,455 (37.3%) = 3,478 (89.2%). [파이낸셜뉴스, 2026-09-13](https://www.fnnews.com/news/202609131357198351); [서울파이낸스](https://www.seoulfn.com/news/articleView.html?idxno=637824).
-[^3]: 주택임대차보호법 제3조의7 (임대인의 정보 제시 의무) — [국가법령정보센터](https://www.law.go.kr/LSW/lsInfoP.do?lsId=001248) · [CaseNote](https://casenote.kr/%EB%B2%95%EB%A0%B9/%EC%A3%BC%ED%83%9D%EC%9E%84%EB%8C%80%EC%B0%A8%EB%B3%B4%ED%98%B8%EB%B2%95/%EC%A0%9C3%EC%A1%B0%EC%9D%987).
+[^1]: 국토교통부 전세사기피해지원위원회. cumulative recognised victims, 40,936 cases as of August 2026. Reported [세계일보, 2026-09-13](https://www.segye.com/newsView/20260913509454).
+[^2]: 한국주택금융공사 (HF) 특례채무조정. 3,898 users June 2023 to July 2026; ~₩400bn debt; 30s 2,023 (51.9%) + 20s 1,455 (37.3%) = 3,478 (89.2%). [파이낸셜뉴스, 2026-09-13](https://www.fnnews.com/news/202609131357198351); [서울파이낸스](https://www.seoulfn.com/news/articleView.html?idxno=637824).
+[^3]: 주택임대차보호법 제3조의7 (임대인의 정보 제시 의무). [국가법령정보센터](https://www.law.go.kr/LSW/lsInfoP.do?lsId=001248) · [CaseNote](https://casenote.kr/%EB%B2%95%EB%A0%B9/%EC%A3%BC%ED%83%9D%EC%9E%84%EB%8C%80%EC%B0%A8%EB%B3%B4%ED%98%B8%EB%B2%95/%EC%A0%9C3%EC%A1%B0%EC%9D%987).
 [^4]: 국세징수법 제108조 (납세증명서) and 제109조 (미납국세 등 열람). Deposits above ₩10m may be inspected without landlord consent after signing, up to the lease start date.
-[^5]: 법무부 press release, 2026-03-30 — legislative rationale for the Article 3-7 amendment: tenants could not learn the landlord's tax arrears or senior deposit information. [moj.go.kr](https://www.moj.go.kr/bbs/moj/182/451959/download.do) · [정책브리핑](https://www.korea.kr/news/policyNewsView.do?newsId=148913348).
-[^6]: HUG 안심전세앱 — integrated risk information and grading service, full rollout from September 2026, built with 한국부동산원. Reported [코리아스프린트](https://www.koreasprint.com/news/articleView.html?idxno=18817) · [천지일보](https://www.newscj.com/news/articleView.html?idxno=3424659).
-[^7]: 개인정보 보호법 제24조의2 (주민등록번호 처리의 제한), added by 법률 제11990호 (promulgated 2013-08-06, **in force 2014-08-07** — not 2026), and 제64조의2 (과징금의 부과): processing an RRN in breach of Article 24-2 carries a fine of up to **3% of total revenue (전체 매출액)**, or up to ₩2bn where revenue cannot be determined. [국가법령정보센터](https://www.law.go.kr/lsEfInfoP.do?lsiSeq=195062) · [제24조의2](https://casenote.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4_%EB%B3%B4%ED%98%B8%EB%B2%95/%EC%A0%9C24%EC%A1%B0%EC%9D%982) · [제64조의2](https://casenote.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4_%EB%B3%B4%ED%98%B8%EB%B2%95/%EC%A0%9C64%EC%A1%B0%EC%9D%982).
-[^8]: 2026 PIPA amendment — passed the National Assembly plenary on 2026-02-12, **in force 2026-09-11**: penalties for repeated or serious violations up to **10% of total sales**; 72-hour breach notification; CEO as final accountable party; CPO appointment by board resolution; data portability extended to healthcare, telecoms and retail (ISMS-P certification obligations phase in from 2027-07-01). [법률신문 — 개정안 통과](https://www.lawtimes.co.kr/news/articleView.html?idxno=217245) · [법률신문 — 9월 11일 시행](https://www.lawtimes.co.kr/news/articleView.html?idxno=226491).
-[^9]: 서울중앙지법, reported 2026-09-04 — broker liability set at 60% (Gwanak-gu 다가구주택, ₩180m deposit, misstated building value and senior lease deposits; ₩108m awarded on appeal) and 70% (forged trust-company consent; ₩84m). [법률신문](https://www.lawtimes.co.kr/news/articleView.html?idxno=225874) · [머니투데이](https://www.mt.co.kr/society/2026/09/04/2026090411110374844).
-[^10]: 미납국세 열람 procedure — arrears may be viewed in person but not printed or photographed. [대한민국 정책브리핑](https://www.korea.kr/news/reporterView.do?newsId=148916704).
+[^5]: 법무부 press release, 2026-03-30. legislative rationale for the Article 3-7 amendment: tenants could not learn the landlord's tax arrears or senior deposit information. [moj.go.kr](https://www.moj.go.kr/bbs/moj/182/451959/download.do) · [정책브리핑](https://www.korea.kr/news/policyNewsView.do?newsId=148913348).
+[^6]: HUG 안심전세앱. integrated risk information and grading service, full rollout from September 2026, built with 한국부동산원. Reported [코리아스프린트](https://www.koreasprint.com/news/articleView.html?idxno=18817) · [천지일보](https://www.newscj.com/news/articleView.html?idxno=3424659).
+[^7]: 개인정보 보호법 제24조의2 (주민등록번호 처리의 제한), added by 법률 제11990호 (promulgated 2013-08-06, **in force 2014-08-07**: not 2026), and 제64조의2 (과징금의 부과): processing an RRN in breach of Article 24-2 carries a fine of up to **3% of total revenue (전체 매출액)**, or up to ₩2bn where revenue cannot be determined. [국가법령정보센터](https://www.law.go.kr/lsEfInfoP.do?lsiSeq=195062) · [제24조의2](https://casenote.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4_%EB%B3%B4%ED%98%B8%EB%B2%95/%EC%A0%9C24%EC%A1%B0%EC%9D%982) · [제64조의2](https://casenote.kr/%EB%B2%95%EB%A0%B9/%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4_%EB%B3%B4%ED%98%B8%EB%B2%95/%EC%A0%9C64%EC%A1%B0%EC%9D%982).
+[^8]: 2026 PIPA amendment. passed the National Assembly plenary on 2026-02-12, **in force 2026-09-11**: penalties for repeated or serious violations up to **10% of total sales**; 72-hour breach notification; CEO as final accountable party; CPO appointment by board resolution; data portability extended to healthcare, telecoms and retail (ISMS-P certification obligations phase in from 2027-07-01). [법률신문 — 개정안 통과](https://www.lawtimes.co.kr/news/articleView.html?idxno=217245) · [법률신문 — 9월 11일 시행](https://www.lawtimes.co.kr/news/articleView.html?idxno=226491).
+[^9]: 서울중앙지법, reported 2026-09-04. broker liability set at 60% (Gwanak-gu 다가구주택, ₩180m deposit, misstated building value and senior lease deposits; ₩108m awarded on appeal) and 70% (forged trust-company consent; ₩84m). [법률신문](https://www.lawtimes.co.kr/news/articleView.html?idxno=225874) · [머니투데이](https://www.mt.co.kr/society/2026/09/04/2026090411110374844).
+[^10]: 미납국세 열람 procedure. arrears may be viewed in person but not printed or photographed. [대한민국 정책브리핑](https://www.korea.kr/news/reporterView.do?newsId=148916704).
 
 > Statutory references were checked against 국가법령정보센터 (the Korean government legal information service). News-reported figures are attributed to the outlet that reported them. Nothing here is legal advice.
 

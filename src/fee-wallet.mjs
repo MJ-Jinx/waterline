@@ -1,22 +1,22 @@
-// Derive the wallet that pays transaction fees when no sponsor is available.
+// Derive the wallet that pays transaction fees.
 //
 //   node src/fee-wallet.mjs
 //
 // WHY THIS EXISTS
 //
-// Every write in this project is proven locally and then handed to 1AM
-// ProofStation, which attaches a DustSpend so the operator pays nothing. That
-// is what makes the demo free and wallet-free, and it is genuinely the right
-// default. It is also a single third-party dependency on the write path, which
-// the README already flags as a production risk — and on 2026-09-22 that risk
-// arrived: ProofStation's preprod balancing wallet returned
-// `503 WALLETS_UNAVAILABLE / DUST_SYNC_STALE` for hours while preview and
-// mainnet stayed healthy, so nothing could be written to preprod at all.
+// Writes used to be proven locally and then handed to 1AM ProofStation, which
+// attached a DustSpend so the operator paid nothing. That made the demo free
+// and wallet-free, and it was the right default for a while. It was also a
+// single third-party dependency on the write path, which the README flagged as
+// a production risk. On 2026-09-22 the risk arrived: ProofStation's preprod
+// balancing wallet returned `503 WALLETS_UNAVAILABLE / DUST_SYNC_STALE` for
+// hours while preview and mainnet stayed healthy, so nothing could be written
+// to preprod at all.
 //
-// This is the fallback. Instead of asking a sponsor to pay the fee, the
-// project pays its own: hold NIGHT, register it for DUST generation, and
-// balance the transaction locally. Slower to set up, but it depends on nothing
-// but the public node and indexer.
+// So this is now the write path, not a fallback. The project pays its own fee:
+// hold NIGHT, register it for DUST generation, and balance the transaction
+// locally. Slower to set up, but it depends on nothing but the public node and
+// indexer.
 //
 // The approach is taken from ODATANO's NIGHTGATE, whose Apache-2.0
 // `packages/nightgate-tx/example/self-funded.mjs` documents the whole

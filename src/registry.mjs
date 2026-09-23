@@ -1,6 +1,6 @@
 // Registry side (stands in for 주민센터): deploy the contract, open a building,
-// and register two tenant leases. Every write is proven, dust-sponsored and
-// submitted — nothing here costs the operator anything.
+// and register two tenant leases. Every write is proven locally, paid for from
+// the project's own DUST, and submitted straight to the node.
 //
 //   node src/registry.mjs
 //
