@@ -142,24 +142,30 @@
   /* ======================================================================
      Demo data — invented, internally consistent, clearly fictional buildings.
      Never use a real address or a district tied to a real jeonse-fraud case.
+
+     These name no district at all, which is the only version of that rule that
+     cannot rot. An earlier version put the DANGER building in Bucheon, which
+     has real jeonse-fraud victims and a municipal support scheme still open for
+     applications — a fabricated villa-scale building marked dangerous is not
+     something to hang on a place where that actually happened to people.
      ====================================================================== */
 
   var BUILDINGS = [
     {
-      id: 'SEO-2019-0412', chip: 'Seocho',
-      place: 'Seocho-gu, Seoul · Serim Heights, Block 102',
+      id: 'WL-DEMO-0412', chip: 'Serim Heights',
+      place: 'Serim Heights, Block 102 · fictional building',
       appraised: '₩1,050,000,000', limit: '₩735,000,000', band: 'safe',
       hash: '0x9f4c8b21…a1e8', block: '3,417,882', issued: '18 Sep 2026, 11:04 KST'
     },
     {
-      id: 'MPO-2017-0883', chip: 'Mapo',
-      place: 'Mapo-gu, Seoul · Eunha Villa, Block A',
+      id: 'WL-DEMO-0883', chip: 'Eunha Villa',
+      place: 'Eunha Villa, Block A · fictional building',
       appraised: '₩620,000,000', limit: '₩434,000,000', band: 'caution',
       hash: '0x3d71ae04…5c92', block: '3,417,601', issued: '18 Sep 2026, 09:47 KST'
     },
     {
-      id: 'BCN-2014-1176', chip: 'Bucheon',
-      place: 'Bucheon, Gyeonggi · Cheongnim Town, Block 3',
+      id: 'WL-DEMO-1176', chip: 'Cheongnim Town',
+      place: 'Cheongnim Town, Block 3 · fictional building',
       appraised: '₩285,000,000', limit: '₩199,500,000', band: 'danger',
       hash: '0xc082f5d9…30b7', block: '3,416,944', issued: '17 Sep 2026, 18:22 KST'
     }
@@ -190,7 +196,7 @@
   var PIPELINE_TOTAL = PIPELINE.reduce(function (a, s) { return a + s.ms; }, 0);
 
   var ATTACK = {
-    building: 'Cheongnim Town, Block 3 · Bucheon',
+    building: 'Cheongnim Town, Block 3 · fictional building',
     appraised: '₩285,000,000',
     limitLabel: '₩199,500,000',
     commitment: '0xc082f5d9…30b7 · block 3,416,944',
@@ -238,6 +244,12 @@
     }
 
     fetchSnapshot().then(function (snap) {
+      // The footer used to carry its own hardcoded block number, which drifted
+      // 63,000 blocks behind the hero note directly above it — both visible on
+      // one phone screen, disagreeing. Same source now, so they cannot.
+      var foot = $('[data-wl-home-block]');
+      if (foot && snap && snap.block) foot.textContent = commas(snap.block);
+
       var b = snap && snap.buildings && snap.buildings[0];
       if (!b || !b.certificate) { draw('safe', null); return; }
       draw(b.certificate.band,
@@ -266,6 +278,11 @@
     return fetch('data/certificates.json', { cache: 'no-cache' })
       .then(function (r) { return r.ok ? r.json() : null; })
       .catch(function () { return null; });
+  }
+
+  /** 2661364 -> '2,661,364'. Block numbers are read, not calculated with. */
+  function commas(n) {
+    return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
   function wonFromString(raw) {

@@ -18,7 +18,7 @@ No wallet, no extension, no signup, no testnet tokens. Open the link.
 | Page | What it shows |
 |---|---|
 | **[How it works](https://mj-jinx.github.io/waterline/guide.html)** | **start here** — a plain-language walkthrough for non-technical readers: what to click, what each screen means, what you can and cannot do, and an honest table of what is live versus illustrated |
-| **[Run the full demo](https://mj-jinx.github.io/waterline/demo.html)** | **the whole lifecycle in one click** — a building registered, four real Plonk proofs computed **in your own browser**, the certificate that comes out, and a box where you can try to forge the total. Narrated at every step. First run downloads ~11 MB of prover keys |
+| **[Run the full demo](https://mj-jinx.github.io/waterline/demo.html)** | **the whole lifecycle in one click** — a building registered, four real Plonk proofs computed **in your own browser**, the certificate that comes out, and a box where you can try to forge the total. Narrated at every step. First run downloads ~18 MB — keys, SRS and two WASM modules |
 | [Check a building](https://mj-jinx.github.io/waterline/check.html) | the tenant view — a verdict band read off the live ledger, with a downloadable QR certificate |
 | [Why a landlord can’t lie](https://mj-jinx.github.io/waterline/why-lying-fails.html) | claim any total you like, and watch the certificate refuse to exist. **A scripted animation**, on a timer, touching no network — for the real circuit refusing, use the forge box on [the demo page](https://mj-jinx.github.io/waterline/demo.html) or run `npm run verify:refusal` locally |
 | [Registry console](https://mj-jinx.github.io/waterline/registry.html) | the proving pipeline, framed as a simulation |
@@ -366,8 +366,9 @@ the verdict band to the ledger, so `/check` is a read rather than a proof — no
 wallet, which is why it loads instantly. A test asserts it stays that way.
 
 `demo.html` is the deliberate exception, and it is opt-in: nothing downloads until you press the
-button. It ships the ~11 MB of prover keys and two WASM modules because it really proves, in the tab.
-Both are build output, neither is committed, and a test asserts that too — see
+button. It pulls ~18 MB on a first run — 10.4 MB of prover keys, 4.5 MB of Plonk SRS and 3.1 MB of WASM —
+because it really proves, in the tab. The keys and the bundle are build output, neither is committed,
+and a test asserts that too — see
 [Run the full demo](#run-the-full-demo-in-the-visitors-own-browser).
 
 `site/deck.html` is the slide deck — the same tokens and typeface as the rest of the site, twelve slides, arrow keys to move and <kbd>P</kbd> to print to PDF. `site/assets/qr.js` is a dependency-free QR encoder: a page that tells you whether a building is safe should not also tell a CDN which building you asked about.

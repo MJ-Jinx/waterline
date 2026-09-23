@@ -161,8 +161,8 @@
 
     <!-- Walkthrough ---------------------------------------------------------- -->
     <section class="wl-container g-section">
-      <h2 class="wl-title">Five things you can do right now</h2>
-      <p class="wl-body-sm" style="margin: 4px 0 26px;">Roughly two minutes, start to finish.</p>
+      <h2 class="wl-title">Six things you can do right now</h2>
+      <p class="wl-body-sm" style="margin: 4px 0 26px;">Roughly two minutes for the first five. The sixth asks for a minute or two of patience, and explains why.</p>
 
       <ol class="g-steps" style="max-width: 68ch;">
 
@@ -268,15 +268,41 @@
             at the bottom.
           </p>
           <p class="wl-body">
-            <span class="g-do">Why it is not live:</span> the real calculation needs about 11 MB of
-            cryptographic keys and several seconds of work. Putting that inside a web page would mean a
-            slow download and a long wait on a phone, at the exact moment somebody is deciding whether
-            to sign. We chose to keep the page instant and to be straightforward about where the
-            demonstration ends.
+            <span class="g-do">Why it is not live:</span> the real calculation needs about 18 MB of
+            downloads and up to half a minute of work per step. That does not belong on the page a
+            tenant opens at the signing table, where the whole point is that it answers instantly on a
+            phone. So this page stays a quick illustration, and says so.
           </p>
           <p class="wl-body">
-            The refusal it shows you is real behaviour, and anyone can run it for themselves. That is
-            the last section on this page.
+            If you would rather wait and see the real thing, we built the page that makes you wait.
+            It is the next step.
+          </p>
+        </li>
+
+        <li class="g-step">
+          <h3>Watch the real thing happen, start to finish</h3>
+          <p class="wl-body">
+            <span class="g-do">Do this:</span> open <a href="demo.html">Run the demo</a> and press
+            <em>Run Full Demo</em>. Give it a minute or two.
+          </p>
+          <p class="wl-body">
+            <span class="g-do">What you are looking at:</span> the real calculation, running on your
+            own device — not an animation this time. It registers a building, adds two deposits and
+            works out the verdict, explaining each step and telling you what comes next. The waiting is
+            the honest part: this kind of proof is genuine work, and you are watching it happen rather
+            than watching a picture of it.
+          </p>
+          <p class="wl-body">
+            <span class="g-do">Then try to cheat:</span> underneath, type a deposit total that would
+            make the building look safer than it really is. The calculation refuses, in your own
+            browser, before any proof exists — and the wording it gives you is the contract's own.
+          </p>
+          <p class="wl-body">
+            <span class="g-do">What it is not:</span> a real building. Your browser is standing in for
+            the registry office here, using figures it invents on the spot, because only a registry may
+            hold real ones. And nothing is sent to the record — the three entries marked
+            <em>Live</em> on <a href="check.html">Check a building</a> were written the proper way,
+            from the registry's own machine.
           </p>
         </li>
 
@@ -303,8 +329,10 @@
         <div class="wl-card">
           <span class="wl-label">You cannot</span>
           <ul class="g-list">
-            <li>Add a building, register a tenant, or issue a verdict. There is no way to write
-                anything to the record from this website at all.</li>
+            <li>Write anything to the public record. Not a building, not a tenant, not a verdict —
+                there is no way to change the record from this website at all. (On
+                <a href="demo.html">Run the demo</a> you can do all three as a calculation on your
+                own device, and watch the proofs being made. None of it is sent anywhere.)</li>
             <li>See any individual deposit, the total, or how many households there are. This is not
                 hidden behind a login — it is simply not available to anyone.</li>
             <li>Change a verdict that has already been published.</li>
@@ -347,6 +375,10 @@
             <tr>
               <th scope="row">The verification document and its QR code</th>
               <td><span class="g-tag g-tag--real">Real</span>Built from that reading, on your device.</td>
+            </tr>
+            <tr>
+              <th scope="row">The “Run the demo” page</th>
+              <td><span class="g-tag g-tag--real">Real</span>The proofs are genuinely computed in your browser, by the same code and the same keys the registry uses. The building it proves about is invented, because only a registry may hold real figures — and nothing is sent to the network.</td>
             </tr>
             <tr>
               <th scope="row">The “Why lying fails” page</th>

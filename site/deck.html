@@ -281,7 +281,7 @@
             <li>A tenant needs no crypto knowledge whatsoever</li>
             <li>No seed phrase to lose at a signing table</li>
             <li>No testnet tokens, no faucet, no gas</li>
-            <li>Hosted free on GitHub Pages, with no key material published</li>
+            <li>Hosted free on GitHub Pages, with no backend at all</li>
           </ul>
         </div>
       </div>
@@ -326,7 +326,7 @@
         </p>
         <h3 style="margin-top: 16px;">Tested</h3>
         <p style="font-size: 15px;">
-          32 tests, no dependencies. Band boundaries pinned at the cap, senior liens counted, the
+          52 tests, no dependencies. Band boundaries pinned at the cap, senior liens counted, the
           forged opening proven unexecutable, and the privacy claim asserted directly: two buildings
           with different books in the same band produce identical certificates.
         </p>
@@ -335,10 +335,11 @@
         <div class="wl-card" style="padding: 22px 26px;">
           <h3>Verified, not assumed</h3>
           <ul style="padding-left: 18px; margin: 0;">
-            <li>A clean clone compiles in <b>6.3s</b> in CI</li>
+            <li>A clean clone compiles in <b>~18s</b> in CI</li>
             <li>Mutating <code>&lt;=</code> to <code>&lt;</code> fails exactly one test</li>
             <li>The QR encoder matched an independent implementation byte for byte and decoded</li>
-            <li>No prover keys are published under <code>site/</code></li>
+            <li>The tenant page loads <b>no</b> proving machinery — enforced by a test</li>
+            <li>Four real proofs computed <b>in the browser</b> on the demo page</li>
           </ul>
         </div>
       </div>
@@ -352,6 +353,7 @@
     <ul style="padding-left: 20px; max-width: 74ch;">
       <li><b>Trust is reduced, not eliminated.</b> It reduces to “the registry inserts leases correctly” — the same trust already placed in the 주민센터.</li>
       <li><b>The registry here is simulated.</b> The ZK layer is real and on chain; the issuer is a demo console. Wiring a government registry is not a hackathon deliverable.</li>
+      <li><b>The browser demo proves over invented books.</b> Proving needs the registry's own ledger, so the tab plays the registry, not a tenant. It shows the circuits and the refusal are real; it says nothing about any real building.</li>
       <li><b>Thresholds are parameters, not legal advice.</b> 70% is illustrative, not a statutory ratio.</li>
       <li><b>Prior art exists.</b> Blockchain approaches to jeonse fraud have been proposed academically. The contribution here is the chained-commitment construction plus a working wallet-free deployment.</li>
     </ul>
@@ -363,6 +365,7 @@
     <h2>No wallet. No signup. Open the link.</h2>
     <div class="two">
       <div>
+        <p><a href="demo.html"><b>Run the full demo</b></a> — one button, the whole lifecycle, and <b>four real proofs computed in your own browser</b>. Then try to forge the total and watch the contract refuse.</p>
         <p><a href="check.html"><b>Check a building</b></a> — a verdict read off the ledger, with a downloadable QR certificate.</p>
         <p><a href="why-lying-fails.html"><b>Why a landlord can’t lie</b></a> — claim any total you like and watch the certificate refuse to exist.</p>
         <p><a href="registry.html"><b>Registry console</b></a> — the proving pipeline, framed as a simulation.</p>

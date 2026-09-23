@@ -41,7 +41,7 @@ No wallet, no extension, no signup, no testnet tokens. It is a link.
 >
 > **1.** Open **[/guide.html](https://mj-jinx.github.io/waterline/guide.html)** — a plain-language walkthrough of what to click and what each screen means.
 >
-> **2.** Open **[/demo.html](https://mj-jinx.github.io/waterline/demo.html)** and press **Run Full Demo**. It registers a building and computes **four real Plonk proofs in your own browser** — roughly 10–20 s each, and about 11 MB of prover keys download on the first press — narrating each step and what comes next, then hands you the certificate.
+> **2.** Open **[/demo.html](https://mj-jinx.github.io/waterline/demo.html)** and press **Run Full Demo**. It registers a building and computes **four real Plonk proofs in your own browser** — roughly 10–20 s each, and about 18 MB of keys, SRS and WASM download on the first press — narrating each step and what comes next, then hands you the certificate.
 >
 > **3.** In the box below it, type a deposit total the registry never committed to and press forge. The contract refuses it with `failed assert: Stale opening`, in your tab, before any proof exists.
 >
