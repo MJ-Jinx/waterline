@@ -222,7 +222,14 @@ async function runForgery({ leases, appraised, safePct, cautionPct, claimedTotal
   }
 
   const honest = reg.execute('issueCertificate', id, BigInt(appraised), BigInt(safePct), BigInt(cautionPct));
-  post({ type: 'forge', phase: 'honest', band: Number(honest.result) });
+  post({ type: 'forge', phase: 'honest', band: Number(honest.result), appraised: String(appraised) });
+
+  // What the claimed figure WOULD have produced, by the same arithmetic the
+  // circuit uses. Reported so the page can name the prize instead of assuming
+  // one: a lie that changes nothing is still refused, and should read that way.
+  const load = BigInt(claimedTotal) * 100n;
+  const wouldBe = load <= BigInt(appraised) * BigInt(safePct) ? 2
+    : load <= BigInt(appraised) * BigInt(cautionPct) ? 1 : 0;
 
   reg.setForge({ total: BigInt(claimedTotal), count: reg.book(id).count });
   try {
@@ -230,7 +237,10 @@ async function runForgery({ leases, appraised, safePct, cautionPct, claimedTotal
     // Reaching here would mean the contract accepted a false opening.
     post({ type: 'forge', phase: 'accepted', band: Number(res.result) });
   } catch (e) {
-    post({ type: 'forge', phase: 'refused', error: String(e?.message ?? e) });
+    post({
+      type: 'forge', phase: 'refused', error: String(e?.message ?? e),
+      claimedTotal: String(claimedTotal), wouldBe,
+    });
   } finally {
     reg.setForge(null);
   }

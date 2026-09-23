@@ -142,6 +142,15 @@ try {
     console.log(`\nFAIL: expected 4 proofs, saw ${proved.length}`);
     failed = true;
   }
+  // Newest first. The timeline used to append, which buried the step that had
+  // just landed below the fold on a phone. Nothing else here would notice if it
+  // flipped back, because every other assertion is order-independent.
+  if (steps[0] !== 'The verdict' || steps[steps.length - 1] !== 'A building, invented on the spot') {
+    console.log('\nFAIL: timeline is not newest-first');
+    console.log(`  top: ${steps[0]}`);
+    console.log(`  bottom: ${steps[steps.length - 1]}`);
+    failed = true;
+  }
   // The scripted books are 5.0억 against an 8.0억 valuation, so 70% -> SAFE.
   if (band !== 'safe') {
     console.log(`\nFAIL: expected band "safe", got "${band}"`);
