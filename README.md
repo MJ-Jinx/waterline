@@ -369,7 +369,8 @@ node src/certify.mjs 6 --attack # -> REFUSED: Stale opening
 node src/read.mjs
 
 # 6. Build the in-browser demo, then open site/demo.html and press the button.
-#    Proves all four circuits client-side. Needs step 1 to have run.
+#    Proves all three circuits client-side — four proofs, because
+#    registerLease runs once per deposit. Needs step 1 to have run.
 npm run build:demo
 ```
 
