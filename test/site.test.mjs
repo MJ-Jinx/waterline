@@ -226,6 +226,29 @@ test('every internal link resolves', () => {
   }
 });
 
+// The test above deliberately strips the query, so check.html?b=<id> only ever
+// proved that check.html exists. Renaming a demo building broke the "see the
+// real verdict for this building" link on why-lying-fails.html and nothing
+// noticed — the page still loaded, it just silently showed a different
+// building than the one the whole page is about.
+test('deep links name a building that actually exists', () => {
+  const block = appjs.match(/var BUILDINGS = \[([\s\S]*?)\n  \];/);
+  assert.ok(block, 'could not find the BUILDINGS array in app.js');
+  const known = [...block[1].matchAll(/id:\s*'([^']+)'/g)].map((m) => m[1]);
+  assert.ok(known.length >= 3, `expected the demo buildings, found ${known.length}`);
+
+  let checked = 0;
+  for (const page of pages) {
+    const html = fs.readFileSync(path.join(SITE, page), 'utf8');
+    for (const m of html.matchAll(/href="[^"]*\?b=([^"&]+)"/g)) {
+      checked += 1;
+      assert.ok(known.includes(m[1]),
+        `${page} deep-links ?b=${m[1]}, which is not one of ${known.join(', ')}`);
+    }
+  }
+  assert.ok(checked > 0, 'expected at least one ?b= deep link to guard');
+});
+
 test('every DOM hook app.js queries exists in the markup', () => {
   // A renamed data attribute silently blanks a whole panel otherwise.
   const html = pages.map((p) => fs.readFileSync(path.join(SITE, p), 'utf8')).join('\n');

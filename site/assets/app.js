@@ -143,29 +143,31 @@
      Demo data — invented, internally consistent, clearly fictional buildings.
      Never use a real address or a district tied to a real jeonse-fraud case.
 
-     These name no district at all, which is the only version of that rule that
-     cannot rot. An earlier version put the DANGER building in Bucheon, which
-     has real jeonse-fraud victims and a municipal support scheme still open for
-     applications — a fabricated villa-scale building marked dangerous is not
-     something to hang on a place where that actually happened to people.
+     Seoul districts are fine for the two healthier buildings. The DANGER one
+     names a PROVINCE and no city, deliberately: an earlier version put it in
+     Bucheon, which has real jeonse-fraud victims and a municipal support scheme
+     still taking applications. A fabricated villa-scale building marked
+     dangerous is not something to hang on a place where that happened to
+     people, and with 40,936 recognised victims nationwide almost any city could
+     be someone's. Gyeonggi-do has 13 million residents and points at nobody.
      ====================================================================== */
 
   var BUILDINGS = [
     {
-      id: 'WL-DEMO-0412', chip: 'Serim Heights',
-      place: 'Serim Heights, Block 102 · fictional building',
+      id: 'SEO-2019-0412', chip: 'Seocho',
+      place: 'Seocho-gu, Seoul · Serim Heights, Block 102',
       appraised: '₩1,050,000,000', limit: '₩735,000,000', band: 'safe',
       hash: '0x9f4c8b21…a1e8', block: '3,417,882', issued: '18 Sep 2026, 11:04 KST'
     },
     {
-      id: 'WL-DEMO-0883', chip: 'Eunha Villa',
-      place: 'Eunha Villa, Block A · fictional building',
+      id: 'MPO-2017-0883', chip: 'Mapo',
+      place: 'Mapo-gu, Seoul · Eunha Villa, Block A',
       appraised: '₩620,000,000', limit: '₩434,000,000', band: 'caution',
       hash: '0x3d71ae04…5c92', block: '3,417,601', issued: '18 Sep 2026, 09:47 KST'
     },
     {
-      id: 'WL-DEMO-1176', chip: 'Cheongnim Town',
-      place: 'Cheongnim Town, Block 3 · fictional building',
+      id: 'GGD-2014-1176', chip: 'Gyeonggi',
+      place: 'Gyeonggi-do · Cheongnim Town, Block 3',
       appraised: '₩285,000,000', limit: '₩199,500,000', band: 'danger',
       hash: '0xc082f5d9…30b7', block: '3,416,944', issued: '17 Sep 2026, 18:22 KST'
     }
@@ -196,7 +198,7 @@
   var PIPELINE_TOTAL = PIPELINE.reduce(function (a, s) { return a + s.ms; }, 0);
 
   var ATTACK = {
-    building: 'Cheongnim Town, Block 3 · fictional building',
+    building: 'Cheongnim Town, Block 3 · Gyeonggi-do',
     appraised: '₩285,000,000',
     limitLabel: '₩199,500,000',
     commitment: '0xc082f5d9…30b7 · block 3,416,944',
