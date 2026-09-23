@@ -53,19 +53,49 @@ No wallet, no extension, no signup, no testnet tokens. It is a link.
 
 ### To clone and compile it yourself
 
-**One thing will break the build if it is skipped: the compiler version.** Use `+0.31.1`. It emits
-runtime 0.16.0, which is what the stable `midnight-js` 4.1.1 line pins. Newer compilers emit runtime
-0.19.0 and fail at load with a version mismatch. **There is also no Windows build of the Compact
-CLI.** Use WSL, macOS or Linux.
+**Requirements: Node ≥ 20, and the Compact toolchain with compiler 0.31.1 installed.**
+
+**There is no Windows build of the Compact CLI** — use WSL, macOS or Linux. This matters more than
+it sounds: on Windows, `compact` is already a built-in Microsoft command (`C:\Windows\System32\compact.exe`,
+the NTFS file-compression tool). Running the compile line there prints a note about compression
+ratios and **exits 0**, so it looks like it worked, produces no `build/` directory, and the failure
+only surfaces later as a missing module. In PowerShell, `Get-Command compact` tells you which one
+you have.
+
+**Two things break the build if they are skipped, and both fail confusingly.**
+
+1. **The compiler version must be 0.31.1.** It emits runtime 0.16.0, which is what the stable
+   `midnight-js` 4.1.1 line pins. Newer compilers emit runtime 0.19.0 and fail at load with a
+   version mismatch.
+2. **`compact update 0.31.1` must be run first.** The `+0.31.1` selector on `compact compile`
+   *selects* a compiler, it does not download one. Without this step you get
+   `Error: Failed to run compactc … Couldn't find compiler … Directory does not exist`, which
+   reads like a broken repository and is not one.
 
 ```bash
+# 1. Toolchain (skip if `compact` is already on your PATH)
+curl --proto '=https' --tlsv1.2 -LsSf \
+  https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
+export PATH="$HOME/.compact/bin:$PATH"
+
+# 2. The compiler this contract needs. Not optional, and not implied by step 3.
+compact update 0.31.1
+
+# 3. Clone, install, compile
 git clone https://github.com/MJ-Jinx/waterline && cd waterline
 npm install
-compact compile +0.31.1 contracts/waterline.compact build/waterline   # ~19s
+npm run compile          # compact compile +0.31.1 … build/waterline   (~19s)
 
 npm test                 # 58 tests, no network needed
 npm run verify:refusal   # the attack alone: watch the real circuit refuse to lie
 ```
+
+Use `npm run compile` rather than typing the compiler invocation by hand: the version pin lives in
+[`package.json`](package.json), so it cannot be mistyped or forgotten.
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs this same sequence on a clean
+`ubuntu-latest` runner on every push — installer, `compact update 0.31.1`, `npm run compile`, tests —
+so the path is exercised continuously rather than remembered. It uses `npm ci` rather than
+`npm install` because Node 20 ships npm 10, which the lockfile matches; on npm 11 use `npm install`.
 
 `verify:refusal` is the shortest path to the core claim. It builds a building with two deposits
 totalling ₩5.5억, confirms the honest verdict against a ₩6.0억 appraisal is **위험 DANGER**, then

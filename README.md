@@ -8,7 +8,7 @@ A ship loaded past its waterline is unsafe. So is a building carrying more lease
 
 Built on [Midnight](https://midnight.network) for the Midnight Korea Hackathon 2026.
 **Judges: [`SUBMISSION.md`](SUBMISSION.md)** has the submitted answers, the fastest demo path, and the
-one compiler flag that will break the build if it is skipped.
+two toolchain steps that will break the build if either is skipped.
 
 **▶ Live site: [mj-jinx.github.io/waterline](https://mj-jinx.github.io/waterline/)**
 &nbsp;·&nbsp; **▶ Slide deck: [mj-jinx.github.io/waterline/deck.html](https://mj-jinx.github.io/waterline/deck.html)**
@@ -326,13 +326,32 @@ flowchart LR
 
 Requires Node ≥ 20 and the Compact CLI. **There is no Windows build of the Compact CLI.** Use WSL, macOS or Linux.
 
-```bash
-# 1. Compile. Use +0.31.1 — it emits runtime 0.16.0, which is what the
-#    stable midnight-js 4.1.1 line pins. Newer compilers emit runtime
-#    0.19.0 and fail at load with a version-mismatch error.
-compact compile +0.31.1 contracts/waterline.compact build/waterline
+> On Windows this fails in the worst possible way rather than the obvious one. `compact` is
+> already a built-in Microsoft command — `C:\Windows\System32\compact.exe`, the NTFS
+> file-compression tool — so the compile line prints a line about compression ratios and
+> **exits 0**. Nothing is built, nothing reports an error, and the first real symptom is a
+> missing module several commands later. `Get-Command compact` in PowerShell shows which
+> binary you actually have.
 
+```bash
+# 0. Toolchain, if you do not already have `compact` on your PATH.
+curl --proto '=https' --tlsv1.2 -LsSf \
+  https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
+export PATH="$HOME/.compact/bin:$PATH"
+
+# 1. Install compiler 0.31.1, then compile with it.
+#
+#    Both lines are needed. `+0.31.1` SELECTS a compiler, it does not fetch
+#    one, so skipping `compact update` fails with "Failed to run compactc …
+#    Couldn't find compiler … Directory does not exist" — which looks like a
+#    broken checkout and is not one.
+#
+#    It must be 0.31.1: that emits runtime 0.16.0, which is what the stable
+#    midnight-js 4.1.1 line pins. Newer compilers emit runtime 0.19.0 and
+#    fail at load with a version-mismatch error.
+compact update 0.31.1
 npm install
+npm run compile   # compact compile +0.31.1 contracts/waterline.compact build/waterline
 
 # 2. Registry side — deploy, open a building, register two leases (writes)
 node src/registry.mjs
@@ -474,8 +493,9 @@ commit to, and the contract throws `failed assert: Stale opening` in your own ta
 exists. Or locally, in one command:
 
 ```bash
+compact update 0.31.1     # installs the compiler; `+0.31.1` alone only selects one
 npm install
-compact compile +0.31.1 contracts/waterline.compact build/waterline
+npm run compile
 npm run verify:refusal
 ```
 
@@ -514,6 +534,8 @@ GitHub-hosted runner, and the full suite runs in well under a second after that.
 | Symptom | Cause |
 |---|---|
 | `Version mismatch: compiled code expects 0.19.0` | Compiled with 0.34.0. Use `+0.31.1`. |
+| `compact compile` prints “X are compressed” and exits 0 | You are on Windows and ran `C:\Windows\System32\compact.exe`, the NTFS compression tool, not the Compact compiler. There is no Windows build; use WSL, macOS or Linux. |
+| `Failed to run compactc … Couldn't find compiler … Directory does not exist` | `compact compile +0.31.1` **selects** a compiler, it does not download one. Run `compact update 0.31.1` first. This is the most likely reason a clean clone looks broken. |
 | `expected instance of LedgerParameters` | Two copies of `ledger-v8` — two WASM instances. Pin `8.1.0`. |
 | `403 Forbidden` submitting a transaction | HTTPS RPC caps bodies well under 20 KB. Use `wss://`. |
 | `1010: Custom error: 182` | Intent TTL expired. Prove and submit in the same process, no gap. |
